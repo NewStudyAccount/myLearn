@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration >
+    <jmxConfigurator/>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+    <!-- 应用名称 -->
+    <property scope="context" name="appName" value="myproject" />
+    <!-- 自定义日志输出路径，以及日志名称前缀 -->
+    <property name="LOG_FILE" value="logs/${appName}"/>
+<!--    <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"/>-->
+    <property name="FILE_LOG_PATTERN" value="[TraceId: %X{traceId}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"/>
+    <!--<property name="CONSOLE_LOG_PATTERN" value="${FILE_LOG_PATTERN}"/>-->
+
+    <!-- 按照每天生成日志文件 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_FILE}-%d{yyyy-MM-dd}-%i.log</FileNamePattern> <!-- 修正文件名格式 -->
+            <maxFileSize>10MB</maxFileSize> <!-- 移到直接子标签 -->
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- dev 环境（仅输出到控制台） -->
+    <springProfile name="dev">
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+        <root level="debug">
+            <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
+
+    <springProfile name="test">
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+        <root level="debug">
+            <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
+
+    <!-- prod 环境（仅输出到文件中） -->
+    <springProfile name="prod">
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+        <root level="INFO">
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+</configuration>

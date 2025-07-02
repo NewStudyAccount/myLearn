@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.SysUserMapper">
+
+<!--    <select id="queryPermissionByUserId" resultType="java.lang.String">-->
+<!--        SELECT distinct sp.per_code-->
+<!--        from sys_user su-->
+<!--                 left join sys_user_role sur on sur.user_id = su.user_id-->
+<!--                 left join sys_role sr on sr.role_id =sur.role_id-->
+<!--                 left join sys_role_per srr on srr.role_id = sur.role_id-->
+<!--                 left join sys_per sp on sp.per_id = srr.per_id-->
+<!--        where su.user_id = #{userId}-->
+
+<!--    </select>-->
+
+
+</mapper>

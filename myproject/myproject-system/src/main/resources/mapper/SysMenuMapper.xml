@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.SysMenuMapper">
+
+
+    <select id="listMenuByUserId" resultType="com.example.domain.SysMenu">
+        select menu.menu_id, menu.menu_name, menu.per_code, menu.menu_type, menu.menu_sort, menu.parent_id, menu.path,
+               menu.component, menu.component_name
+        from sys_menu menu
+                 left join sys_role_menu role_menu on menu.menu_id = role_menu.meun_id
+                 left join sys_user_role user_role on user_role.role_id = role_menu.role_id
+                 left join sys_role roles on roles.role_id = user_role.role_id
+                 left join sys_user users on users.user_id = user_role.user_id
+        where user_role.user_id = #{userId}
+        order by menu.parent_id,menu.menu_sort
+    </select>
+
+
+    <select id="listMenu" resultType="com.example.domain.SysMenu">
+        select menu.menu_id, menu.menu_name, menu.per_code, menu.menu_type, menu.menu_sort, menu.parent_id, menu.path,
+               menu.component, menu.component_name
+        from sys_menu menu
+        order by menu.parent_id,menu.menu_sort
+    </select>
+
+
+    <select id="listPermissionCodesByUserId" resultType="java.lang.String">
+        select menu.per_code
+        from sys_menu menu
+                 left join sys_role_menu role_menu on role_menu.meun_id = menu.menu_id
+                 left join sys_user_role user_role on user_role.role_id = role_menu.role_id
+                 left join sys_role roles on roles.role_id = user_role.role_id
+                 left join sys_user users on users.user_id = user_role.user_id
+        where users.user_id = #{userId}
+
+    </select>
+
+
+
+</mapper>
