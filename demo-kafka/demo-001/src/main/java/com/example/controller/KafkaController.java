@@ -1,7 +1,7 @@
-package com.example.demokafka.controller;
+package com.example.controller;
 
 
-import com.example.demokafka.service.KafkaProducerService;
+import com.example.service.KafkaProducerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
