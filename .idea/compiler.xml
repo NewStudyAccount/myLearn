@@ -9,24 +9,11 @@
         <module name="myproject-common" />
         <module name="myproject-security" />
         <module name="myproject-framework" />
+        <module name="myproject-server" />
         <module name="myproject-blog" />
         <module name="myproject-system" />
-        <module name="myproject-server" />
-      </profile>
-      <profile name="Annotation profile for demo-kafka" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
-        </processorPath>
-        <module name="demo-001" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="demo-kafka" target="17" />
-      <module name="thread-learn" target="17" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
