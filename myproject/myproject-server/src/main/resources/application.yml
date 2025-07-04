@@ -1,5 +1,8 @@
-eww:
-  feature-001
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: beans
 
 server:
   port: 8080
@@ -10,11 +13,11 @@ spring:
   application:
     name: myproject
 mybatis-plus:
-  global-config:
-    db-config:
-      logic-delete-field: is_deleted # 全局逻辑删除字段名
-      logic-delete-value: 1 # 逻辑已删除值
-  mapper-locations: classpath:mapper/*.xml  # 确保 XML 文件路径正确
+#  global-config:
+#    db-config:
+#      logic-delete-field: is_deleted # 全局逻辑删除字段名
+#      logic-delete-value: 1 # 逻辑已删除值
+  mapper-locations: classpath*:mapper/**/*.xml  # 确保 XML 文件路径正确
   configuration:
     map-underscore-to-camel-case: true  # 自动驼峰转换（若数据库字段带下划线）
   type-aliases-package: com.example.domain # 实体类别名包扫描
