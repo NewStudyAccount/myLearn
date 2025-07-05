@@ -130,19 +130,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
 
     /**
-     * 用户登录之后返回的用户信息
+     * 用户登录之后返回的用户信息,用户登录之后是有自己的token信息的
      * 用户信息
      * 权限信息
      * 等
-     * @param userId
      */
     @Override
-    public UserInfoVo queryUserInfo(Long userId) {
+    public UserInfoVo queryUserInfoAfterLogin() {
 
-        SysUser sysUser = sysUserMapper.selectById(userId);
+        Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
+
+
+        SysUser sysUser = sysUserMapper.selectById(loginUserId);
         sysUser.setUserPwd("******");
 
-        List<String> userPermission = getUserPermission(userId);
+        List<String> userPermission = getUserPermission(loginUserId);
 
 
 

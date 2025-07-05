@@ -60,14 +60,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
         //获取请求头中的token
-        String token = request.getHeader("access_token");
+        String token = request.getHeader("Authorization");
         MyUserDetails userDetailsFromToken = new MyUserDetails();
         //判断token是否为空，为空则抛出异常
-        if (!StringUtils.isEmpty(token)) {
+        if (!StringUtils.isEmpty(token)  && token.startsWith("Bearer ")) {
 
             //取得token中的用户表示，注意解析的异常处理
             try {
-                 userDetailsFromToken = tokenService.getUserDetailsFromToken(token);
+                token = token.substring(7); // 去除 "Bearer " 前缀
+                userDetailsFromToken = tokenService.getUserDetailsFromToken(token);
             } catch (Exception e) {
                 throw new BadCredentialsException("token错误或token过期");
             }

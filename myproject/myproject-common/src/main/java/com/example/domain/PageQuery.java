@@ -25,13 +25,13 @@ public class PageQuery implements Serializable {
     /**
      * 分页大小
      */
-    @JsonProperty("PAGE_SIZE")
+    @JsonProperty("pageSize")
     private Integer pageSize;
 
     /**
      * 当前页数
      */
-    @JsonProperty("PAGE_NUM")
+    @JsonProperty("pageNum")
     private Integer pageNum;
 
     /**

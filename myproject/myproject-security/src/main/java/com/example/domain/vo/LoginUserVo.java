@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginUserVo {
 
-    @JsonProperty(value = "USER_NAME")
+    @JsonProperty(value = "userName")
     private String userName;
 
-    @JsonProperty(value = "PASSWORD")
+    @JsonProperty(value = "passWord")
     private String password;
 }

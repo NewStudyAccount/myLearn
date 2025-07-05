@@ -4,7 +4,6 @@ package com.example.controller;
 import com.example.domain.Response;
 import com.example.domain.SysMenu;
 import com.example.domain.req.sysUser.SysUserQueryReq;
-import com.example.domain.vo.UserInfoVo;
 import com.example.service.SysUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,12 +25,7 @@ public class SysUserController {
     private SysUserService sysUserService;
 
 
-    @Operation(summary = "用户登陆后查询用户信息")
-    @PostMapping("/queryUserInfo")
-    public Response<?> queryUserInfo(@RequestBody SysUserQueryReq sysUserQueryReq){
-        UserInfoVo userInfoVo = sysUserService.queryUserInfo(sysUserQueryReq.getUserId());
-        return Response.success(userInfoVo);
-    }
+
 
     @Operation(summary = "查询用户动态路由信息")
     @PostMapping("/queryUserDynamicRouter")
