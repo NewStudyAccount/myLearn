@@ -45,5 +45,12 @@ public class LoginController {
         return Response.success(userInfoVo);
     }
 
+    @Operation(summary = "用户登录后获取用户信息")
+    @PostMapping("/getDynamicRouter")
+    public Response<?> getDynamicRouter(){
+        UserInfoVo userInfoVo = sysUserService.queryUserDynamicRouter();
+        return Response.success(userInfoVo);
+    }
+
 
 }

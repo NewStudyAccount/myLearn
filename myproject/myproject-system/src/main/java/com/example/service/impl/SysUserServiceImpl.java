@@ -157,8 +157,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     }
 
     @Override
-    public List<SysMenu> queryUserDynamicRouter(Long userId) {
-        List<SysMenu> sysMenus = listDynamicRouterByUserId(userId);
+    public List<SysMenu> queryUserDynamicRouter() {
+        Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
+        List<SysMenu> sysMenus = listDynamicRouterByUserId(loginUserId);
         return sysMenus;
     }
 

@@ -30,7 +30,7 @@ public class SysUserController {
     @Operation(summary = "查询用户动态路由信息")
     @PostMapping("/queryUserDynamicRouter")
     public Response<?> queryUserDynamicRouter(@RequestBody SysUserQueryReq sysUserQueryReq){
-        List<SysMenu> sysMenus = sysUserService.queryUserDynamicRouter(sysUserQueryReq.getUserId());
+        List<SysMenu> sysMenus = sysUserService.queryUserDynamicRouter();
         return Response.success(sysMenus);
     }
 
