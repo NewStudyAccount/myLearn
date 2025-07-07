@@ -1,6 +1,7 @@
 package com.example.config;
 
 
+import com.example.filter.ExceptionHandlingFilter;
 import com.example.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -36,6 +36,12 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+
+    @Autowired
+
+    private ExceptionHandlingFilter exceptionHandlingFilter;
+
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -72,6 +78,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(AbstractHttpConfigurer::disable)
+                .addFilterBefore(exceptionHandlingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)  // 先配置过滤器
                 .exceptionHandling(execption->execption.authenticationEntryPoint(authenticationEntryPoint)  // 后配置异常处理
                         .accessDeniedHandler(accessDeniedHandler))
