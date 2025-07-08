@@ -174,7 +174,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         if (CollectionUtils.isEmpty(sysMenus)){
             return Collections.emptyList();
         }
-        return sysMenus.stream().filter(item -> "C".equals(item.getMenuType())).toList();
+        return sysMenus.stream().filter(item -> "C".equals(item.getMenuType()))
+                .sorted(Comparator.comparing(SysMenu::getParentId)
+                        .thenComparing(SysMenu::getMenuSort))
+                .toList();
     }
 }
 

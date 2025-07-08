@@ -48,7 +48,7 @@ public class LoginController {
         return Response.success(userInfoVo);
     }
 
-    @Operation(summary = "用户登录后获取用户信息")
+    @Operation(summary = "用户登录后获取动态路由信息")
     @PostMapping("/getDynamicRouter")
     public Response<?> getDynamicRouter(){
         List<SysMenu> sysMenus = sysUserService.queryUserDynamicRouter();
