@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.domain.*;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
+import com.example.domain.vo.MenuTree;
 import com.example.domain.vo.SysRoleVo;
 import com.example.domain.vo.UserInfoVo;
 import com.example.domain.vo.UserVo;
@@ -20,7 +21,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
 * @author QJJ
@@ -157,10 +160,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     }
 
     @Override
-    public List<SysMenu> queryUserDynamicRouter() {
+    public List<MenuTree> queryUserDynamicRouter() {
         Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
         List<SysMenu> sysMenus = listDynamicRouterByUserId(loginUserId);
-        return sysMenus;
+
+        List<MenuTree> menuTrees = buildTreeMethod2(sysMenus);
+//        List<MenuTree> menuTrees = buildTree(sysMenus);
+        return menuTrees;
     }
 
 
@@ -174,11 +180,115 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         if (CollectionUtils.isEmpty(sysMenus)){
             return Collections.emptyList();
         }
-        return sysMenus.stream().filter(item -> "C".equals(item.getMenuType()))
+        return sysMenus.stream().filter(item -> !"F".equals(item.getMenuType()))
                 .sorted(Comparator.comparing(SysMenu::getParentId)
                         .thenComparing(SysMenu::getMenuSort))
                 .toList();
     }
+
+
+    public List<MenuTree> buildTree(List<SysMenu> sysMenus){
+
+        Map<Integer,SysMenu> rootMenuMap = new HashMap<>();
+        Map<Integer,List<SysMenu>> childMenuMap = new HashMap<>();
+
+        for (SysMenu sysMenu : sysMenus) {
+            if (sysMenu.getParentId() == 0){
+                rootMenuMap.put(sysMenu.getMenuId(),sysMenu);
+            }else {
+                if (!childMenuMap.containsKey(sysMenu.getParentId())){
+                    List<SysMenu> childMenuList = new ArrayList<>();
+                    childMenuList.add(sysMenu);
+                    childMenuMap.put(sysMenu.getParentId(),childMenuList);
+                }else {
+                    List<SysMenu> sysMenus1 = childMenuMap.get(sysMenu.getParentId());
+                    sysMenus1.add(sysMenu);
+                    childMenuMap.put(sysMenu.getParentId(),sysMenus1);
+                }
+            }
+        }
+
+        List<MenuTree> menuTrees = new ArrayList<>();
+
+        rootMenuMap.forEach((key,value)->{
+            MenuTree menuTree = new MenuTree();
+            menuTree.setMenuId(value.getMenuId());
+            menuTree.setName(value.getMenuName());
+            menuTree.setSort(value.getMenuSort());
+            menuTree.setPath(value.getPath());
+            menuTree.setComponent(value.getComponent());
+
+            menuTree.setChildren(constructChildTree(childMenuMap.get(key)));
+
+            menuTrees.add(menuTree);
+
+        });
+
+        return menuTrees;
+    }
+
+    public List<MenuTree> constructChildTree(List<SysMenu> sysMenus){
+
+        List<MenuTree> menuTrees = new ArrayList<>();
+        for (SysMenu sysMenu : sysMenus) {
+            MenuTree menuTree = new MenuTree();
+            menuTree.setMenuId(sysMenu.getMenuId());
+            menuTree.setName(sysMenu.getMenuName());
+            menuTree.setSort(sysMenu.getMenuSort());
+            menuTree.setPath(sysMenu.getPath());
+            menuTree.setComponent(sysMenu.getComponent());
+            menuTrees.add(menuTree);
+        }
+        return menuTrees;
+    }
+
+
+
+    public List<MenuTree> buildTreeMethod2(List<SysMenu> sysMenus) {
+        if (CollectionUtils.isEmpty(sysMenus)) {
+            return Collections.emptyList();
+        }
+
+        // 构建所有节点的映射
+        Map<Integer, MenuTree> menuNodeMap = new HashMap<>();
+        sysMenus.forEach(menu -> menuNodeMap.put(menu.getMenuId(), new MenuTree(menu.getMenuId(),menu.getParentId(), menu.getMenuName(), menu.getMenuSort(), menu.getPerCode(), menu.getPath(), menu.getComponent())));
+
+        // 构建父子关系
+        List<MenuTree> rootNodes = new ArrayList<>();
+
+        sysMenus.forEach(menu -> {
+            MenuTree menuTree = menuNodeMap.get(menu.getMenuId());
+            Integer parentId = menu.getParentId();
+
+            if (parentId == null || parentId == 0) {
+                rootNodes.add(menuTree);
+            } else {
+                MenuTree parent = menuNodeMap.get(parentId);
+                if (parent != null) {
+                    if (parent.getChildren() == null) {
+                        parent.setChildren(new ArrayList<>());
+                    }
+                    parent.getChildren().add(menuTree);
+                }
+            }
+        });
+
+        // 排序
+        Comparator<MenuTree> comparator = Comparator.comparing(MenuTree::getMenuId).thenComparing(MenuTree::getSort);
+        sortTree(rootNodes, comparator);
+
+        return rootNodes;
+    }
+
+    private void sortTree(List<MenuTree> nodes, Comparator<MenuTree> comparator) {
+        if (nodes == null || nodes.isEmpty()) return;
+
+        nodes.sort(comparator);
+        nodes.forEach(node -> sortTree(node.getChildren(), comparator));
+    }
+
+
+
 }
 
 

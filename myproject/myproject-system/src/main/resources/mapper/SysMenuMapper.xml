@@ -14,7 +14,7 @@
                  left join sys_role roles on roles.role_id = user_role.role_id
                  left join sys_user users on users.user_id = user_role.user_id
         where user_role.user_id = #{userId}
-        order by menu.parent_id,menu.menu_sort
+        order by menu.menu_id,menu.parent_id,menu.menu_sort
     </select>
 
 
@@ -22,7 +22,7 @@
         select menu.menu_id, menu.menu_name, menu.per_code, menu.menu_type, menu.menu_sort, menu.parent_id, menu.path,
                menu.component, menu.component_name
         from sys_menu menu
-        order by menu.parent_id,menu.menu_sort
+        order by menu.menu_id,menu.parent_id,menu.menu_sort
     </select>
 
 

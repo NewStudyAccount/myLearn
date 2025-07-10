@@ -5,6 +5,7 @@ import com.example.aspect.ApiOperationLog;
 import com.example.domain.Response;
 import com.example.domain.SysMenu;
 import com.example.domain.vo.LoginUserVo;
+import com.example.domain.vo.MenuTree;
 import com.example.domain.vo.UserInfoVo;
 import com.example.service.LoginService;
 import com.example.service.SysUserService;
@@ -51,8 +52,8 @@ public class LoginController {
     @Operation(summary = "用户登录后获取动态路由信息")
     @PostMapping("/getDynamicRouter")
     public Response<?> getDynamicRouter(){
-        List<SysMenu> sysMenus = sysUserService.queryUserDynamicRouter();
-        return Response.success(sysMenus);
+        List<MenuTree> menuTrees = sysUserService.queryUserDynamicRouter();
+        return Response.success(menuTrees);
     }
 
 
