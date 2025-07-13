@@ -4,7 +4,10 @@ package com.example.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.domain.*;
+import com.example.domain.SysMenu;
+import com.example.domain.SysUser;
+import com.example.domain.SysUserDto;
+import com.example.domain.TableDataInfo;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
 import com.example.domain.vo.MenuTree;
 import com.example.domain.vo.SysRoleVo;
@@ -21,9 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 /**
 * @author QJJ
@@ -261,6 +262,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
             Integer parentId = menu.getParentId();
 
             if (parentId == null || parentId == 0) {
+                //父级目录的组件全部传 Layout，默认都使用主页的目录
+                menuTree.setComponent("Layout");
                 rootNodes.add(menuTree);
             } else {
                 MenuTree parent = menuNodeMap.get(parentId);
