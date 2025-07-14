@@ -10,7 +10,7 @@ public class TokenConstant {
     public static final String SECRET = "QWERTYUIOP";
 
     // token过期时间毫秒  15分钟
-    public static long EXPIRE_TIME = 1000 * 60 * 15;
+    public static long EXPIRE_TIME = 1000 * 60 * 15*60;
 
 
     // RedisLoginKey

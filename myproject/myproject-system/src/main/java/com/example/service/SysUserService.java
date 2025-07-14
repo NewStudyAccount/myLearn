@@ -6,6 +6,7 @@ import com.example.domain.SysMenu;
 import com.example.domain.SysUser;
 import com.example.domain.TableDataInfo;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
+import com.example.domain.vo.MenuTree;
 import com.example.domain.vo.UserInfoVo;
 import com.example.domain.vo.UserVo;
 
@@ -24,9 +25,9 @@ public interface SysUserService extends IService<SysUser> {
 
 //    List<String> queryUserInfoPermission(Long userId);
 
-    UserInfoVo queryUserInfo(Long userId);
+    UserInfoVo queryUserInfoAfterLogin();
 
-    List<SysMenu> queryUserDynamicRouter(Long userId);
+    List<MenuTree> queryUserDynamicRouter();
 
 
 

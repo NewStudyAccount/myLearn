@@ -44,7 +44,7 @@ public class TokenServiceImpl implements TokenService {
         //redis redis中存储的是token信息   redis key  login_user_key+ user_id   value  是 MyUserDetails信息
 
         String redisKey = createRedisKey(userId);
-        redisCache.setCacheObject(redisKey,myUserDetails,TokenConstant.REDIS_LOGIN_KEY_EXPIRE_TIME, TimeUnit.MINUTES);
+        redisCache.setCacheObject(redisKey,myUserDetails,TokenConstant.REDIS_LOGIN_KEY_EXPIRE_TIME, TimeUnit.HOURS);
 
         return token;
     }

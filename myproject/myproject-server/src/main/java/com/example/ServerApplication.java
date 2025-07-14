@@ -10,7 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication(scanBasePackages = {"com.example"})
 //@ComponentScan(basePackages = "com.example") // 扫描 com.example 及其所有子包
-@MapperScan("com.example.mapper")
+@MapperScan(basePackages = {"com.example.mapper"})
 public class ServerApplication
 {
     public static void main( String[] args )

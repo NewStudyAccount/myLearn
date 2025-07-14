@@ -19,19 +19,19 @@ public class UserVo {
     /**
      * 用户名
      */
-    @JsonProperty(value = "USER_NAME")
+    @JsonProperty(value = "userName")
     private String userName;
 
     /**
      * 用户密码
      */
-    @JsonProperty(value = "PASSWORD")
+    @JsonProperty(value = "passWord")
     private String password;
 
     /**
      * 性别
      */
-    @JsonProperty(value = "SEX")
+    @JsonProperty(value = "sex")
     private String sex;
 
 }

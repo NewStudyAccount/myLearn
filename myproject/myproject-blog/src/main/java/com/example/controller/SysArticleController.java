@@ -6,6 +6,7 @@ import com.example.domain.req.SysArticleReq;
 import com.example.service.SysArticleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,7 +18,7 @@ public class SysArticleController {
     @Autowired
     private SysArticleService sysArticleService;
 
-    @RequestMapping("/save")
+    @PostMapping("/save")
     public Response<?> saveArticle(SysArticleReq sysArticleReq){
         return Response.success(sysArticleService.saveArticle(sysArticleReq));
     }

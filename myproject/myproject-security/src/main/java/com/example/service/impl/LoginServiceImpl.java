@@ -13,6 +13,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class LoginServiceImpl implements LoginService {
 
@@ -39,7 +42,9 @@ public class LoginServiceImpl implements LoginService {
             //认证成功,生成token返回
             MyUserDetails myUserDetails = (MyUserDetails) authenticate.getPrincipal();
             String token = tokenService.createToken(myUserDetails);
-            return Response.success("登录成功",token);
+            Map<String,Object> result = new HashMap<>();
+            result.put("token",token);
+            return Response.success("登录成功",result);
 
         }else {
             //认证失败
