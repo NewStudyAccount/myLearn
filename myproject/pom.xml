@@ -15,6 +15,7 @@
         <module>myproject-security</module>
         <module>myproject-blog</module>
         <module>myproject-framework</module>
+        <module>myproject-oss</module>
     </modules>
     <properties>
         <java.version>17</java.version>
