@@ -2,12 +2,11 @@ package com.example.config;
 
 import io.minio.messages.Upload;
 import org.springframework.beans.factory.annotation.Autowired;
+import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -91,10 +90,38 @@ public class OssService {
     }
 
 
+//      v1版本的
+//    private TransferManager transferManager;
 
+
+
+    public String uploadFile2(String key, InputStream inputStream) {
+
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .contentType("application/octet-stream")
+                .build();
+
+        s3Client.putObject(request, AsyncRequestBody.fromInputStream(inputStream, contentLength, executorService));
+    }
+
+
+
+
+
+//    使用分片上传（适合大文件）
     public String uploadBigFiles(String key, InputStream inputStream) {
 
+        CreateMultipartUploadRequest createRequest = CreateMultipartUploadRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
 
+        CreateMultipartUploadResponse createResponse = s3Client.createMultipartUpload(createRequest);
+        String uploadId = createResponse.uploadId();
+
+// 然后依次上传每个 part，最后 CompleteMultipartUpload
 
     }
 
