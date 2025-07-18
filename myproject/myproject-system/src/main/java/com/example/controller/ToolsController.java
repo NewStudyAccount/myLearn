@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,18 +28,24 @@ public class ToolsController {
      * 文件上传接口
      *
      * @param file 上传的文件
-     * @param key  文件在 S3 中的存储路径（例如：folder/filename.ext）
      * @return 响应结果
      */
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
         try (InputStream inputStream = file.getInputStream()) {
-            String result = ossService.uploadFile("test/"+originalFilename, inputStream);
+            String result = ossService.uploadFile("test2/"+originalFilename, inputStream);
             return ResponseEntity.ok(result);
         } catch (IOException e) {
             throw new RuntimeException("Failed to read uploaded file", e);
         }
+    }
+
+    @PostMapping("/list")
+    public ResponseEntity<String> list() {
+        ListBucketsResponse listBucketsResponse = ossService.listAllBuckets();
+        return ResponseEntity.ok(listBucketsResponse.toString());
+
     }
 
     public Response<?> uploadFile(String fileName, byte[] fileBytes) {
