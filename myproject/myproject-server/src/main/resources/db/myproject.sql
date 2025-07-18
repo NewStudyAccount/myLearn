@@ -11,7 +11,7 @@
  Target Server Version : 80405
  File Encoding         : 65001
 
- Date: 14/07/2025 23:08:05
+ Date: 19/07/2025 00:06:55
 */
 
 SET NAMES utf8mb4;
@@ -28,7 +28,7 @@ CREATE TABLE `sys_article`  (
   `is_deleted` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NULL DEFAULT NULL COMMENT '删除标志',
   `read_num` int NULL DEFAULT 0 COMMENT '阅读次数',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '文章表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '文章表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_article
@@ -124,6 +124,43 @@ INSERT INTO `sys_menu` VALUES (1001, '用户列表', 'test:001', 'C', 1, 1, '/sy
 INSERT INTO `sys_menu` VALUES (1002, '角色列表', 'confirm:002', 'C', 2, 1, '/system/role', 'system/role/Role', 'Role');
 INSERT INTO `sys_menu` VALUES (1003, '菜单列表', 'test:002', 'C', 3, 1, '/system/menu', 'system/menu/Menu', 'Menu');
 INSERT INTO `sys_menu` VALUES (2001, '标签列表', 's', 'C', 1, 2, '/blog/tag', 'blog/tag/Tags', NULL);
+
+-- ----------------------------
+-- Table structure for sys_oss_config
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_oss_config`;
+CREATE TABLE `sys_oss_config`  (
+  `id` int NOT NULL,
+  `config_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `bucket_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `access_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `key_secret` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `end_point` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `region` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `status` int NULL DEFAULT 1,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_oss_config
+-- ----------------------------
+
+-- ----------------------------
+-- Table structure for sys_oss_file
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_oss_file`;
+CREATE TABLE `sys_oss_file`  (
+  `oss_id` bigint NOT NULL,
+  `file_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `original_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `file_suffix` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `file_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`oss_id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_oss_file
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for sys_role
