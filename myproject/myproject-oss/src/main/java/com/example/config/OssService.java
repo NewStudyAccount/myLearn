@@ -100,6 +100,7 @@ public class OssService {
         return s3AsyncClient.putObject(PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(key)
+                .acl("public-read")
                 .build(),
                 AsyncRequestBody.fromBytes(inputStream.readAllBytes())).join().toString();
 

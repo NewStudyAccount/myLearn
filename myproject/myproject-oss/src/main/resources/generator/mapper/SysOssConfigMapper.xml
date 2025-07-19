@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="generator.mapper.SysOssConfigMapper">
+
+    <resultMap id="BaseResultMap" type="generator.domain.SysOssConfig">
+            <id property="id" column="id" />
+            <result property="configName" column="config_name" />
+            <result property="bucketName" column="bucket_name" />
+            <result property="accessKey" column="access_key" />
+            <result property="keySecret" column="key_secret" />
+            <result property="endPoint" column="end_point" />
+            <result property="region" column="region" />
+            <result property="status" column="status" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,config_name,bucket_name,access_key,key_secret,end_point,
+        region,status
+    </sql>
+</mapper>

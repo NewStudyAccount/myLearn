@@ -1,14 +1,16 @@
 package com.example.service;
 
+import java.io.InputStream;
+
 public interface ObjectStorageService {
     /**
      * 上传文件
      *
      * @param bucketName 存储桶名称
      * @param objectKey  对象键（文件路径）
-     * @param filePath   文件本地路径
+     * @param inputStream
      */
-    void uploadFile(String bucketName, String objectKey, String filePath);
+    public void uploadFile(String bucketName, String objectKey, InputStream inputStream);
 
     /**
      * 下载文件
