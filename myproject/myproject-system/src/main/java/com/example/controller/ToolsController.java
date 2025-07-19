@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,12 +40,12 @@ public class ToolsController {
         }
     }
 
-    @PostMapping("/list")
-    public ResponseEntity<String> list() {
-        ListBucketsResponse listBucketsResponse = ossService.listAllBuckets();
-        return ResponseEntity.ok(listBucketsResponse.toString());
-
-    }
+//    @PostMapping("/list")
+//    public ResponseEntity<String> list() {
+//        ListBucketsResponse listBucketsResponse = ossService.listAllBuckets();
+//        return ResponseEntity.ok(listBucketsResponse.toString());
+//
+//    }
 
     public Response<?> uploadFile(String fileName, byte[] fileBytes) {
         return Response.success("上传成功");
