@@ -1,7 +1,8 @@
-package generator.service;
+package com.example.service;
 
-import generator.domain.SysOssFile;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.domain.SysOssFile;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
 * @author AI
@@ -9,5 +10,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2025-07-19 16:06:21
 */
 public interface SysOssFileService extends IService<SysOssFile> {
+
+    public int uploadFile(MultipartFile file);
+
+    public int insertSysOssFile(SysOssFile sysOssFile);
+
 
 }

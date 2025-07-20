@@ -11,7 +11,7 @@
  Target Server Version : 80405
  File Encoding         : 65001
 
- Date: 19/07/2025 00:06:55
+ Date: 20/07/2025 23:50:16
 */
 
 SET NAMES utf8mb4;
@@ -150,7 +150,7 @@ CREATE TABLE `sys_oss_config`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_oss_file`;
 CREATE TABLE `sys_oss_file`  (
-  `oss_id` bigint NOT NULL,
+  `oss_id` bigint NOT NULL AUTO_INCREMENT,
   `file_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `original_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `file_suffix` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
@@ -161,6 +161,7 @@ CREATE TABLE `sys_oss_file`  (
 -- ----------------------------
 -- Records of sys_oss_file
 -- ----------------------------
+INSERT INTO `sys_oss_file` VALUES (1, '0b52a287-cbfe-4e96-b94b-88a8362f6bae.jpg', 'QQ图片20231105182412.jpg', 'jpg', 'https://qjj-learn.oss-cn-shanghai.aliyuncs.com/test2/0b52a287-cbfe-4e96-b94b-88a8362f6bae.jpg');
 
 -- ----------------------------
 -- Table structure for sys_role

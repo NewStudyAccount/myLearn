@@ -1,9 +1,9 @@
-package generator.service.impl;
+package com.example.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import generator.domain.SysOssConfig;
-import generator.service.SysOssConfigService;
-import generator.mapper.SysOssConfigMapper;
+import com.example.domain.SysOssConfig;
+import com.example.mapper.SysOssConfigMapper;
+import com.example.service.SysOssConfigService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 */
 @Service
 public class SysOssConfigServiceImpl extends ServiceImpl<SysOssConfigMapper, SysOssConfig>
-    implements SysOssConfigService{
+    implements SysOssConfigService {
 
 }
 

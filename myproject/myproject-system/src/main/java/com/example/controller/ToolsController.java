@@ -3,6 +3,7 @@ package com.example.controller;
 
 import com.example.config.OssService;
 import com.example.domain.Response;
+import com.example.service.SysOssFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +39,17 @@ public class ToolsController {
         } catch (IOException e) {
             throw new RuntimeException("Failed to read uploaded file", e);
         }
+    }
+
+
+    @Autowired
+
+    private SysOssFileService sysOssFileService;
+    @PostMapping("/upload2")
+    public ResponseEntity<String> uploadFile2(@RequestParam("file") MultipartFile file) {
+        int i = sysOssFileService.uploadFile(file);
+        return ResponseEntity.ok(String.valueOf(i));
+
     }
 
 //    @PostMapping("/list")

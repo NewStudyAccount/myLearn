@@ -1,7 +1,7 @@
-package generator.mapper;
+package com.example.mapper;
 
-import generator.domain.SysOssConfig;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.domain.SysOssConfig;
 
 /**
 * @author AI

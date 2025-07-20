@@ -1,7 +1,7 @@
-package generator.service;
+package com.example.service;
 
-import generator.domain.SysOssConfig;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.example.domain.SysOssConfig;
 
 /**
 * @author AI
