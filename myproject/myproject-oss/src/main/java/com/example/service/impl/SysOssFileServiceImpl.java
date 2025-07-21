@@ -1,8 +1,9 @@
 package com.example.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.config.OssService;
+import com.example.config.OssClient;
 import com.example.domain.SysOssFile;
+import com.example.factory.OssFactory;
 import com.example.mapper.SysOssFileMapper;
 import com.example.service.SysOssFileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,11 @@ public class SysOssFileServiceImpl extends ServiceImpl<SysOssFileMapper, SysOssF
     @Autowired
     private SysOssFileMapper sysOssFileMapper;
 
+//    @Autowired
+//    private OssService ossService;
+
     @Autowired
-    private OssService ossService;
+    private OssFactory ossFactory;
 
     @Override
     public int uploadFile(MultipartFile file) {
@@ -38,9 +42,11 @@ public class SysOssFileServiceImpl extends ServiceImpl<SysOssFileMapper, SysOssF
             String fileFolder = "test2/";
             String newFileName = UUID.randomUUID().toString() + "."+split[1];
             String key = fileFolder+newFileName;
-            String url = "https://qjj-learn.oss-cn-shanghai.aliyuncs.com/"+key;
+//            String url = "https://qjj-learn.oss-cn-shanghai.aliyuncs.com/"+key;
 
-            ossService.uploadFile(key,inputStream);
+            OssClient defaultOssClient = ossFactory.getDefaultOssClient();
+            String url = defaultOssClient.uploadFile(key, inputStream);
+//            ossService.uploadFile(key,inputStream);
 
 
             SysOssFile sysOssFile = new SysOssFile(newFileName,originalFilename,split[1],url);

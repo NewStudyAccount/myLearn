@@ -36,3 +36,14 @@ blog相关接口
 
 
 文章新增业务层：标签、分类、文章标题、文章内容等服务组装使用
+
+
+
+![img_2.png](img_2.png)
+
+✅ 一、项目初始化时加载数据进入 Redis
+1. 使用 @PostConstruct 注解
+   适用于在 Bean 初始化阶段加载数据到 Redis。
+2. 使用 ApplicationRunner 或 CommandLineRunner
+   这两个接口会在 Spring 容器启动完成后执行，适合执行一些初始化任务。
+3. 

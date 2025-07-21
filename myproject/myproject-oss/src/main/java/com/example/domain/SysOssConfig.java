@@ -52,7 +52,7 @@ public class SysOssConfig {
     private String fileFolder;
 
     /**
-     * 0:启用 1:不启用
+     * 是否默认（0=是,1=否）
      */
     private Integer status;
 
