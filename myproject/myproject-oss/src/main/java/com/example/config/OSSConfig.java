@@ -37,44 +37,6 @@ public class OSSConfig {
 //    }
 
 
-    //    qjj-learn
-//    accessKey  LTAI5tSJf7HTwMp2ZkdENjgT
-//    AccessKey Secret   jpvy38MQpYfC6suwb3Q5KyHxBqNn1C
-//    oss-cn-shanghai
-
-//    @Bean
-//    public S3Client s3Client() {
-//
-//        return S3Client.builder()
-//                .endpointOverride(URI.create("https://oss-cn-shanghai.aliyuncs.com"))
-//                .region(Region.of("oss-cn-shanghai"))
-//                .credentialsProvider(StaticCredentialsProvider.create(
-//                        AwsBasicCredentials.create("LTAI5tSJf7HTwMp2ZkdENjgT", "jpvy38MQpYfC6suwb3Q5KyHxBqNn1C")
-//                ))
-////              非亚马逊云的需要如下配置 如果你不是上传到 AWS 官方 S3，建议禁用 chunked encoding 或设置 x-amz-content-sha256: UNSIGNED-PAYLOAD 来规避该错误。
-//                .serviceConfiguration(S3Configuration.builder()
-//                        .pathStyleAccessEnabled(false)
-//                        .chunkedEncodingEnabled(false)
-//                        .build())
-//                .build();
-//    }
-
-
-//    @Bean
-//    public S3AsyncClient s3AsyncClient(){
-//        return S3AsyncClient.builder()
-//                .endpointOverride(URI.create("https://oss-cn-shanghai.aliyuncs.com"))
-//                .region(Region.of("oss-cn-shanghai"))
-//                .credentialsProvider(StaticCredentialsProvider.create(
-//                        AwsBasicCredentials.create("LTAI5tSJf7HTwMp2ZkdENjgT", "jpvy38MQpYfC6suwb3Q5KyHxBqNn1C")
-//                ))
-////              非亚马逊云的需要如下配置 如果你不是上传到 AWS 官方 S3，建议禁用 chunked encoding 或设置 x-amz-content-sha256: UNSIGNED-PAYLOAD 来规避该错误。
-//                .serviceConfiguration(S3Configuration.builder()
-//                        .pathStyleAccessEnabled(false)
-//                        .chunkedEncodingEnabled(false)
-//                        .build())
-//                .build();
-//    }
 
     @Bean
     public S3AsyncClient s3AsyncClient() {

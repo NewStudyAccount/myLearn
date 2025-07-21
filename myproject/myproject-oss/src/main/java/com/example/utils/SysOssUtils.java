@@ -9,4 +9,9 @@ public class SysOssUtils {
         return UUID.randomUUID().toString();
     }
 
+    public static String genUrl(){
+        return "https://oss.aliyuncs.com";
+
+    }
+
 }

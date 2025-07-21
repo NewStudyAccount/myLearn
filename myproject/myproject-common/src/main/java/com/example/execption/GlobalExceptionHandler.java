@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+
 /**
  * @author: 犬小哈
  * @url: www.quanxiaoha.com
@@ -25,6 +27,13 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public Response<Object> handleBizException(BizException e) {
         return Response.fail(e.getErrorCode(),e.getErrorMessage());
+    }
+
+
+    @ExceptionHandler({ SQLIntegrityConstraintViolationException.class })
+    @ResponseBody
+    public Response<Object> handleBizException(SQLIntegrityConstraintViolationException e) {
+        return Response.fail(String.valueOf(e.getErrorCode()),e.getMessage());
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -14,7 +15,7 @@ public class SysOssConfig {
     /**
      * 
      */
-    @TableId
+    @TableId(type = IdType.AUTO)
     private Integer id;
 
     /**
@@ -47,8 +48,11 @@ public class SysOssConfig {
      */
     private String region;
 
+
+    private String fileFolder;
+
     /**
-     * 
+     * 0:启用 1:不启用
      */
     private Integer status;
 
