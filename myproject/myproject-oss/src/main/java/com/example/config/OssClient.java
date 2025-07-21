@@ -8,10 +8,16 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Configuration;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.transfer.s3.S3TransferManager;
+import software.amazon.awssdk.transfer.s3.model.FileUpload;
+import software.amazon.awssdk.transfer.s3.model.UploadFileRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 public class OssClient {
 
@@ -39,31 +45,63 @@ public class OssClient {
 
     /**
      * 上传文件，并返回访问URL
-     * @param key
+     * @param fileName
      * @param inputStream
      * @return
      */
-    public String uploadFile(String key, InputStream inputStream) {
+    public String uploadFile(String fileName, InputStream inputStream) {
         try {
             s3AsyncClient.putObject(PutObjectRequest.builder()
                             .bucket(sysOssConfig.getBucketName())
-                            .key(key)
+                            .key(sysOssConfig.getFileFolder()+"/"+ fileName)
                             .acl("public-read")
                             .build(),
                     AsyncRequestBody.fromBytes(inputStream.readAllBytes())).join();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return getUrl( key);
+        return getUrl(fileName);
     }
 
-    public String getUrl(String key) {
+
+    /**
+     * 大文件上传
+     * @param fileName
+     * @param inputStream
+     * @return
+     * @throws IOException
+     */
+    public String uploadBigFileFromStream(String fileName, InputStream inputStream) throws IOException {
+
+        S3TransferManager transferManager = S3TransferManager.builder()
+                .s3Client(s3AsyncClient)
+                .uploadDirectoryMaxDepth(1).build();
+
+        Path tempFile = Files.createTempFile("upload", ".tmp");
+        try (inputStream) {
+            Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        UploadFileRequest uploadFileRequest = UploadFileRequest.builder()
+                .putObjectRequest(b -> b.bucket(sysOssConfig.getBucketName()).key(sysOssConfig.getFileFolder()+"/"+fileName))
+                .source(tempFile)
+                .build();
+
+        FileUpload upload = transferManager.uploadFile(uploadFileRequest);
+        upload.completionFuture().join();
+
+        Files.deleteIfExists(tempFile); // 清理临时文件
+        return getUrl(fileName);
+    }
+
+    public String getUrl(String fileName) {
         // 阿里云公网域名： https://<bucket>.<endpoint>/<key>
-        return String.format("https://%s.%s/%s",
+        return String.format("https://%s.%s/%s/%s",
                 sysOssConfig.getBucketName(),
                 sysOssConfig.getEndPoint()
                         .replaceFirst("https?://", ""),
-                key);
+                sysOssConfig.getFileFolder(),
+                fileName);
     }
 
     /**

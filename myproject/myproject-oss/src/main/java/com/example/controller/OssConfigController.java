@@ -6,7 +6,7 @@ import com.example.domain.SysOssConfig;
 import com.example.domain.req.OssConfigReq;
 import com.example.domain.req.OssConfigUpdateReq;
 import com.example.service.SysOssConfigService;
-import jakarta.validation.Valid;
+import com.example.utils.SnowflakeIdGenerator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -27,7 +27,10 @@ public class OssConfigController {
     public Response<?> insertSysOssConfig(@RequestBody OssConfigReq ossConfigReq){
 
         SysOssConfig sysOssConfig = new SysOssConfig();
+
         BeanUtils.copyProperties(ossConfigReq,sysOssConfig);
+        SnowflakeIdGenerator snowflakeIdGenerator = new SnowflakeIdGenerator(1);
+        sysOssConfig.setId(snowflakeIdGenerator.nextId());
         int i = sysOssConfigService.insertSysOssConfig(sysOssConfig);
         return i > 0 ? Response.success("添加成功") : Response.fail("添加失败");
     }

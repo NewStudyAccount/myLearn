@@ -15,7 +15,6 @@ import java.io.InputStream;
 import java.util.UUID;
 
 /**
-* @author AI
 * @description 针对表【sys_oss_file】的数据库操作Service实现
 * @createDate 2025-07-19 16:06:21
 */
@@ -39,14 +38,10 @@ public class SysOssFileServiceImpl extends ServiceImpl<SysOssFileMapper, SysOssF
             InputStream inputStream = file.getInputStream();
             String originalFilename = file.getOriginalFilename();
             String[] split = originalFilename.split("\\.");
-            String fileFolder = "test2/";
             String newFileName = UUID.randomUUID().toString() + "."+split[1];
-            String key = fileFolder+newFileName;
-//            String url = "https://qjj-learn.oss-cn-shanghai.aliyuncs.com/"+key;
 
             OssClient defaultOssClient = ossFactory.getDefaultOssClient();
-            String url = defaultOssClient.uploadFile(key, inputStream);
-//            ossService.uploadFile(key,inputStream);
+            String url = defaultOssClient.uploadFile(newFileName, inputStream);
 
 
             SysOssFile sysOssFile = new SysOssFile(newFileName,originalFilename,split[1],url);
