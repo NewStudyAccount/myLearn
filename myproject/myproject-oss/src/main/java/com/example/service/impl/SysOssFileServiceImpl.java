@@ -33,7 +33,9 @@ public class SysOssFileServiceImpl extends ServiceImpl<SysOssFileMapper, SysOssF
     private OssFactory ossFactory;
 
     @Override
-    public int uploadFile(MultipartFile file) {
+    public String uploadFile(MultipartFile file) {
+
+        String url = "";
         try {
             InputStream inputStream = file.getInputStream();
             String originalFilename = file.getOriginalFilename();
@@ -41,7 +43,7 @@ public class SysOssFileServiceImpl extends ServiceImpl<SysOssFileMapper, SysOssF
             String newFileName = UUID.randomUUID().toString() + "."+split[1];
 
             OssClient defaultOssClient = ossFactory.getDefaultOssClient();
-            String url = defaultOssClient.uploadFile(newFileName, inputStream);
+            url = defaultOssClient.uploadFile(newFileName, inputStream);
 
 
             SysOssFile sysOssFile = new SysOssFile(newFileName,originalFilename,split[1],url);
@@ -53,7 +55,32 @@ public class SysOssFileServiceImpl extends ServiceImpl<SysOssFileMapper, SysOssF
             throw new RuntimeException(e);
         }
 
-        return 0;
+        return url;
+    }
+
+    @Override
+    public String uploadBigFile(MultipartFile file) {
+        String url = "";
+        try {
+            InputStream inputStream = file.getInputStream();
+            String originalFilename = file.getOriginalFilename();
+            String[] split = originalFilename.split("\\.");
+            String newFileName = UUID.randomUUID().toString() + "."+split[1];
+
+            OssClient defaultOssClient = ossFactory.getDefaultOssClient();
+            url = defaultOssClient.uploadBigFileFromStream(newFileName, inputStream);
+
+
+            SysOssFile sysOssFile = new SysOssFile(newFileName,originalFilename,split[1],url);
+
+            insertSysOssFile(sysOssFile);
+
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return url;
     }
 
     @Override
