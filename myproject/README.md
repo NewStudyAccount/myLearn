@@ -46,4 +46,15 @@ blog相关接口
    适用于在 Bean 初始化阶段加载数据到 Redis。
 2. 使用 ApplicationRunner 或 CommandLineRunner
    这两个接口会在 Spring 容器启动完成后执行，适合执行一些初始化任务。
-3. 
+
+
+
+
+
+
+遇到的问题 深拷贝
+需要从 原对象（复杂对象） 创建一个新的对象，并对其进行处理
+如果使用  newObject = sourceObject 那么后续对newObject的处理都会影响到sourceObject
+因此需要通过深拷贝的方式创建新的对象 将原对象的所有数据拷贝到新对象中。
+选用Json序列化与反序列化 反而是最简单的。
+
