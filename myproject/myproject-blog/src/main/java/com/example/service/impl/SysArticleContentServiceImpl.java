@@ -1,6 +1,8 @@
 package com.example.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.domain.pojo.SysArticleContent;
 import com.example.domain.req.SysArticleContentReq;
@@ -11,6 +13,8 @@ import com.example.utils.MarkDownUtil;
 import com.example.utils.SnowflakeIdGenerator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 /**
 * @author QJJ
@@ -29,11 +33,25 @@ public class SysArticleContentServiceImpl extends ServiceImpl<SysArticleContentM
      */
     @Override
     public int saveArticleContent(SysArticleContentReq sysArticleContentReq) {
-        SnowflakeIdGenerator snowflakeIdGenerator = new SnowflakeIdGenerator(1);
         SysArticleContent sysArticleContent = new SysArticleContent();
         BeanUtils.copyProperties(sysArticleContentReq,sysArticleContent);
-        sysArticleContent.setId(snowflakeIdGenerator.nextId());
-        return this.baseMapper.insert(sysArticleContent);
+
+
+        LambdaQueryWrapper<SysArticleContent> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SysArticleContent::getArticleId,sysArticleContent.getArticleId());
+
+        SysArticleContent isexist = this.baseMapper.selectOne(lambdaQueryWrapper);
+        if (Objects.nonNull(isexist)) {
+            LambdaUpdateWrapper<SysArticleContent> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+            lambdaUpdateWrapper.eq(SysArticleContent::getArticleId,sysArticleContent.getArticleId());
+            return this.baseMapper.update(sysArticleContent,lambdaUpdateWrapper);
+        }else {
+            SnowflakeIdGenerator snowflakeIdGenerator = new SnowflakeIdGenerator(1);
+            sysArticleContent.setId(snowflakeIdGenerator.nextId());
+            return this.baseMapper.insert(sysArticleContent);
+        }
+
+
     }
 
     /**
