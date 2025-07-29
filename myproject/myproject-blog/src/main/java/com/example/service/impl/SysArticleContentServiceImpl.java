@@ -38,16 +38,17 @@ public class SysArticleContentServiceImpl extends ServiceImpl<SysArticleContentM
 
 
         LambdaQueryWrapper<SysArticleContent> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(SysArticleContent::getArticleId,sysArticleContent.getArticleId());
+        lambdaQueryWrapper.eq(SysArticleContent::getId,sysArticleContent.getId());
 
         SysArticleContent isexist = this.baseMapper.selectOne(lambdaQueryWrapper);
         if (Objects.nonNull(isexist)) {
             LambdaUpdateWrapper<SysArticleContent> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            lambdaUpdateWrapper.eq(SysArticleContent::getArticleId,sysArticleContent.getArticleId());
+            lambdaUpdateWrapper.eq(SysArticleContent::getId,sysArticleContent.getId());
             return this.baseMapper.update(sysArticleContent,lambdaUpdateWrapper);
         }else {
             SnowflakeIdGenerator snowflakeIdGenerator = new SnowflakeIdGenerator(1);
             sysArticleContent.setId(snowflakeIdGenerator.nextId());
+            sysArticleContent.setArticleId(11L);
             return this.baseMapper.insert(sysArticleContent);
         }
 
