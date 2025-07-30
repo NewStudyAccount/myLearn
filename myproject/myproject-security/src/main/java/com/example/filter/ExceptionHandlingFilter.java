@@ -22,7 +22,6 @@ public class ExceptionHandlingFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (AuthenticationException ex) {
             response.setContentType("application/json;charset=UTF-8");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             Response responseModel = Response.authFailure(ex.getMessage());
             ResponseModelUtils.write(response, responseModel);
         }
