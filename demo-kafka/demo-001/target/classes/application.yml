@@ -1,0 +1,33 @@
+spring:
+  kafka:
+    bootstrap-servers: 192.168.99.100:9092
+    consumer:
+      group-id: demo-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      enable-auto-commit: true
+      auto-commit-interval: 5000
+      session-timeout: 30000
+      heartbeat-interval: 10000
+      max-poll-interval: 300000
+      fetch-max-wait: 500
+      retry-backoff: 1000
+      metadata-max-age: 30000
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        acks: all
+        retries: 5
+        retry.backoff.ms: 1000
+        enable.idempotence: true
+        # 禁用 telemetry 报告功能
+        client.dns.lookup: use_all_dns_ips
+        allow.auto.create.topics: true
+        # 禁用 telemetry 相关功能
+        metric.reporters: ""
+        internal.client.metrics.enable: false
+        # 新增配置：关闭 telemetry 网络请求
+        internal.telemetry.metrics.push.interval.ms: -1
+        internal.telemetry.metrics.topic.replication.factor: -1
+
