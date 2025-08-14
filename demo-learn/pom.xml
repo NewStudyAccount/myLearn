@@ -23,6 +23,7 @@
     </developers>
     <modules>
         <module>mybatis-learn/mybatis-learn-001</module>
+        <module>mybatis-learn/mybatis-learn-002</module>
     </modules>
 
     <scm>
