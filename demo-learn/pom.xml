@@ -24,6 +24,7 @@
     <modules>
         <module>mybatis-learn/mybatis-learn-001</module>
         <module>mybatis-learn/mybatis-learn-002</module>
+        <module>design-mode-learn/design-mode-demo</module>
     </modules>
 
     <scm>
