@@ -15,7 +15,6 @@ public class MybatisConfig {
 
         SqlSessionManager sqlSessionManager = SqlSessionManager.newInstance(sqlSessionFactory);
 
-        Connection connection = sqlSession.getConnection();
 
     }
 

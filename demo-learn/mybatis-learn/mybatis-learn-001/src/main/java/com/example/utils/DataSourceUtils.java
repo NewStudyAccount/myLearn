@@ -1,10 +1,21 @@
 package com.example.utils;
 
+import com.example.impl.ResultInterface;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.sql.*;
 import java.util.Map;
 import java.util.Set;
 
+@Component
 public class DataSourceUtils {
+
+
+    @Autowired
+    private ResultInterface resultHandler;
+
+
 
     String url = "jdbc:mysql://192.168.200.128:3306/mybatis_demo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true";
     String username = "root";
@@ -21,7 +32,7 @@ public class DataSourceUtils {
     /**
      * 改进版本：执行查询并处理结果
      */
-    public void executeQuery(String sql, ResultSetHandler handler, Map<String, Object> queryParams) throws SQLException {
+    public void executeQuery(String sql, ResultInterface handler, Map<String, Object> queryParams) throws SQLException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -77,7 +88,7 @@ public class DataSourceUtils {
      * 设置的查询参数也要和sql语句中的参数名顺序一致
      *
      */
-    public void executeQuery2(String sql, ResultSetHandler handler, Map<String, String> queryParams) throws SQLException {
+    public void executeQuery2(String sql, ResultInterface handler, Map<String, String> queryParams) throws SQLException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -102,9 +113,66 @@ public class DataSourceUtils {
             throw new SQLException("Database operation failed", e);
         } finally {
             // 关闭资源
-            closeResources(resultSet, preparedStatement, connection);
+            closeQuietly(resultSet);
+            closeQuietly(preparedStatement);
+            closeQuietly(connection);
         }
     }
+
+
+    /**
+     * sql 语句中参数名：:paramName
+     * @param sql
+     * @param clazz
+     * @param queryParams
+     * @param <T>
+     * @return
+     */
+    public <T> T executeQueryOne(String sql, Class<T> clazz, Map<String, Object> queryParams) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            //1、加载驱动
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            //2、创建数据库连接
+            connection = DriverManager.getConnection(url, username, password);
+
+            //3、创建 PreparedStatement
+
+            //3.1  解析命名参数并替换为位置参数
+            String parsedSql = parseNamedParameters(sql, queryParams.keySet());
+
+            preparedStatement = connection.prepareStatement(parsedSql);
+
+            //4、设置参数,setParameter 设置不同各类型的数据
+            // 设置参数值
+            int index = 1;
+            for (String paramName : queryParams.keySet()) {
+//                preparedStatement.setString(index++, queryParams.get(paramName));
+                setParameter(preparedStatement, index, queryParams.get(paramName));
+            }
+            //5、执行查询
+            resultSet = preparedStatement.executeQuery();
+
+            //6、处理结果
+            return (T) resultHandler.handleObject(resultSet, clazz);
+
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new RuntimeException(e);
+        }finally {
+            //7、关闭资源
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+        }
+
+
+    }
+
+
 
     private String parseNamedParameters(String sql, Set<String> paramNames) {
         // 简单实现：将 :paramName 替换为 ?
@@ -175,12 +243,5 @@ public class DataSourceUtils {
         } catch (Exception e) {
             throw new SQLException("Failed to get database connection", e);
         }
-    }
-
-    /**
-     * 结果集处理接口
-     */
-    public interface ResultSetHandler {
-        void handle(ResultSet rs) throws SQLException;
     }
 }
