@@ -3,6 +3,15 @@
 
 原生jdbc的方式
 
+JDBC通过PreparedStatement接口提供了设置参数的方法，主要原理如下：
+位置参数索引：参数通过从1开始的整数索引标识，而不是名称
+类型映射：根据不同数据类型提供相应的set方法
+预编译SQL：参数值在SQL执行前绑定到预编译语句中
+
+```mysql
+select * from user where id = ? and name = ? and age = ?;
+```
+
 
 
 MyBatis 是一个优秀的持久层框架，它封装了 JDBC 的复杂操作，提供了简洁的 API。下面我们从源码层面详细分析 MyBatis 的核心实现原理。
