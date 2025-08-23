@@ -16,6 +16,7 @@ public class MainClass {
         System.out.println(chicken.getName());
 
 
+        System.out.println("-----------------------------------------------------");
 
         System.out.println("工厂模式");
         FoodFactoryInterface noodleFactory = new NoodleFactory();
