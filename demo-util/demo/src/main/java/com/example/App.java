@@ -25,5 +25,24 @@ public class App
 
         System.out.println(newOrgValue);
 
+
+        String attrValue1 = "Mb_111";
+        String attrValue2 = "Gb_10";
+
+        String newattrValue = attrValue2.replaceAll("([A-Za-z])([A-Za-z])_(\\d+(?:\\.\\d+)?)", "$3$1$2ps");
+        System.out.println(newattrValue);
+
+        String attrValue3 = "EQ_2";
+        String attrValue4 = "No_122";
+        String newattrValue3  = attrValue4.replaceAll("([A-Za-z])([A-Za-z])_(\\d+(?:\\.\\d+)?)", "$3");
+        System.out.println(newattrValue3);
+
+
+        String attrValue5 = "GB_2";
+        String newOrgValue5 = attrValue5.replaceAll("([A-Za-z])([A-Za-z])_(\\d+(?:\\.\\d+)?)", "$3$1$2");
+        System.out.println(newOrgValue5);
     }
+
+
+
 }
