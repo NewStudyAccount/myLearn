@@ -64,5 +64,58 @@ BaseFileReader.java
 
 
 
+# 字符串不可变性在这段代码中的体现
+1. 字符串不可变性的基本概念
+   在Java中，String对象一旦创建就不能被修改。任何对String的操作都会创建新的String对象，而不是修改原有对象。
+2. 代码中的具体体现
+   // 1. 创建User对象
+   String username = "沉默王二";
+   String password = "123456";
+   User user = new User(username, password);
 
+// 2. 获取凭据数组
+String[] credentials = getUserCredentials(user);
 
+// 3. 尝试修改数组中的字符串
+credentials[0] = "陈清扬";  // 这里只是改变了数组元素的引用
+credentials[1] = "612311";  // 并没有修改原始的String对象
+
+3. 内存层面的解释
+```java
+   // getUserCredentials方法内部
+   public static String[] getUserCredentials(User user) {
+   String[] credentials = new String[2];
+   credentials[0] = user.getUsername(); // credentials[0]指向"沉默王二"对象
+   credentials[1] = user.getPassword(); // credentials[1]指向"123456"对象
+   return credentials;
+   }
+```
+
+内存结构示意：
+```java
+User对象:
+username引用 -> "沉默王二" String对象
+password引用 -> "123456" String对象
+
+credentials数组:
+credentials[0]引用 -> "沉默王二" String对象 (与User.username指向同一对象)
+credentials[1]引用 -> "123456" String对象 (与User.password指向同一对象)
+
+执行 credentials[0] = "陈清扬" 后:
+credentials[0]引用 -> "陈清扬" String对象 (新的String对象)
+User.username引用 -> "沉默王二" String对象 (原对象未改变)
+```
+
+4. 不可变性的关键体现
+   原始String对象未被修改：尽管我们试图通过数组修改凭据，但原始 User 对象中的username和password保持不变
+   引用的重新指向：credentials[0] = "陈清扬" 只是让数组元素指向新的String对象，而不是修改原有String对象
+   数据安全性：由于String的不可变性，敏感信息如密码不会被意外修改
+5. 验证不可变性的代码
+   如果String是可变的，我们可能会期望以下行为：
+
+```java
+// 如果String可变，这可能会影响User对象（但实际上不会）
+String temp = user.getUsername();
+temp = "新用户名"; // 这不会影响user.getUsername()的值
+System.out.println(user.getUsername()); // 仍然是"沉默王二"
+```
