@@ -87,8 +87,8 @@ public class SecurityConfig {
                         "/doc.html/**","/v3/api-docs/**","/swagger-ui.html/**",
                         "/project/admin/login","/project/admin/register")
                         .permitAll()  //自定义的登录接口不需要验证
-                .anyRequest().authenticated()
-//                .anyRequest().permitAll()
+//                .anyRequest().authenticated()
+                .anyRequest().permitAll()
                 )
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)

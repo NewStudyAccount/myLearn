@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/**
+ * 认证异常处理
+ */
 @Component
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
 

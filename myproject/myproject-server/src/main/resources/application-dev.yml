@@ -39,3 +39,18 @@ knife4j:
   setting:
     language: zh_cn
 
+
+
+# MinIO 配置
+minio:
+  endpoint: http://localhost:9000
+  accessKey: your-minio-access-key
+  secretKey: your-minio-secret-key
+  bucketName: weblog
+
+# 阿里云OSS 配置
+aliyun:
+  oss:
+    endpoint: oss-cn-hangzhou.aliyuncs.com
+    accessKeyId: your-access-key
+    accessKeySecret: your-secret-key

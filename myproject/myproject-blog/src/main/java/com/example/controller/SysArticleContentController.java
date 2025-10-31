@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import com.example.domain.Response;
-import com.example.domain.pojo.SysArticleContent;
 import com.example.domain.req.SysArticleContentReq;
 import com.example.domain.vo.SysArticleContentVo;
 import com.example.service.SysArticleContentService;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "文章内容接口")
 @RestController
-@RequestMapping("/article/content")
+@RequestMapping("/project/article/content")
 public class SysArticleContentController {
 
     @Autowired
