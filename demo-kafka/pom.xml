@@ -23,6 +23,8 @@
     </developers>
     <modules>
         <module>demo-001</module>
+        <module>producer-demo</module>
+        <module>consumer-demo</module>
     </modules>
     <scm>
         <connection/>

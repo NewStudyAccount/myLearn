@@ -1,0 +1,22 @@
+server:
+  port: 48080
+
+spring:
+  kafka:
+    # Kafka集群
+    bootstrap-servers: 192.168.99.100:9092
+    producer:
+      # Kafka提供的序列化和反序列化类
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # 重试次数
+      retries: 0
+      # 应答级别:多少个分区副本备份完成时向生产者发送ack确认(可选0、1、all/-1)
+      acks: 1
+      # 批量大小
+      batch-size: 16384
+      # 提交延时
+      properties:
+        linger.ms: 0
+      # 生产端缓冲区大小
+      buffer-memory: 33554432
