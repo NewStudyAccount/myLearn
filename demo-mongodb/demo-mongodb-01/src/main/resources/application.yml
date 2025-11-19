@@ -1,0 +1,7 @@
+server:
+  port: 48080
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb://qjj:123456@192.168.99.100:27017/test?authSource=admin
