@@ -71,6 +71,12 @@ public void refresh() throws BeansException, IllegalStateException {
 
 
 
+
+
+##  3. 配置 BeanFactory（添加一些标准后置处理器、注册环境 Bean 等）
+
+
+
 ```java
 // 3. 配置 BeanFactory（添加一些标准后置处理器、注册环境 Bean 等）
 prepareBeanFactory(beanFactory);
@@ -126,11 +132,7 @@ protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 
 
 
-
-
-
-
-### 1. **设置类加载器和表达式解析器**
+##### 1. **设置类加载器和表达式解析器**
 
 ```java
 beanFactory.setBeanClassLoader(getClassLoader());
@@ -142,7 +144,7 @@ beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvi
 - **`setBeanExpressionResolver`**：配置 Spring 表达式语言（SpEL）的解析器，允许在 Bean 配置中使用如 `#{systemProperties.myProp}` 的表达式。
 - **`addPropertyEditorRegistrar`**：注册属性编辑器（PropertyEditor），用于将字符串（如配置文件中的值）转换为特定类型（如 `Resource`、`File` 等）。`ResourceEditorRegistrar` 主要支持 `Resource` 类型的自动转换。
 
-### 2. **注册 `ApplicationContextAwareProcessor` 并忽略某些 Aware 接口的自动注入**
+##### 2. **注册 `ApplicationContextAwareProcessor` 并忽略某些 Aware 接口的自动注入**
 
 ```java
 beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
@@ -153,7 +155,7 @@ beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
 - **`ApplicationContextAwareProcessor`** 是一个 `BeanPostProcessor`，它会在 Bean 初始化后检查是否实现了某些 `*Aware` 接口（如 `ApplicationContextAware`、`EnvironmentAware` 等），如果实现了就自动注入对应的依赖（如 `ApplicationContext`、`Environment` 等）。
 - **`ignoreDependencyInterface`** 告诉 Spring：这些接口的 setter 方法（如 `setApplicationContext`）**不要通过自动装配（byType）来注入**，因为它们会由 `ApplicationContextAwareProcessor` 来处理。避免重复或冲突注入。
 
-### 3. **注册可解析的依赖类型（Resolvable Dependencies）**
+##### 3. **注册可解析的依赖类型（Resolvable Dependencies）**
 
 ```java
 beanFactory.registerResolvableDependency(BeanFactory.class, beanFactory);
@@ -169,7 +171,7 @@ beanFactory.registerResolvableDependency(ResourceLoader.class, this);
   - `ApplicationEventPublisher`
   - `ApplicationContext`
 
-### 4. **注册 `ApplicationListenerDetector`**
+##### 4. **注册 `ApplicationListenerDetector`**
 
 ```java
 beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
@@ -178,7 +180,7 @@ beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 - 这个 `BeanPostProcessor` 用于检测那些实现了 `ApplicationListener` 接口的 Bean，并将它们注册到 Spring 的事件广播器中，使其能接收 `ApplicationEvent`。
 - 如果 Bean 是内部 Bean（inner bean）或作用域不符合要求，会将其从监听器列表中移除。
 
-### 5. **支持 LoadTimeWeaving（如果启用）**
+##### 5. **支持 LoadTimeWeaving（如果启用）**
 
 ```java
 if (!NativeDetector.inNativeImage() && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
@@ -191,7 +193,7 @@ if (!NativeDetector.inNativeImage() && beanFactory.containsBean(LOAD_TIME_WEAVER
 - 此时注册 `LoadTimeWeaverAwareProcessor`，用于将 `LoadTimeWeaver` 注入到实现了 `LoadTimeWeaverAware` 的 Bean 中。
 - 设置临时 ClassLoader 用于类型匹配（因为织入可能改变类结构）。
 
-### 6. **注册环境相关的单例 Bean**
+##### 6. **注册环境相关的单例 Bean**
 
 ```java
 if (!beanFactory.containsLocalBean(ENVIRONMENT_BEAN_NAME)) {
@@ -213,11 +215,76 @@ if (!beanFactory.containsLocalBean(ENVIRONMENT_BEAN_NAME)) {
 
 
 
+## 4、允许子类进一步处理 BeanFactory（如注册 BeanPostProcessor）
+
+postProcessBeanFactory(beanFactory);
+
+```
+是 Spring 容器初始化过程中一个典型的模板方法（Template Method）设计模式的体现，用于允许子类在 BeanFactory 完成基础配置后，执行自定义的扩展逻辑。
+```
+
+它的作用：**给子类一个干预 BeanFactory 的“钩子”（hook）**
+
+`postProcessBeanFactory` 方法在 `AbstractApplicationContext` 中是**空实现**：
+
+```java
+protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+    // 默认什么都不做，留给子类覆盖
+}
+```
+
+但 **Spring 的具体 ApplicationContext 子类会重写它**，用于注入特定功能。典型例子：
+
+#### ✅ `GenericWebApplicationContext`
+
+- 注册 `ServletContextAwareProcessor`
+- 注册 `ServletContext`、`ServletConfig` 为可解析依赖
+
+#### ✅ `AnnotationConfigServletWebServerApplicationContext`（Spring Boot Web 环境）
+
+- 注册 `WebApplicationContextServletContextAwareProcessor`
+- 可能注册 Web 相关的 BeanPostProcessor
+
+#### ✅ `AbstractRefreshableWebApplicationContext`
+
+```java
+@Override
+protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+    beanFactory.addBeanPostProcessor(new ServletContextAwareProcessor(this.servletContext, this.servletConfig));
+    beanFactory.ignoreDependencyInterface(ServletContextAware.class);
+    beanFactory.ignoreDependencyInterface(ServletConfigAware.class);
+    // 注册 Web 相关的单例
+    WebApplicationContextUtils.registerWebApplicationScopes(beanFactory, this.servletContext);
+    WebApplicationContextUtils.registerEnvironmentBeans(beanFactory, this.servletContext, this.servletConfig);
+}
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 ```
 preInstantiateSingletons
 ```
+
+
+
+
+
+// 4. 允许子类进一步处理 BeanFactory（如注册 BeanPostProcessor）
+        postProcessBeanFactory(beanFactory);
+
+
+
+
 
 
 
