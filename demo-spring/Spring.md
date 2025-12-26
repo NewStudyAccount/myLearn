@@ -263,9 +263,13 @@ protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactor
 
 
 
+## 5、★★★ 调用所有 BeanFactoryPostProcessor（如 ConfigurationClassPostProcessor）
 
+```
+invokeBeanFactoryPostProcessors(beanFactory);
+```
 
-
+**处理 `@Configuration`、`@ComponentScan`、注册 `BeanDefinition`**
 
 
 
@@ -291,3 +295,104 @@ preInstantiateSingletons
 
 
 ## 第二步：Bean 注册 —— `BeanDefinition` 是什么？
+
+
+
+
+
+
+
+### 一、整体阶段概览（以 `AnnotationConfigApplicationContext` 为例）
+
+```
+1. 容器创建（new ApplicationContext）
+   └─ 加载配置类（@Configuration）
+2. refresh()
+   ├─ ① prepareRefresh()                // 准备环境
+   ├─ ② obtainFreshBeanFactory()        // 创建/刷新 BeanFactory
+   ├─ ③ prepareBeanFactory()            // 配置 BeanFactory（注册 Aware 接口等）
+   ├─ ④ postProcessBeanFactory()        // 子类可扩展（如 WebApplicationContext）
+   ├─ ⑤ invokeBeanFactoryPostProcessors()  // ⭐【关键】加载 BeanDefinition
+   ├─ ⑥ registerBeanPostProcessors()     // ⭐【关键】注册 BeanPostProcessor 实例
+   ├─ ⑦ initMessageSource()             // 国际化
+   ├─ ⑧ initApplicationEventMulticaster() // 事件广播器
+   ├─ ⑨ onRefresh()                     // Web 容器扩展点
+   ├─ ⑩ registerListeners()             // 注册事件监听器
+   ├─ ⑪ finishBeanFactoryInitialization() // ⭐【关键】实例化所有非懒加载单例 Bean
+   └─ ⑫ finishRefresh()                 // 发布 ContextRefreshedEvent
+```
+
+
+
+### 二、各类子类/实现类的加载时机详解
+
+#### 1. **配置类（`@Configuration` 类）**
+
+- **何时加载**：在 `refresh()` 第 ⑤ 步 `invokeBeanFactoryPostProcessors()` 中
+- **关键处理器**：`ConfigurationClassPostProcessor`
+- **过程**：
+  - 扫描 `@ComponentScan` 包
+  - 解析 `@Bean` 方法 → 生成 `BeanDefinition`
+  - **此时只是注册 BeanDefinition，不实例化！**
+- ✅ **子类（如 `MyConfig extends BaseConfig`）**：只要被扫描到，就会被解析
+
+#### 2. **普通 Bean（`@Component`, `@Service`, `@Repository` 等）**
+
+- **BeanDefinition 注册**：同上，在第 ⑤ 步完成（通过 `ClassPathBeanDefinitionScanner`）
+- **实例化时机**：第 ⑪ 步 `finishBeanFactoryInitialization()`
+  - 遍历所有非懒加载（`lazy-init=false`）的单例 Bean
+  - 调用 `getBean()` → 触发 `createBean()` → 实例化 + 初始化
+- ✅ **子类会被正常实例化**：Spring 通过 `BeanDefinition.getBeanClassName()` 获取具体类名
+
+#### 3. **`BeanFactoryPostProcessor` 的实现类**
+
+- **作用**：在 Bean 实例化前修改 `BeanDefinition`（如 `@Value` 替换）
+- **加载时机**：
+  - 如果是 **普通 Bean**（如 `@Component`），先被注册为普通 Bean
+  - 在第 ⑤ 步 `invokeBeanFactoryPostProcessors()` 中**优先实例化并执行**
+- ✅ **典型子类**：
+  - `ConfigurationClassPostProcessor`（处理 `@Configuration`）
+  - `PropertySourcesPlaceholderConfigurer`（处理 `${}`）
+
+> ⚠️ 注意：这些类**必须在 Bean 实例化前就准备好**，所以 Spring 会 **提前实例化** 它们。
+
+#### 4. **`BeanPostProcessor` 的实现类**
+
+- **作用**：在 Bean 初始化前后做增强（如 AOP 代理、`@Autowired` 注入）
+- **加载时机**：
+  - BeanDefinition 在第 ⑤ 步注册
+  - **实例化在第 ⑥ 步 `registerBeanPostProcessors()`**
+  - **早于普通 Bean 的实例化（第 ⑪ 步）**
+- ✅ **典型子类**：
+  - `AutowiredAnnotationBeanPostProcessor`（处理 `@Autowired`）
+  - `CommonAnnotationBeanPostProcessor`（处理 `@PostConstruct`）
+  - `AnnotationAwareAspectJAutoProxyCreator`（AOP 代理）
+
+> 💡 这就是为什么 `@Autowired` 能在 `@Bean` 方法中使用 —— BPP 已提前加载。
+
+#### 5. **AOP 代理类（JDK Proxy / CGLib 子类）**
+
+- **不是你写的类，而是 Spring 动态生成的子类/代理类**
+- **生成时机**：在目标 Bean **初始化完成前**（`initializeBean()` 阶段）
+  - 由 `AbstractAutoProxyCreator.postProcessAfterInitialization()` 触发
+  - 如果匹配切点，则用 CGLib 生成子类（或 JDK Proxy）
+- ✅ **例如**：
+  - 你的 `OrderService` 被 `@Transactional` 标注
+  - Spring 会生成 `OrderService$$EnhancerBySpringCGLIB$$xxx` 作为代理
+
+#### 6. **懒加载 Bean（`@Lazy`）**
+
+- **BeanDefinition 注册**：第 ⑤ 步
+- **实例化时机**：**第一次调用 `getBean()` 时**（可能是运行时任意时刻）
+- ✅ 子类同样适用
+
+### 三、一张表总结“各类子类加载时机”
+
+| 类型                       | 代表注解/接口               | BeanDefinition 注册时机 | 实例化时机              | 用途             |
+| -------------------------- | --------------------------- | ----------------------- | ----------------------- | ---------------- |
+| 配置类                     | `@Configuration`            | refresh() 第 ⑤ 步       | 第 ⑪ 步（或被依赖时）   | 定义 `@Bean`     |
+| 普通组件                   | `@Component`, `@Service`    | 第 ⑤ 步                 | 第 ⑪ 步                 | 业务 Bean        |
+| `BeanFactoryPostProcessor` | 实现该接口                  | 第 ⑤ 步                 | **第 ⑤ 步中提前实例化** | 修改 Bean 定义   |
+| `BeanPostProcessor`        | 实现该接口                  | 第 ⑤ 步                 | **第 ⑥ 步提前实例化**   | 增强 Bean 初始化 |
+| AOP 代理类                 | `@Transactional`, `@Aspect` | —（动态生成）           | 目标 Bean 初始化时      | 运行时增强       |
+| 懒加载 Bean                | `@Lazy`                     | 第 ⑤ 步                 | **首次 getBean() 时**   | 延迟初始化       |
