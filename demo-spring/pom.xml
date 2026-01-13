@@ -23,6 +23,7 @@
     </developers>
     <modules>
         <module>demo-spring-01</module>
+        <module>demo-mini-spring</module>
     </modules>
     <scm>
         <connection/>
