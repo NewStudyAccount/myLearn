@@ -460,3 +460,298 @@ public class MySpringTest {
 1. IoC 实现：我们在 MyApplicationContext 构造函数中，通过反射 newInstance 创建了 UserDao 和 UserServiceImpl，并将它们放入 Map 中。
 2. DI 实现：在 populateBean 方法中，我们扫描 UserServiceImpl 的字段，发现 @MyAutowired，于是从 Map 中取出 userDao 并暴力塞入 UserServiceImpl 中。
 3. AOP 实现：在 processAop 中，我们发现 UserServiceImpl 的方法上有 @MyTransactional，于是利用 JDK Proxy.newProxyInstance 创建了一个代理对象替换了原本的 Bean。当我们调用 createUser 时，实际执行的是 InvocationHandler 中的逻辑（打印事务日志 + 调用原方法）。
+
+
+
+
+
+### 手写一个完善的 IoC 容器，核心在于设计BeanDefinition（Bean定义）、BeanFactory（Bean工厂） 和 Bean生命周期管理。
+
+简单的 `Map<String, Object>` 只能算是一个“对象池”，算不上真正的 Spring IoC。真正的 Spring 结构要复杂得多，因为它需要支持“延迟加载”、“作用域（单例/原型）”、“后置处理器”等功能。
+
+以下是一个高仿 Spring 结构的 IoC 容器手写指南。我们将从底层数据结构开始构建
+
+
+
+#### 一、 核心架构设计
+
+我们需要实现以下四个核心组件：
+
+1. `BeanDefinition`：用来描述一个 Bean（它是单例吗？它的类名是什么？它有哪些属性需要注入？）。
+2. `BeanDefinitionRegistry`：注册表，用来存储所有的 BeanDefinition。
+3. `BeanFactory`：核心接口，提供 getBean 方法。
+4. `AbstractAutowireCapableBeanFactory`：核心实现类，负责 Bean 的创建、填充属性、初始化等复杂生命周期。
+
+
+
+#### 二、 第一层：元数据描述 (BeanDefinition)
+
+Spring 不会直接把类 new 出来放到 Map 里，而是先读取类的信息存成 `BeanDefinition`。
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * 1. BeanDefinition
+ * 用来描述 Bean 的配置信息
+ */
+public class BeanDefinition {
+    private Class beanClass; // Bean 的类对象
+    private PropertyValues propertyValues; // Bean 的属性集合 (用于依赖注入)
+
+    public BeanDefinition(Class beanClass) {
+        this(beanClass, new PropertyValues());
+    }
+
+    public BeanDefinition(Class beanClass, PropertyValues propertyValues) {
+        this.beanClass = beanClass;
+        this.propertyValues = propertyValues != null ? propertyValues : new PropertyValues();
+    }
+
+    public Class getBeanClass() { return beanClass; }
+    public PropertyValues getPropertyValues() { return propertyValues; }
+}
+
+/**
+ * 2. PropertyValue & PropertyValues
+ * 用来封装 <property name="uDao" ref="userDao"/> 这种属性键值对
+ */
+class PropertyValue {
+    private final String name;
+    private final Object value; // 可能是具体的值，也可能是 BeanReference
+
+    public PropertyValue(String name, Object value) {
+        this.name = name;
+        this.value = value;
+    }
+    public String getName() { return name; }
+    public Object getValue() { return value; }
+}
+
+class PropertyValues {
+    private final List<PropertyValue> propertyValueList = new ArrayList<>();
+
+    public void addPropertyValue(PropertyValue pv) {
+        this.propertyValueList.add(pv);
+    }
+    public List<PropertyValue> getPropertyValues() {
+        return this.propertyValueList;
+    }
+}
+
+/**
+ * 3. BeanReference
+ * 用来解决引用类型注入：如果属性值是另一个 Bean，就用这个类包装一下名字
+ */
+class BeanReference {
+    private final String beanName;
+
+    public BeanReference(String beanName) {
+        this.beanName = beanName;
+    }
+    public String getBeanName() { return beanName; }
+}
+
+```
+
+
+
+
+
+#### 三、 第二层：工厂接口与抽象实现 (BeanFactory)
+
+我们需要定义容器的标准。
+
+```java
+/**
+ * 4. BeanFactory 接口
+ * 容器的顶层接口
+ */
+public interface BeanFactory {
+    Object getBean(String name) throws Exception;
+}
+
+/**
+ * 5. AbstractBeanFactory
+ * 实现单例缓存机制 (一级缓存)
+ */
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public abstract class AbstractBeanFactory implements BeanFactory {
+
+    // 单例池 (Singleton Objects)
+    private Map<String, Object> singletonObjects = new ConcurrentHashMap<>();
+
+    // Bean定义注册表
+    private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
+
+    @Override
+    public Object getBean(String name) throws Exception {
+        // 1. 先尝试从单例池获取
+        Object bean = singletonObjects.get(name);
+        if (bean != null) {
+            return bean;
+        }
+
+        // 2. 如果没有，读取定义信息，开始创建
+        BeanDefinition beanDefinition = beanDefinitionMap.get(name);
+        if (beanDefinition == null) {
+            throw new IllegalArgumentException("No bean named " + name + " is defined");
+        }
+
+        // 3. 调用具体的创建逻辑 (模板模式，由子类实现)
+        bean = createBean(name, beanDefinition);
+        
+        // 4. 存入单例池
+        singletonObjects.put(name, bean);
+        
+        return bean;
+    }
+
+    // 注册 BeanDefinition
+    public void registerBeanDefinition(String name, BeanDefinition beanDefinition) {
+        beanDefinitionMap.put(name, beanDefinition);
+    }
+
+    // 抽象方法：具体怎么创建 Bean，由子类决定
+    protected abstract Object createBean(String beanName, BeanDefinition beanDefinition) throws Exception;
+}
+
+```
+
+
+
+##### 四、 第三层：核心创建逻辑 (AutowireCapableBeanFactory)
+
+这是 Spring 最硬核的部分，负责 Bean 的完整生命周期：实例化 -> 填充属性 -> 初始化。
+
+```java
+import java.lang.reflect.Field;
+
+/**
+ * 6. AutowireCapableBeanFactory
+ * 具备自动装配能力的 Bean 工厂
+ */
+public class AutowireCapableBeanFactory extends AbstractBeanFactory {
+
+    @Override
+    protected Object createBean(String beanName, BeanDefinition beanDefinition) throws Exception {
+        Object bean = null;
+        try {
+            // Step 1: 实例化 (Instantiation)
+            bean = beanDefinition.getBeanClass().getDeclaredConstructor().newInstance();
+
+            // Step 2: 属性填充 (Populate Bean)
+            applyPropertyValues(bean, beanDefinition);
+            
+            // Step 3: 初始化 (Initialization) - 比如调用 init-method (此处省略)
+
+        } catch (Exception e) {
+            throw new Exception("Error creating bean with name '" + beanName + "'", e);
+        }
+        return bean;
+    }
+
+    // 核心：处理依赖注入
+    private void applyPropertyValues(Object bean, BeanDefinition beanDefinition) throws Exception {
+        for (PropertyValue pv : beanDefinition.getPropertyValues().getPropertyValues()) {
+            String name = pv.getName();
+            Object value = pv.getValue();
+
+            // 如果属性值是 BeanReference，说明依赖另一个 Bean，需要递归 getBean
+            if (value instanceof BeanReference) {
+                BeanReference beanReference = (BeanReference) value;
+                // 递归调用父类的 getBean
+                value = getBean(beanReference.getBeanName());
+            }
+
+            // 反射设置属性
+            // 注意：这里简化处理，假设字段名和属性名一致
+            try {
+                Field field = bean.getClass().getDeclaredField(name);
+                field.setAccessible(true);
+                field.set(bean, value);
+            } catch (NoSuchFieldException e) {
+                // 实际 Spring 会找 Setter 方法，这里简化为直接找 Field
+                System.err.println("Field not found: " + name);
+            }
+        }
+    }
+}
+
+```
+
+
+
+#### 五、 业务测试代码
+
+我们要模拟：UserService 依赖 UserDao。
+
+```java
+// 业务类 1
+class UserDao {
+    public void query() {
+        System.out.println("UserDao: 查询数据库...");
+    }
+}
+
+// 业务类 2
+class UserService {
+    private UserDao userDao; // 依赖
+
+    public void queryUserInfo() {
+        System.out.println("UserService: 开始查询");
+        userDao.query();
+    }
+}
+
+// --- 测试运行 ---
+public class IocTest {
+    public static void main(String[] args) throws Exception {
+        // 1. 初始化工厂
+        AutowireCapableBeanFactory beanFactory = new AutowireCapableBeanFactory();
+
+        // 2. 注册 UserDao
+        // 相当于 XML: <bean id="userDao" class="com.example.UserDao"/>
+        BeanDefinition daoDef = new BeanDefinition(UserDao.class);
+        beanFactory.registerBeanDefinition("userDao", daoDef);
+
+        // 3. 注册 UserService，并声明依赖关系
+        // 相当于 XML: 
+        // <bean id="userService" class="com.example.UserService">
+        //    <property name="userDao" ref="userDao"/>
+        // </bean>
+        PropertyValues propertyValues = new PropertyValues();
+        // 重点：这里传入的是 BeanReference，而不是具体的对象
+        propertyValues.addPropertyValue(new PropertyValue("userDao", new BeanReference("userDao")));
+        
+        BeanDefinition serviceDef = new BeanDefinition(UserService.class, propertyValues);
+        beanFactory.registerBeanDefinition("userService", serviceDef);
+
+        // 4. 获取 Bean (触发 IoC 和 DI)
+        UserService userService = (UserService) beanFactory.getBean("userService");
+        userService.queryUserInfo();
+    }
+}
+
+```
+
+
+
+#### 六、 总结：这个结构好在哪？
+
+这个手写的结构虽然简陋，但已经完全符合 Spring 源码的设计模式：
+
+分离定义与实例：
+通过 BeanDefinition 存储类信息，而不是直接 new 对象。这为后续支持 Scope（单例/多例）、Lazy Init（懒加载）打下了基础。
+模板模式 (Template Pattern)：
+AbstractBeanFactory 定义了 getBean 的标准流程（查缓存 -> 查定义 -> 创建）。
+AutowireCapableBeanFactory 负责具体的 createBean 脏活累活。
+递归依赖解析：
+引入 BeanReference。当注入属性时，如果发现是 Reference，就回头调用 getBean，从而实现了依赖链的自动装配。
+如果你想进一步扩展（进阶挑战）：
+
+资源读取器 (BeanDefinitionReader)：实现读取 XML 或扫描 @Component 注解，自动生成 BeanDefinition 并注册。
+Bean 后置处理器 (BeanPostProcessor)：在 createBean 的实例化之后、初始化之前，提供一个扩展点，这就是实现 AOP 的入口。
