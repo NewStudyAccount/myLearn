@@ -7,32 +7,38 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class JsonToSqlConverter {
+
 
     /**
      * 从JSON文件读取数据并生成INSERT SQL语句（批量插入格式）
      *
      * @param jsonFilePath JSON文件路径
-     * @param tableName 目标表名
      * @return INSERT SQL语句列表
      * @throws IOException
      */
-    public static List<String> convertJsonToSql(String jsonFilePath, String tableName) throws IOException {
+    public static List<String> convertJsonToSql(String jsonFilePath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(new File(jsonFilePath));
 
         List<String> sqlStatements = new ArrayList<>();
 
-        // 如果JSON是数组格式，生成批量插入语句
-        if (jsonNode.isArray()) {
-            String batchSql = generateBatchInsertStatement(jsonNode, tableName);
-            sqlStatements.add(batchSql);
-        } else if (jsonNode.isObject()) {
-            // 如果JSON是单个对象，仍然按单行处理
-            String sql = generateSingleInsertStatement(jsonNode, tableName);
-            sqlStatements.add(sql);
+        // 处理对象格式的JSON，其中每个字段名是表名，值是数据数组
+        if (jsonNode.isObject()) {
+            // 遍历所有表名
+            Iterator<String> fieldNames = jsonNode.fieldNames();
+            while (fieldNames.hasNext()) {
+                String tableName = fieldNames.next();
+                JsonNode dataArray = jsonNode.get(tableName);
+
+                if (dataArray.isArray()) {
+                    String batchSql = generateBatchInsertStatement(dataArray, tableName);
+                    sqlStatements.add(batchSql);
+                }
+            }
         }
 
         return sqlStatements;
@@ -153,7 +159,7 @@ public class JsonToSqlConverter {
     public static void main(String[] args) {
         try {
             // 示例：读取JSON文件并生成SQL语句
-            List<String> sqlStatements = convertJsonToSql("D:\\yudao\\myLearn\\demo-util\\demo\\src\\main\\java\\com\\example\\sql.json", "users");
+            List<String> sqlStatements = convertJsonToSql("D:\\yudao\\myLearn\\demo-util\\demo\\src\\main\\java\\com\\example\\sql.json");
 
             for (String sql : sqlStatements) {
                 System.out.println(sql);
