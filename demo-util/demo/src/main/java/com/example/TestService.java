@@ -3,11 +3,9 @@ package com.example;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TestService {
@@ -18,11 +16,11 @@ public class TestService {
     ExecutorService threadPool = Executors.newFixedThreadPool(100);
 
 
-    public List<User> generateUsers(){
+    public List<User> generateUsers(int j){
 
         List<User> userList = new ArrayList<>();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < j; i++) {
             User user = new User(i,"张三"+i, 18+i);
 
             userList.add( user);
@@ -39,67 +37,114 @@ public class TestService {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("UserService: 正在生成验证码 -> " + userId);
         return "CODE"+userId;
     }
 
     public void handleData(){
-        List<User> userList = generateUsers();
+        List<User> userList = generateUsers(100);
         System.out.println("开始处理数据");
         long start = System.currentTimeMillis();
-        handleWithThread(userList);
+//        handleWithThread(userList);
+
+        //9091ms 1037ms
+//        CopyOnWriteArrayList<String> strings = handleWithAsyncProcessing(userList);
+        //1138ms   1028ms
+        CopyOnWriteArrayList<String> strings = handleWithVirtualThread(userList);
 
 
         long end = System.currentTimeMillis();
         System.out.println("处理完成，耗时：" + (end - start) + "ms");
+        System.out.println("处理完成，错误列表：" + strings.size());
+        System.out.println("处理完成，错误列表：" + strings);
+
     }
 
-    public void handleWithThread(List<User> userList){
 
 
-        CopyOnWriteArrayList<String> errorList = new CopyOnWriteArrayList();
+    public CopyOnWriteArrayList<String> handleWithAsyncProcessing(List<User> userList) {
+        CopyOnWriteArrayList<String> errorList = new CopyOnWriteArrayList<>();
+
+
+        List<CompletableFuture<Void>> futures = userList.stream()
+                .map(user -> CompletableFuture.runAsync(() -> {
+                    int id = user.getId();
+                    String errorMessage = "";
+
+                    if (id % 10 == 0) {
+                        errorMessage = "处理用户" + id + "时发生错误";
+                        errorList.add(errorMessage);
+                    } else {
+                        try {
+                            String code = generateValidCode(id);
+                            user.setValidCode(code);
+                        } catch (Exception e) {
+                            errorMessage = "处理用户" + id + "时发生错误";
+                            errorList.add(errorMessage);
+                        }
+                    }
+                }, threadPool))
+                .collect(Collectors.toList());
+
+        // 等待所有任务完成
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        // 过滤掉有问题的用户
+        userList.removeIf(user -> errorList.contains("处理用户" + user.getId() + "时发生错误"));
+
+        return errorList;
+        //模拟插入数据库耗时
+//        for (User user : userList) {
+//            try {
+//                Thread.sleep(10);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+
+    }
 
 
 
-        Iterator<User> iterator = userList.iterator();
-        while (iterator.hasNext()) {
-            User user = iterator.next();
+    public CopyOnWriteArrayList<String> handleWithVirtualThread(List<User> userList) {
+        CopyOnWriteArrayList<String> errorList = new CopyOnWriteArrayList<>();
+        CountDownLatch latch = new CountDownLatch(userList.size()); // 初始化计数器
+
+        // 使用虚拟线程
+        userList.stream().forEach(user -> Thread.startVirtualThread(() -> {
             int id = user.getId();
             String errorMessage = "";
-            if (id%10==0){
-                errorMessage = "处理用户" + id + "时发生错误";
-                errorList.add(errorMessage);
-                iterator.remove();
-            }else {
-                String code = null;
-                try {
-                    code = generateValidCode(id);
-                } catch (Exception e) {
+
+            try {
+                if (id % 10 == 0) {
                     errorMessage = "处理用户" + id + "时发生错误";
                     errorList.add(errorMessage);
-                    iterator.remove();
-                    continue;
+                } else {
+                    try {
+                        String code = generateValidCode(id);
+                        user.setValidCode(code);
+                    } catch (Exception e) {
+                        errorMessage = "处理用户" + id + "时发生错误";
+                        errorList.add(errorMessage);
+                    }
                 }
-                user.setValidCode(code);
+            } finally {
+                latch.countDown(); // 完成时递减计数器
             }
+        }));
+
+        try {
+            latch.await(); // 等待所有虚拟线程完成
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
 
+        userList.removeIf(user -> errorList.contains("处理用户" + user.getId() + "时发生错误"));
 
-        //模拟插入数据库耗时
-        for (User user : userList) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-
-
+        return errorList;
     }
 
-    public void handleWithVirtualThread(){
 
-    }
 
 
     public class User {
