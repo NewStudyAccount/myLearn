@@ -11,6 +11,8 @@
 
 HELP.md
 target/
+# 子目录中的 target（递归）
+**/target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
