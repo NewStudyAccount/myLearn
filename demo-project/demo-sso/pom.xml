@@ -9,11 +9,11 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>demo-project</artifactId>
+    <artifactId>demo-sso</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>demo-project</name>
-    <description>demo-project</description>
+    <name>demo-sso</name>
+    <description>demo-sso</description>
     <url/>
     <licenses>
         <license/>
@@ -21,7 +21,10 @@
     <developers>
         <developer/>
     </developers>
-
+    <modules>
+        <module>sso-server</module>
+        <module>sso-client</module>
+    </modules>
     <scm>
         <connection/>
         <developerConnection/>
@@ -29,7 +32,7 @@
         <url/>
     </scm>
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
     </properties>
     <dependencies>
         <dependency>
@@ -42,6 +45,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>

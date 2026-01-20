@@ -1,0 +1,25 @@
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        name: JSESSIONID_CLIENT # 【关键】改名，避免冲突
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          sso-login-client:
+            provider: my-sso-server
+            client-id: sso-client-id
+            client-secret: sso-secret
+            authorization-grant-type: authorization_code
+            # 保持 127.0.0.1 不变，这是正确的
+            redirect-uri: "http://127.0.0.1:8080/login/oauth2/code/{registrationId}"
+            scope: openid,profile
+        provider:
+          my-sso-server:
+            # 【修改这里】：把 localhost 改为 127.0.0.1
+            # 这样 Client 会认为 Server 是 127.0.0.1:9000，避免跨域和 Cookie 问题
+            issuer-uri: http://127.0.0.1:9000
