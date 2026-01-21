@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 48080
   servlet:
     session:
       cookie:
@@ -12,11 +12,11 @@ spring:
         registration:
           sso-login-client:
             provider: my-sso-server
-            client-id: sso-client-id
-            client-secret: sso-secret
+            client-id: my-client-id
+            client-secret: my-client-secret
             authorization-grant-type: authorization_code
             # 保持 127.0.0.1 不变，这是正确的
-            redirect-uri: "http://127.0.0.1:8080/login/oauth2/code/{registrationId}"
+            redirect-uri: "http://127.0.0.1:48080/login/oauth2/code/{registrationId}"
             scope: openid,profile
         provider:
           my-sso-server:
