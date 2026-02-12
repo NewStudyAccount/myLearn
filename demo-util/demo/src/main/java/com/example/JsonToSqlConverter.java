@@ -14,7 +14,7 @@ public class JsonToSqlConverter {
 
 
     /**
-     * 从JSON文件读取数据并生成INSERT SQL语句（批量插入格式）
+     * 从JSON文件读取数据并生成INSERT SQL语句(批量插入格式)
      *
      * @param jsonFilePath JSON文件路径
      * @return INSERT SQL语句列表
@@ -26,21 +26,78 @@ public class JsonToSqlConverter {
 
         List<String> sqlStatements = new ArrayList<>();
 
-        // 处理对象格式的JSON，其中每个字段名是表名，值是数据数组
+        // 处理对象格式的JSON
         if (jsonNode.isObject()) {
-            // 遍历所有表名
-            Iterator<String> fieldNames = jsonNode.fieldNames();
-            while (fieldNames.hasNext()) {
-                String tableName = fieldNames.next();
-                JsonNode dataArray = jsonNode.get(tableName);
+            // 检查是否是新格式（包含RSP.DATA结构）
+            if (jsonNode.has("RSP") && jsonNode.get("RSP").has("DATA")) {
+                // 新格式：RSP.DATA[].TRADE_*
+                sqlStatements.addAll(processNestedFormat(jsonNode));
+            } else {
+                // 原格式：{表名: [数据数组]}
+                sqlStatements.addAll(processOriginalFormat(jsonNode));
+            }
+        }
 
-                if (dataArray.isArray()) {
-                    String batchSql = generateBatchInsertStatement(dataArray, tableName);
+        return sqlStatements;
+    }
+
+    /**
+     * 处理原始格式的JSON数据
+     *
+     * @param jsonNode JSON根节点
+     * @return SQL语句列表
+     */
+    private static List<String> processOriginalFormat(JsonNode jsonNode) {
+        List<String> sqlStatements = new ArrayList<>();
+        
+        // 遍历所有表名
+        Iterator<String> fieldNames = jsonNode.fieldNames();
+        while (fieldNames.hasNext()) {
+            String tableName = fieldNames.next();
+            JsonNode dataArray = jsonNode.get(tableName);
+
+            if (dataArray.isArray()) {
+                String batchSql = generateBatchInsertStatement(dataArray, tableName);
+                if (!batchSql.isEmpty()) {
                     sqlStatements.add(batchSql);
                 }
             }
         }
+        
+        return sqlStatements;
+    }
 
+    /**
+     * 处理嵌套格式的JSON数据（新格式）
+     *
+     * @param jsonNode JSON根节点
+     * @return SQL语句列表
+     */
+    private static List<String> processNestedFormat(JsonNode jsonNode) {
+        List<String> sqlStatements = new ArrayList<>();
+        
+        JsonNode dataArray = jsonNode.get("RSP").get("DATA");
+        
+        if (dataArray.isArray()) {
+            // 遍历DATA数组中的每个元素
+            for (JsonNode dataItem : dataArray) {
+                // 遍历每个dataItem中的所有字段
+                Iterator<String> fieldNames = dataItem.fieldNames();
+                while (fieldNames.hasNext()) {
+                    String fieldName = fieldNames.next();
+                    JsonNode fieldValue = dataItem.get(fieldName);
+                    
+                    // 只处理以"TRADE_"开头的字段且值为数组的情况
+                    if (fieldName.startsWith("TRADE_") && fieldValue.isArray()) {
+                        String batchSql = generateBatchInsertStatement(fieldValue, fieldName);
+                        if (!batchSql.isEmpty()) {
+                            sqlStatements.add(batchSql);
+                        }
+                    }
+                }
+            }
+        }
+        
         return sqlStatements;
     }
 
