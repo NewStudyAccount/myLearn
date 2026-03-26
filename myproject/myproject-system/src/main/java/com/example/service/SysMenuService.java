@@ -5,7 +5,6 @@ import com.example.domain.SysMenu;
 import com.example.domain.SysRoleMenu;
 
 import java.util.List;
-import java.util.Set;
 
 /**
 * @author AI
@@ -18,7 +17,7 @@ public interface SysMenuService extends IService<SysMenu> {
 
     List<SysMenu> listMenuTree();
 
-    Set<String> listPermissionCodesByUserId(Long userId);
+    List<String> listPermissionCodesByUserId(Long userId);
 
     List<SysMenu> listMenuByRoleMenu(List<SysRoleMenu> sysRoleMenuList);
 

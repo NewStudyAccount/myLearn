@@ -16,5 +16,11 @@ public class ServerApplication
     public static void main( String[] args )
     {
         SpringApplication.run(ServerApplication.class, args);
+
+
+        System.out.println("====================================");
+        System.out.println("启动成功！");
+        System.out.println("API 文档：http://localhost:38080/doc.html");
+        System.out.println("====================================");
     }
 }

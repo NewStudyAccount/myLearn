@@ -33,11 +33,11 @@ public class MyUserDetails implements UserDetails {
         if (permissionList == null || permissionList.isEmpty()) {
             return Collections.emptyList();
         }
-        List<SimpleGrantedAuthority> permissionGrantedAuthorities = permissionList.stream()
+        // 过滤掉可能的null值
+        return permissionList.stream()
                 .filter(Objects::nonNull) // 过滤掉可能的null值
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
-        return permissionGrantedAuthorities;
     }
 
     @Override

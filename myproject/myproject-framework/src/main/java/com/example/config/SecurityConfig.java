@@ -77,26 +77,50 @@ public class SecurityConfig {
     }
 
 
+
+    private static final String[] WHITE_LIST = {
+
+            // Swagger 和 API 文档 - 精确路径 + 通配符
+            "/v3/api-docs",
+            "/v3/api-docs/default",
+            "/v3/api-docs/**",
+            "/swagger-ui.html",
+            "/swagger-ui.html/**",
+            "/swagger-resources/**",
+            "/webjars/**",
+            "/doc.html",
+            "/doc.html/**",
+
+            // 登录注册接口
+            "/project/admin/login",
+            "/project/admin/register",
+
+            // 网站图标
+            "/favicon.ico"
+
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth
 
-                .requestMatchers(
-//                        "/**",
-                        "/webjars/**",
-                        "/doc.html/**","/v3/api-docs/**","/swagger-ui.html/**",
-                        "/project/admin/login","/project/admin/register")
-                        .permitAll()  //自定义的登录接口不需要验证
-//                .anyRequest().authenticated()
-                .anyRequest().permitAll()
-                )
-                .cors(cors->cors.configurationSource(corsConfigurationSource()))
+        http
                 .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(AbstractHttpConfigurer::disable)
-                .addFilterBefore(exceptionHandlingFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)  // 先配置过滤器
-                .exceptionHandling(execption->execption.authenticationEntryPoint(authenticationEntryPoint)  // 后配置异常处理
+
+                // ★★★★★ 必须保留或启用匿名认证（强烈推荐）★★★★★
+                // .anonymous(AbstractHttpConfigurer::disable)   // ← 务必删除或注释掉这一行
+
+                .authorizeHttpRequests(auth -> auth
+                        // 把所有公开路径集中写在一起，放在最前面，匹配更宽松
+                        .requestMatchers(WHITE_LIST).permitAll()
+
+                        .anyRequest().authenticated()
+                )
+                .formLogin(AbstractHttpConfigurer::disable)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler));
 
         return http.build();

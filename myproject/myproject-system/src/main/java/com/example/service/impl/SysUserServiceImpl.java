@@ -71,6 +71,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         return sysUserDto;
     }
 
+    @Override
+    public List<String> getUserPermission(Long userId) {
+        return sysMenuService.listPermissionCodesByUserId(userId);
+    }
 
 
     @Override
@@ -80,7 +84,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
         Long loginUserId = SecurityUtils.getLoginUserId();
         MyUserDetails loginUser = SecurityUtils.getLoginUser();
-        Set<String> permissionSet = sysMenuService.listPermissionCodesByUserId(loginUserId);
+        Set<String> permissionSet = new HashSet<>(sysMenuService.listPermissionCodesByUserId(loginUserId));
         Set<String> roleSet = sysRoleService.listRoleByUserId(loginUserId);
 
         resultMap.put("user",loginUser);

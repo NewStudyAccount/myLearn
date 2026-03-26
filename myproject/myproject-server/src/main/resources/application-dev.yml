@@ -1,6 +1,10 @@
 
 logging:
-  config: classpath:logback.xml
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+#logging:
+#  config: classpath:logback.xml
 server:
   port: 38080
 
@@ -20,19 +24,18 @@ spring:
       password: 123456
 
 # springdoc-openapi项目配置
+# springdoc-openapi项目配置
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
     tags-sorter: alpha
-    #operations-sorter: order
+    operations-sorter: alpha
   api-docs:
     path: /v3/api-docs
   group-configs:
     - group: 'default'
-      display-name: '测试'
       paths-to-match: '/**'
       packages-to-scan: com.example.controller
-  default-flat-param-object: true
 # knife4j的增强配置，不需要增强可以不配
 knife4j:
   enable: true

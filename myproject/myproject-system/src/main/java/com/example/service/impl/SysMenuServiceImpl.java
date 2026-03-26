@@ -59,7 +59,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
      * @return
      */
     @Override
-    public Set<String> listPermissionCodesByUserId(Long userId) {
+    public List<String> listPermissionCodesByUserId(Long userId) {
 
         boolean admin = SecurityUtils.isAdmin();
         List<String> list = sysMenuMapper.listPermissionCodesByUserId(userId);
@@ -67,7 +67,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
             list.add("*:*:*");
         }
 
-        return new HashSet<>(list);
+        return list;
     }
 
     /**
