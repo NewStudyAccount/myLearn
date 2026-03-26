@@ -1,11 +1,8 @@
 package com.example.service.impl;
 
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.domain.PageQuery;
 import com.example.domain.SysRole;
 import com.example.domain.SysUserRole;
 import com.example.domain.TableDataInfo;
@@ -22,8 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
 * @author QJJ
@@ -65,20 +63,18 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public List<SysRoleVo> listRoleByUserId(Long userId) {
-        List<SysRoleVo> result = new ArrayList<>();
+    public Set<String> listRoleByUserId(Long userId) {
+
+        Set<String> result = new HashSet<>();
+
         List<SysUserRole> sysUserRoles = sysUserRoleService.queryUserRoleList(userId);
         if (CollectionUtils.isEmpty(sysUserRoles)) {
-            return new ArrayList<>();
+            return result;
         }
         for (SysUserRole sysUserRole : sysUserRoles) {
             Long roleId = sysUserRole.getRoleId();
             SysRole sysRole = this.lambdaQuery().eq(SysRole::getRoleId, roleId).one();
-
-            SysRoleVo sysRoleVo = new SysRoleVo();
-            BeanUtils.copyProperties(sysRole,sysRoleVo);
-            result.add(sysRoleVo);
-
+            result.add(sysRole.getRoleName());
         }
 
         return result;

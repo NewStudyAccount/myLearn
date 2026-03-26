@@ -32,6 +32,8 @@ target/
 *.iml
 *.ipr
 
+
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -44,3 +46,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+/myproject/myproject-frontend/node_modules
+

@@ -6,16 +6,13 @@ import com.example.domain.SysMenu;
 import com.example.domain.SysRoleMenu;
 import com.example.mapper.SysMenuMapper;
 import com.example.service.SysMenuService;
+import com.example.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 /**
 * @author AI
@@ -38,14 +35,22 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
         return sysMenuMapper.listMenu();
     }
 
-    /**
-     * 通过userId 关系表查询所有的菜单信息。动态路由信息
-     * @param userId
-     * @return
-     */
     @Override
-    public List<SysMenu> listMenuByUserId(Long userId) {
-        return sysMenuMapper.listMenuByUserId(userId);
+    public List<SysMenu> listMenuTree() {
+        Long loginUserId = SecurityUtils.getLoginUserId();
+        boolean admin = SecurityUtils.isAdmin();
+        List<SysMenu> sysMenus = sysMenuMapper.listMenuByUserId(loginUserId);
+
+        if (CollectionUtils.isEmpty(sysMenus)){
+            return Collections.emptyList();
+        }
+
+        return sysMenus.stream().filter(item -> !"F".equals(item.getMenuType()))
+                .sorted(Comparator.comparing(SysMenu::getParentId)
+                        .thenComparing(SysMenu::getMenuSort))
+                .toList();
+
+
     }
 
     /**
@@ -54,8 +59,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
      * @return
      */
     @Override
-    public List<String> listPermissionCodesByUserId(Long userId) {
-        return sysMenuMapper.listPermissionCodesByUserId(userId);
+    public Set<String> listPermissionCodesByUserId(Long userId) {
+
+        boolean admin = SecurityUtils.isAdmin();
+        List<String> list = sysMenuMapper.listPermissionCodesByUserId(userId);
+        if (admin){
+            list.add("*:*:*");
+        }
+
+        return new HashSet<>(list);
     }
 
     /**

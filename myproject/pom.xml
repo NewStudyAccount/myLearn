@@ -12,7 +12,6 @@
         <module>myproject-common</module>
         <module>myproject-server</module>
         <module>myproject-system</module>
-        <module>myproject-security</module>
         <module>myproject-blog</module>
         <module>myproject-framework</module>
         <module>myproject-oss</module>

@@ -9,7 +9,7 @@ import com.example.domain.req.SysRoleQueryPageReq;
 import com.example.domain.req.SysRoleUpdateReq;
 import com.example.domain.vo.SysRoleVo;
 
-import java.util.List;
+import java.util.Set;
 
 /**
 * @author QJJ
@@ -27,7 +27,7 @@ public interface SysRoleService extends IService<SysRole> {
 
     SysRoleVo queryByRoleId(Long roleId);
 
-    List<SysRoleVo> listRoleByUserId(Long userId);
+    Set<String> listRoleByUserId(Long userId);
 
     int addRole(SysRoleAddReq sysRole);
 

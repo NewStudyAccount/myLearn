@@ -1,0 +1,11 @@
+{
+  "users": [
+    {"id": 1, "name": "张三", "age": 25, "isActive": true},
+    {"id": 2, "name": "李四", "age": 30, "isActive": false},
+    {"id": 3, "name": "王五", "age": 28, "isActive": true}
+  ],
+  "products": [
+    {"productId": "P001", "productName": "笔记本电脑", "price": 5999.99, "stock": 50},
+    {"productId": "P002", "productName": "手机", "price": 2999.00, "stock": 100}
+  ]
+}

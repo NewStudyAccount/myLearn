@@ -1,0 +1,7 @@
+schema: spec-driven
+
+context: |
+  项目名称：myproject
+
+  技术栈：
+    - 前端：Vue 3, Element Plus,Pinia, Vite,Vue-Router, Axios,TypeScript

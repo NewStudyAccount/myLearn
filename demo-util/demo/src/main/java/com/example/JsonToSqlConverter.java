@@ -57,6 +57,13 @@ public class JsonToSqlConverter {
             JsonNode dataArray = jsonNode.get(tableName);
 
             if (dataArray.isArray()) {
+                // 先生成建表语句
+                String createTableSql = generateCreateTableStatement(dataArray, tableName);
+                if (!createTableSql.isEmpty()) {
+                    sqlStatements.add(createTableSql);
+                }
+                
+                // 再生成插入语句
                 String batchSql = generateBatchInsertStatement(dataArray, tableName);
                 if (!batchSql.isEmpty()) {
                     sqlStatements.add(batchSql);
@@ -89,6 +96,13 @@ public class JsonToSqlConverter {
                     
                     // 只处理以"TRADE_"开头的字段且值为数组的情况
                     if (fieldName.startsWith("TRADE_") && fieldValue.isArray()) {
+                        // 先生成建表语句
+                        String createTableSql = generateCreateTableStatement(fieldValue, fieldName);
+                        if (!createTableSql.isEmpty()) {
+                            sqlStatements.add(createTableSql);
+                        }
+                        
+                        // 再生成插入语句
                         String batchSql = generateBatchInsertStatement(fieldValue, fieldName);
                         if (!batchSql.isEmpty()) {
                             sqlStatements.add(batchSql);
@@ -190,6 +204,64 @@ public class JsonToSqlConverter {
         List<String> fieldNames = new ArrayList<>();
         node.fieldNames().forEachRemaining(fieldNames::add);
         return fieldNames;
+    }
+
+    /**
+     * 生成CREATE TABLE IF NOT EXISTS语句
+     *
+     * @param jsonArray JSON数组节点
+     * @param tableName 表名
+     * @return CREATE TABLE SQL语句
+     */
+    private static String generateCreateTableStatement(JsonNode jsonArray, String tableName) {
+        if (jsonArray.isEmpty()) {
+            return "";
+        }
+
+        // 获取第一行的字段名和类型
+        JsonNode firstRecord = jsonArray.get(0);
+        List<String> columnDefinitions = new ArrayList<>();
+
+        Iterator<String> fieldNames = firstRecord.fieldNames();
+        while (fieldNames.hasNext()) {
+            String fieldName = fieldNames.next();
+            JsonNode valueNode = firstRecord.get(fieldName);
+
+            // 推断字段类型
+            String fieldType = inferFieldType(valueNode);
+            columnDefinitions.add(fieldName + " " + fieldType);
+        }
+
+        // 拼接CREATE TABLE语句
+        StringBuilder sql = new StringBuilder();
+        sql.append("CREATE TABLE IF NOT EXISTS ").append(tableName).append(" (\n  ");
+        for (int i = 0; i < columnDefinitions.size(); i++) {
+            if (i > 0) {
+                sql.append(",\n  ");
+            }
+            sql.append(columnDefinitions.get(i));
+        }
+        sql.append("\n);");
+
+        return sql.toString();
+    }
+
+    /**
+     * 推断字段类型
+     *
+     * @param valueNode JSON值节点
+     * @return 数据库字段类型
+     */
+    private static String inferFieldType(JsonNode valueNode) {
+        if (valueNode.isNull()) {
+            return "TEXT"; // 默认文本类型
+        } else if (valueNode.isNumber()) {
+            return valueNode.isIntegralNumber() ? "INT" : "DECIMAL";
+        } else if (valueNode.isBoolean()) {
+            return "BOOLEAN";
+        } else {
+            return "VARCHAR(255)"; // 字符串默认长度
+        }
     }
 
     /**
