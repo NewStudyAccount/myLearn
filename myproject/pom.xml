@@ -104,7 +104,9 @@
                 <version>1.10.0</version>
             </dependency>
 
-
+<!--这是 springdoc-openapi 与 Spring Framework 6.2+（对应 Spring Boot 3.4.x 或 3.5.x）之间的严重版本不兼容。
+Spring Framework 6.2 移除了 ControllerAdviceBean(Object) 这个构造方法，而你当前使用的 springdoc 版本（大概率是 2.5.x、2.6.x 或更低）内部还在调用它（特别是在扫描 @ControllerAdvice / @RestControllerAdvice 来生成通用响应时）。
+这个错误在 2025 年 Spring Boot 3.4+ 升级后非常普遍，尤其项目中存在全局异常处理器时更容易触发。-->
             <dependency>
                 <groupId>org.springdoc</groupId>
                 <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>

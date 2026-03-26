@@ -1,7 +1,6 @@
 package com.example.config;
 
 
-import com.example.security.filter.ExceptionHandlingFilter;
 import com.example.security.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -40,9 +39,6 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-
-    @Autowired
-    private ExceptionHandlingFilter exceptionHandlingFilter;
 
 
     @Bean
@@ -120,7 +116,9 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex
+                        //认证失败401
                         .authenticationEntryPoint(authenticationEntryPoint)
+                        //授权失败403
                         .accessDeniedHandler(accessDeniedHandler));
 
         return http.build();
