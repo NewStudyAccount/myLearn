@@ -1,8 +1,8 @@
-
-logging:
-  level:
-    org.springframework.security: DEBUG
-    org.springframework.web: DEBUG
+#
+#logging:
+#  level:
+#    org.springframework.security: DEBUG
+#    org.springframework.web: DEBUG
 #logging:
 #  config: classpath:logback.xml
 server:
