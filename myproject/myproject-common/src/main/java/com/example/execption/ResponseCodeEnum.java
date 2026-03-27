@@ -10,6 +10,7 @@ public enum ResponseCodeEnum implements BaseExceptionInterface {
 
     USER_NOT_FOUND("401", "获取用户信息异常"),
     USER_NAME_NOT_FOUND("401", "获取用户账户异常"),
+    USER_ID_NOT_FOUND("401", "获取用户ID异常"),
 
 
 

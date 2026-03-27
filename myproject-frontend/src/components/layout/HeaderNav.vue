@@ -42,7 +42,7 @@ const handleLogout = () => {
       <el-dropdown trigger="click">
         <span class="user-info">
           <el-icon><User /></el-icon>
-          <span class="username">{{ userStore.userInfo?.nickname || '用户' }}</span>
+          <span class="username">{{ userStore.userInfo?.user?.username || '用户' }}</span>
         </span>
         <template #dropdown>
           <el-dropdown-menu>

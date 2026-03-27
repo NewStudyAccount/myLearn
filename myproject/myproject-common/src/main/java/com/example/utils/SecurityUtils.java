@@ -62,21 +62,13 @@ public class SecurityUtils {
         }
         catch (Exception e)
         {
-            throw new BizException(ResponseCodeEnum.USER_NAME_NOT_FOUND);
+            throw new BizException(ResponseCodeEnum.USER_ID_NOT_FOUND);
         }
     }
 
-    public static boolean isAdmin()
+    public static boolean isAdmin(Long userId)
     {
-        try
-        {
-            SysUserDto sysUserDto = getLoginUser().getSysUserDto();
-            return true;
-        }
-        catch (Exception e)
-        {
-            throw new BizException(ResponseCodeEnum.USER_NAME_NOT_FOUND);
-        }
+        return userId != null && 1L == userId;
     }
 
 

@@ -38,7 +38,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     @Override
     public List<SysMenu> listMenuTree() {
         Long loginUserId = SecurityUtils.getLoginUserId();
-        boolean admin = SecurityUtils.isAdmin();
+        boolean admin = SecurityUtils.isAdmin(loginUserId);
         List<SysMenu> sysMenus = sysMenuMapper.listMenuByUserId(loginUserId);
 
         if (CollectionUtils.isEmpty(sysMenus)){
@@ -61,7 +61,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     @Override
     public List<String> listPermissionCodesByUserId(Long userId) {
 
-        boolean admin = SecurityUtils.isAdmin();
+        boolean admin = SecurityUtils.isAdmin(userId);
         List<String> list = sysMenuMapper.listPermissionCodesByUserId(userId);
         if (admin){
             list.add("*:*:*");

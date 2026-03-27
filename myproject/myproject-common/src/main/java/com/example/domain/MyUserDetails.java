@@ -7,14 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -30,14 +26,7 @@ public class MyUserDetails implements UserDetails {
     @JsonIgnore //放置在方法或字段上，表示在序列化和反序列化过程中忽略该字段或方法
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (permissionList == null || permissionList.isEmpty()) {
-            return Collections.emptyList();
-        }
-        // 过滤掉可能的null值
-        return permissionList.stream()
-                .filter(Objects::nonNull) // 过滤掉可能的null值
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        return null;
     }
 
     @Override

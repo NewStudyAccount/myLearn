@@ -88,7 +88,8 @@ public class SecurityConfig {
             "/doc.html/**",
 
             // 登录注册接口
-            "/project/admin/login",
+            "/project/auth/login",
+
             "/project/admin/register",
 
             // 网站图标
@@ -105,7 +106,7 @@ public class SecurityConfig {
                 .sessionManagement(AbstractHttpConfigurer::disable)
 
                 // ★★★★★ 必须保留或启用匿名认证（强烈推荐）★★★★★
-                // .anonymous(AbstractHttpConfigurer::disable)   // ← 务必删除或注释掉这一行
+                 .anonymous(AbstractHttpConfigurer::disable)   // ← 务必删除或注释掉这一行
 
                 .authorizeHttpRequests(auth -> auth
                         // 把所有公开路径集中写在一起，放在最前面，匹配更宽松

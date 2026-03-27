@@ -1,50 +1,37 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { login as loginApi, logout as logoutApi, getUserInfo as getUserInfoApi } from '@/api/auth'
-
-export interface UserInfo {
-  userId: number
-  username: string
-  nickname: string
-  avatar?: string
-}
+import {login as loginApi, getUserInfo as getUserInfoApi, type UserInfo, type LoginParams} from '@/api/auth'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>(localStorage.getItem('token') || '')
   const userInfo = ref<UserInfo | null>(null)
 
   const isLoggedIn = computed(() => !!token.value)
+  const username = computed(() => userInfo.value?.user?.username || '')
+  const roles = computed(() => userInfo.value?.roles || [])
+  const permissions = computed(() => userInfo.value?.permissions || [])
 
-  async function login(username: string, password: string) {
-    try {
-      const res = await loginApi(username, password)
-      token.value = res.token
-      localStorage.setItem('token', res.token)
+  async function login(params:LoginParams) {
+    const res = await loginApi(params)
+    if (res.code === '200') {
+      token.value = res.data.token
+      localStorage.setItem('token', res.data.token)
       return res
-    } catch (error) {
-      throw error
     }
+    throw new Error(res.msg || '登录失败')
   }
 
-  async function getUserInfo() {
+  async function fetchUserInfo() {
     try {
       const res = await getUserInfoApi()
-      userInfo.value = res
-      return res
+      if (res.code === '200') {
+        userInfo.value = res.data
+        return res.data
+      }
+      throw new Error(res.msg || '获取用户信息失败')
     } catch (error) {
+      resetToken()
       throw error
-    }
-  }
-
-  async function logout() {
-    try {
-      await logoutApi()
-    } catch (error) {
-      console.error('Logout error:', error)
-    } finally {
-      token.value = ''
-      userInfo.value = null
-      localStorage.removeItem('token')
     }
   }
 
@@ -54,15 +41,20 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('token')
   }
 
+  async function logout() {
+    resetToken()
+  }
+
   return {
     token,
     userInfo,
     isLoggedIn,
+    username,
+    roles,
+    permissions,
     login,
-    getUserInfo,
+    fetchUserInfo,
     logout,
     resetToken,
   }
-}, {
-  persist: false,
 })

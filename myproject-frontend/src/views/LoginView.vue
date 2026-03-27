@@ -2,32 +2,52 @@
 import { ref, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { ElMessage } from 'element-plus'
+import { usePermissionStore } from '@/stores/permission'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
+import type {LoginParams} from "@/api/auth.ts";
 
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
+const permissionStore = usePermissionStore()
 
-const loginForm = reactive({
-  username: 'admin',
-  password: '123456',
+const loginFormRef = ref<FormInstance>()
+
+const loginForm = reactive<LoginParams>({
+  USER_NAME: 'admin',
+  PASS_WORD: '123456',
 })
 
 const loading = ref(false)
 
+const rules: FormRules = {
+  USER_NAME: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 3, max: 20, message: '用户名长度为 3 到 20 个字符', trigger: 'blur' },
+  ],
+  PASS_WORD: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 5, max: 20, message: '密码长度为 5 到 20 个字符', trigger: 'blur' },
+  ],
+}
+
 const handleLogin = async () => {
-  if (!loginForm.username || !loginForm.password) {
-    ElMessage.warning('请输入用户名和密码')
-    return
-  }
+  const valid = await loginFormRef.value?.validate().catch(() => false)
+  if (!valid) return
 
   loading.value = true
   try {
-    await userStore.login(loginForm.username, loginForm.password)
+    await userStore.login(loginForm)
+    await userStore.fetchUserInfo()
+
+    const routes = await permissionStore.loadRoutes()
+    routes.forEach((route) => {
+      router.addRoute(route)
+    })
+
     ElMessage.success('登录成功')
 
-    // 跳转到之前的页面或首页
     const redirect = route.query.redirect as string
     router.push(redirect || '/')
   } catch (error: any) {
@@ -47,13 +67,15 @@ const handleLogin = async () => {
       </div>
 
       <el-form
+        ref="loginFormRef"
         :model="loginForm"
+        :rules="rules"
         class="login-form"
         @keyup.enter="handleLogin"
       >
         <el-form-item>
           <el-input
-            v-model="loginForm.username"
+            v-model="loginForm.USER_NAME"
             placeholder="用户名"
             :prefix-icon="User"
             size="large"
@@ -62,7 +84,7 @@ const handleLogin = async () => {
 
         <el-form-item>
           <el-input
-            v-model="loginForm.password"
+            v-model="loginForm.PASS_WORD"
             type="password"
             placeholder="密码"
             :prefix-icon="Lock"

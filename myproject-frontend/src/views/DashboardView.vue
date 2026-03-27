@@ -10,7 +10,7 @@ const userStore = useUserStore()
       <template #header>
         <span>欢迎回来</span>
       </template>
-      <p>你好，{{ userStore.userInfo?.nickname || '用户' }}！</p>
+      <p>你好，{{ userStore.userInfo?.user?.username || '用户' }}！</p>
       <p>这是 MyProject 管理系统首页</p>
     </el-card>
 

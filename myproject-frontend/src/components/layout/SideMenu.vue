@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { HomeFilled, Document, Setting } from '@element-plus/icons-vue'
+import { usePermissionStore } from '@/stores/permission'
+import { HomeFilled, Folder, Document, Setting } from '@element-plus/icons-vue'
 
 defineProps<{
   isCollapse: boolean
@@ -8,24 +10,43 @@ defineProps<{
 
 const route = useRoute()
 const router = useRouter()
+const permissionStore = usePermissionStore()
 
-const menuItems = [
-  {
-    path: '/dashboard',
-    title: '首页',
-    icon: HomeFilled,
-  },
-  {
-    path: '/about',
-    title: '关于',
-    icon: Document,
-  },
-  {
-    path: '/settings',
-    title: '设置',
-    icon: Setting,
-  },
-]
+const iconMap: Record<string, any> = {
+  '系统管理': Setting,
+  '文章管理': Document,
+  '/system': Setting,
+  '/blog': Document,
+}
+
+interface MenuDisplayItem {
+  path: string
+  title: string
+  icon: any
+  children?: { path: string; title: string }[]
+}
+
+const dynamicMenus = computed<MenuDisplayItem[]>(() => {
+  const menus = permissionStore.menuList
+  if (menus.length === 0) {
+    return [
+      {
+        path: '/dashboard',
+        title: '首页',
+        icon: HomeFilled,
+      },
+    ]
+  }
+  return menus.map((menu) => ({
+    path: menu.path,
+    title: menu.menuName,
+    icon: iconMap[menu.menuName] || iconMap[menu.path] || Folder,
+    children: menu.children?.map((child) => ({
+      path: `${menu.path}/${child.path}`,
+      title: child.menuName,
+    })),
+  }))
+})
 
 const handleSelect = (path: string) => {
   router.push(path)
@@ -48,9 +69,9 @@ const handleSelect = (path: string) => {
       @select="handleSelect"
     >
       <el-menu-item
-        v-for="item in menuItems"
+        v-for="item in dynamicMenus"
         :key="item.path"
-        :index="item.path"
+        :index="item.children?.[0]?.path || item.path"
       >
         <el-icon><component :is="item.icon" /></el-icon>
         <template #title>{{ item.title }}</template>
