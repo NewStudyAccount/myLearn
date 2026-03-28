@@ -45,12 +45,49 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
             return Collections.emptyList();
         }
 
-        return sysMenus.stream().filter(item -> !"F".equals(item.getMenuType()))
-                .sorted(Comparator.comparing(SysMenu::getParentId)
-                        .thenComparing(SysMenu::getMenuSort))
+        // 过滤掉按钮类型（F），只保留目录（M）和菜单（C）
+        List<SysMenu> menuList = sysMenus.stream()
+                .filter(item -> !"F".equals(item.getMenuType()))
                 .toList();
 
+        // 构建树形结构
+        return buildMenuTree(menuList);
 
+
+    }
+
+    /**
+     * 构建菜单树形结构
+     * @param menus 所有菜单列表
+     * @return 树形结构菜单列表
+     */
+    private List<SysMenu> buildMenuTree(List<SysMenu> menus) {
+        // 初始化每个节点的 children 为空列表
+        menus.forEach(menu -> menu.setChildren(new ArrayList<>()));
+
+        // 使用 Map 存储，方便快速查找
+        Map<Integer, SysMenu> menuMap = new HashMap<>();
+        menus.forEach(menu -> menuMap.put(menu.getMenuId(), menu));
+
+        List<SysMenu> treeNodes = new ArrayList<>();
+
+        for (SysMenu menu : menus) {
+            Integer parentId = menu.getParentId();
+
+            // 如果父节点存在且在列表中，将当前节点添加到父节点的 children 中
+            if (parentId != null && menuMap.containsKey(parentId)) {
+                SysMenu parentMenu = menuMap.get(parentId);
+                parentMenu.getChildren().add(menu);
+            } else {
+                // 否则作为根节点
+                treeNodes.add(menu);
+            }
+        }
+
+        // 对根节点进行排序
+        return treeNodes.stream()
+                .sorted(Comparator.comparing(SysMenu::getMenuSort))
+                .toList();
     }
 
     /**

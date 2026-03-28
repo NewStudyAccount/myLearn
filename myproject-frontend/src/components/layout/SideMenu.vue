@@ -1,5 +1,4 @@
-<script setup lang="ts">
-import { computed } from 'vue'
+<script setup lang="ts">import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePermissionStore } from '@/stores/permission'
 import { HomeFilled, Folder, Document, Setting } from '@element-plus/icons-vue'
@@ -28,23 +27,22 @@ interface MenuDisplayItem {
 
 const dynamicMenus = computed<MenuDisplayItem[]>(() => {
   const menus = permissionStore.menuList
+
   if (menus.length === 0) {
-    return [
-      {
-        path: '/dashboard',
-        title: '首页',
-        icon: HomeFilled,
-      },
-    ]
+    return []
   }
+
   return menus.map((menu) => ({
     path: menu.path,
     title: menu.menuName,
     icon: iconMap[menu.menuName] || iconMap[menu.path] || Folder,
-    children: menu.children?.map((child) => ({
-      path: `${menu.path}/${child.path}`,
-      title: child.menuName,
-    })),
+    children: menu.children
+        ? menu.children.map((child) => ({
+          path: `${child.path}`,
+          title: child.menuName,
+          icon: iconMap[child.menuName] || iconMap[child.path] || Document,
+        }))
+        : [],
   }))
 })
 
@@ -61,45 +59,36 @@ const handleSelect = (path: string) => {
     </div>
 
     <el-menu
-      :default-active="route.path"
-      :collapse="isCollapse"
-      background-color="#304156"
-      text-color="#bfcbd9"
-      active-text-color="#409eff"
-      @select="handleSelect"
+        :default-active="route.path"
+        :collapse="isCollapse"
+        background-color="#304156"
+        text-color="#bfcbd9"
+        active-text-color="#409eff"
+        @select="handleSelect"
     >
-      <el-menu-item
-        v-for="item in dynamicMenus"
-        :key="item.path"
-        :index="item.children?.[0]?.path || item.path"
-      >
-        <el-icon><component :is="item.icon" /></el-icon>
-        <template #title>{{ item.title }}</template>
-      </el-menu-item>
+      <template v-for="item in dynamicMenus" :key="item.path">
+        <!-- 有子菜单的情况 -->
+        <el-sub-menu v-if="item.children && item.children.length > 0" :index="item.path">
+          <template #title>
+            <el-icon><component :is="item.icon" /></el-icon>
+            <span>{{ item.title }}</span>
+          </template>
+          <el-menu-item
+              v-for="child in item.children"
+              :key="child.path"
+              :index="child.path"
+          >
+            <el-icon><component :is="child.icon" /></el-icon>
+            <template #title>{{ child.title }}</template>
+          </el-menu-item>
+        </el-sub-menu>
+
+        <!-- 没有子菜单的情况 -->
+        <el-menu-item v-else :index="item.path">
+          <el-icon><component :is="item.icon" /></el-icon>
+          <template #title>{{ item.title }}</template>
+        </el-menu-item>
+      </template>
     </el-menu>
   </div>
 </template>
-
-<style scoped>
-.side-menu {
-  height: 100%;
-}
-
-.logo {
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-bottom: 1px solid #3a4a5a;
-}
-
-.logo h3 {
-  margin: 0;
-  color: #fff;
-  font-size: 18px;
-}
-
-.el-menu {
-  border-right: none;
-}
-</style>

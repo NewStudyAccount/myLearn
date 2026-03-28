@@ -18,7 +18,7 @@ export const usePermissionStore = defineStore('permission', () => {
       if (menu.menuType === 'M' && menu.component === null) {
         const route: RouteRecordRaw = {
           path: menu.path,
-          name: menu.componentName || `menu-${menu.menuId}`,
+          name: menu.menuName || menu.componentName ||`menu-${menu.menuId}`,
           component: MainLayout,
           redirect: menu.children?.[0] ? `${menu.path}/${menu.children[0].path}` : undefined,
           meta: { title: menu.menuName },
@@ -28,7 +28,7 @@ export const usePermissionStore = defineStore('permission', () => {
         if (menu.children && menu.children.length > 0) {
           route.children = menu.children.map((child) => ({
             path: child.path,
-            name: child.componentName || `menu-${child.menuId}`,
+            name: child.menuName || child.componentName || `menu-${child.menuId}`,
             component: loadComponent(child.component),
             meta: { title: child.menuName },
           }))
@@ -38,26 +38,40 @@ export const usePermissionStore = defineStore('permission', () => {
       } else if (menu.component) {
         routes.push({
           path: menu.path,
-          name: menu.componentName || `menu-${menu.menuId}`,
+          name: menu.menuName || menu.componentName || `menu-${menu.menuId}`,
           component: loadComponent(menu.component),
           meta: { title: menu.menuName },
         })
       }
     })
 
+    console.log('generateRoutes:', routes)
     return routes
   }
+
 
   function loadComponent(componentPath: string | null) {
     if (!componentPath) return () => import('@/views/NotFoundView.vue')
 
-    const normalizedPath = componentPath.startsWith('/') ? componentPath : `/${componentPath}`
-    const fullPath = `/src/views${normalizedPath}.vue`
+    // 移除可能存在的前后斜杠和 .vue 后缀
+    let normalizedPath = componentPath.replace(/^\/+/, '').replace(/\/+$/, '')
+    normalizedPath = normalizedPath.replace(/\.vue$/i, '')
 
+    // 构建完整的 glob 路径
+    const fullPath = `/src/views/${normalizedPath}.vue`
+
+    // 尝试直接匹配
     if (viewModules[fullPath]) {
       return viewModules[fullPath]
     }
 
+    // 尝试 index.vue 的情况（例如 system/user -> system/user/index.vue）
+    const indexPath = `/src/views/${normalizedPath}/index.vue`
+    if (viewModules[indexPath]) {
+      return viewModules[indexPath]
+    }
+
+    console.warn(`Component not found: ${fullPath}, fallback to NotFoundView`)
     return () => import('@/views/NotFoundView.vue')
   }
 
