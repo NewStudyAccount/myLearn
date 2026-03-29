@@ -34,8 +34,12 @@ public class FrontendApiGenerator {
         String apiName = tableInfo.getEntityName().replace("Entity", "") + "Api";
         context.put("apiName", apiName);
 
-        String fileName = toFileName(tableInfo.getEntityName()) + "Api";
+        String fileName = toFileName(tableInfo.getLowerEntityName()) + "Api";
         context.put("fileName", fileName);
+
+        String resourceName = extractResourceName(tableInfo.getTableName());
+        context.put("resourceName", resourceName);
+        context.put("resourceNameLower", resourceName.substring(0, 1).toLowerCase() + resourceName.substring(1));
 
         String template = getApiTemplate();
         return templateEngine.renderString(template, context);
@@ -43,7 +47,7 @@ public class FrontendApiGenerator {
 
     private String getApiTemplate() {
         return """
-import request from '@/utils/request';
+import http from '@/utils/http';
 import type { ${table.entityName} } from './types';
 
 #set($baseName = ${table.entityName})
@@ -51,41 +55,75 @@ import type { ${table.entityName} } from './types';
 #set($baseName = $baseName.substring(0, $baseName.length() - 6))
 #end
 
-export const ${table.entityLowerName}Api = {
-  getList: (params?: any) =>
-    request({
-      url: '/${table.entityLowerName}',
-      method: 'GET',
-      params,
-    }),
 
-  getById: (${table.primaryKey.fieldName}: ${table.primaryKey.javaType}) =>
-    request({
-      url: '/${table.entityLowerName}/${table.primaryKey.fieldName}',
-      method: 'GET',
-    }),
+export function getList${baseName}(query?: any): AxiosPromise<any> {
+  return http({
+    url: '/system/${resourceName}/list',
+    method: 'get',
+    params: query
+  });
+}
 
-  create: (data: ${table.entityName}) =>
-    request({
-      url: '/${table.entityLowerName}',
-      method: 'POST',
-      data,
-    }),
+export function getById${baseName}(${table.primaryKey.fieldName}: ${table.primaryKey.javaType}): AxiosPromise<${table.entityName}> {
+  return http({
+    url: '/system/${resourceName}/${table.primaryKey.fieldName}',
+    method: 'get'
+  });
+}
 
-  update: (data: ${table.entityName}) =>
-    request({
-      url: '/${table.entityLowerName}',
-      method: 'PUT',
-      data,
-    }),
+export function create${baseName}(data: ${table.entityName}): AxiosPromise<void> {
+  return http({
+    url: '/system/${resourceName}',
+    method: 'post',
+    data
+  });
+}
 
-  delete: (${table.primaryKey.fieldName}: ${table.primaryKey.javaType}) =>
-    request({
-      url: '/${table.entityLowerName}/${table.primaryKey.fieldName}',
-      method: 'DELETE',
-    }),
-};
+export function update${baseName}(data: ${table.entityName}): AxiosPromise<void> {
+  return http({
+    url: '/system/${resourceName}',
+    method: 'put',
+    data
+  });
+}
+
+export function delete${baseName}(${table.primaryKey.fieldName}: ${table.primaryKey.javaType}): AxiosPromise<void> {
+  return http({
+    url: '/system/${resourceName}/${table.primaryKey.fieldName}',
+    method: 'delete'
+  });
+}
 """;
+    }
+
+    private String extractResourceName(String tableName) {
+        if (tableName == null || tableName.isEmpty()) {
+            return "";
+        }
+
+        String nameWithoutPrefix = tableName;
+        if (tableName.toLowerCase().startsWith("sys_")) {
+            nameWithoutPrefix = tableName.substring(4);
+        }
+
+        StringBuilder result = new StringBuilder();
+        boolean capitalizeNext = false;
+
+        for (int i = 0; i < nameWithoutPrefix.length(); i++) {
+            char c = nameWithoutPrefix.charAt(i);
+            if (c == '_' || c == '-') {
+                capitalizeNext = true;
+            } else if (capitalizeNext) {
+                result.append(Character.toUpperCase(c));
+                capitalizeNext = false;
+            } else if (i == 0) {
+                result.append(Character.toLowerCase(c));
+            } else {
+                result.append(c);
+            }
+        }
+
+        return result.toString();
     }
 
     private String toFileName(String entityName) {
