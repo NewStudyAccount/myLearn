@@ -41,11 +41,30 @@ export interface ApiResponse<T> {
   data: T
 }
 
-export function login(params: LoginParams): Promise<ApiResponse<LoginResult>> {
+export function login2(params: LoginParams): Promise<ApiResponse<LoginResult>> {
   return http.post('/auth/login', params)
 }
 
 
+export function login(params: LoginParams): Promise<ApiResponse<LoginResult>> {
+
+  return http({
+    url: '/auth/login',
+    headers: {
+      isToken: false,
+      repeatSubmit: false
+    },
+    method: 'post',
+    data: params
+  })
+
+}
+
+
 export function getUserInfo(): Promise<ApiResponse<UserInfo>> {
-  return http.post('/auth/me')
+
+  return http({
+    url: '/auth/me',
+    method: 'post'
+  })
 }
