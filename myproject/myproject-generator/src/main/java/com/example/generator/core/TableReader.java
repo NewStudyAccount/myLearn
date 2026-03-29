@@ -115,6 +115,10 @@ public class TableReader {
     }
 
     public static String toCamelCase(String str) {
+        return toCamelCase(str, false);
+    }
+
+    public static String toCamelCase(String str, boolean capitalizeFirst) {
         if (str == null || str.isEmpty()) {
             return str;
         }
@@ -122,12 +126,15 @@ public class TableReader {
         StringBuilder result = new StringBuilder();
         boolean capitalizeNext = false;
 
-        for (char c : str.toCharArray()) {
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
             if (c == '_' || c == '-') {
                 capitalizeNext = true;
             } else if (capitalizeNext) {
                 result.append(Character.toUpperCase(c));
                 capitalizeNext = false;
+            } else if (i == 0 && capitalizeFirst) {
+                result.append(Character.toUpperCase(c));
             } else {
                 result.append(Character.toLowerCase(c));
             }

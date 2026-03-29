@@ -119,9 +119,9 @@ public class GeneratorController {
         try {
             Map<String, String> generatedCode = generate(request);
             
-            String entityName = TableReader.toCamelCase(request.getTableName());
+            String entityName = TableReader.toCamelCase(request.getTableName(), true);
             if (request.getTablePrefix() != null && request.getTableName().startsWith(request.getTablePrefix())) {
-                entityName = TableReader.toCamelCase(request.getTableName().substring(request.getTablePrefix().length()));
+                entityName = TableReader.toCamelCase(request.getTableName().substring(request.getTablePrefix().length()), true);
             }
             if (request.getEntityPrefix() != null) {
                 entityName = request.getEntityPrefix() + entityName;

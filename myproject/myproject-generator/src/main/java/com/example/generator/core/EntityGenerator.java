@@ -35,7 +35,7 @@ public class EntityGenerator {
         if (properties.getTablePrefix() != null && !properties.getTablePrefix().isEmpty()) {
             entityName = entityName.replaceFirst(properties.getTablePrefix(), "");
         }
-        entityName = TableReader.toCamelCase(entityName);
+        entityName = TableReader.toCamelCase(entityName, true);
         if (properties.getEntityPrefix() != null && !properties.getEntityPrefix().isEmpty()) {
             entityName = properties.getEntityPrefix() + entityName;
         }
