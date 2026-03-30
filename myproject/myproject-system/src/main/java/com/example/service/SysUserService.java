@@ -2,15 +2,13 @@ package com.example.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.example.domain.SysMenu;
 import com.example.domain.SysUser;
 import com.example.domain.TableDataInfo;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
-import com.example.domain.vo.MenuTree;
 import com.example.domain.vo.UserInfoVo;
 import com.example.domain.vo.UserVo;
 
-import java.util.List;
+import java.util.Map;
 
 /**
 * @author QJJ
@@ -25,10 +23,9 @@ public interface SysUserService extends IService<SysUser> {
 
 //    List<String> queryUserInfoPermission(Long userId);
 
+    Map<String,Object> getUserInfo();
+
     UserInfoVo queryUserInfoAfterLogin();
-
-    List<MenuTree> queryUserDynamicRouter();
-
 
 
 }

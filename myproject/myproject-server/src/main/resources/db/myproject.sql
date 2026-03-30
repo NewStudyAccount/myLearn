@@ -1,17 +1,17 @@
 /*
- Navicat Premium Data Transfer
+ Navicat Premium Dump SQL
 
  Source Server         : 192.168.99.100
  Source Server Type    : MySQL
- Source Server Version : 80405
+ Source Server Version : 80042 (8.0.42)
  Source Host           : 192.168.99.100:3306
  Source Schema         : myproject
 
  Target Server Type    : MySQL
- Target Server Version : 80405
+ Target Server Version : 80042 (8.0.42)
  File Encoding         : 65001
 
- Date: 22/07/2025 00:50:49
+ Date: 29/03/2026 22:39:34
 */
 
 SET NAMES utf8mb4;
@@ -120,10 +120,10 @@ CREATE TABLE `sys_menu`  (
 -- ----------------------------
 INSERT INTO `sys_menu` VALUES (1, '系统管理', 's', 'M', 1, 0, '/system', NULL, NULL);
 INSERT INTO `sys_menu` VALUES (2, '文章管理', 's', 'M', 2, 0, '/blog', NULL, NULL);
-INSERT INTO `sys_menu` VALUES (1001, '用户列表', 'test:001', 'C', 1, 1, '/system/user', 'system/user/User', 'User');
-INSERT INTO `sys_menu` VALUES (1002, '角色列表', 'confirm:002', 'C', 2, 1, '/system/role', 'system/role/Role', 'Role');
-INSERT INTO `sys_menu` VALUES (1003, '菜单列表', 'test:002', 'C', 3, 1, '/system/menu', 'system/menu/Menu', 'Menu');
-INSERT INTO `sys_menu` VALUES (2001, '标签列表', 's', 'C', 1, 2, '/blog/tag', 'blog/tag/Tags', NULL);
+INSERT INTO `sys_menu` VALUES (1001, '用户管理', 'test:001', 'C', 1, 1, '/system/user', 'system/user/index', 'User');
+INSERT INTO `sys_menu` VALUES (1002, '角色列表', 'confirm:002', 'C', 2, 1, '/system/role', 'system/role/index', 'Role');
+INSERT INTO `sys_menu` VALUES (1003, '菜单列表', 'test:002', 'C', 3, 1, '/system/menu', 'system/menu/index', 'Menu');
+INSERT INTO `sys_menu` VALUES (2001, '标签列表', 's', 'C', 1, 2, '/blog/tag', 'blog/tag/index', NULL);
 
 -- ----------------------------
 -- Table structure for sys_oss_config
@@ -159,7 +159,7 @@ CREATE TABLE `sys_oss_file`  (
   `file_suffix` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `file_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`oss_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_oss_file
@@ -198,6 +198,10 @@ CREATE TABLE `sys_role_menu`  (
 -- ----------------------------
 INSERT INTO `sys_role_menu` VALUES (1, 1);
 INSERT INTO `sys_role_menu` VALUES (1, 2);
+INSERT INTO `sys_role_menu` VALUES (1, 1001);
+INSERT INTO `sys_role_menu` VALUES (1, 1002);
+INSERT INTO `sys_role_menu` VALUES (1, 1003);
+INSERT INTO `sys_role_menu` VALUES (1, 2001);
 
 -- ----------------------------
 -- Table structure for sys_tag
@@ -245,7 +249,7 @@ CREATE TABLE `sys_template_menu`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '备注',
   PRIMARY KEY (`menu_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2000 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '菜单权限表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2000 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '菜单权限表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_template_menu
@@ -358,7 +362,7 @@ CREATE TABLE `sys_user`  (
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO `sys_user` VALUES (1, 'zs', '$2a$10$AhCqTU/K8pI3ry5XmyF.FOUmKU8sOPeUWJs9/Rtl.zwDkBLdUvw9S', NULL, '1', NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `sys_user` VALUES (1, 'admin', '$2a$10$xB8E7korwpq54qUErSS1Re.yhFDjHDxc67P2e6nradgGBnLnC3zvG', NULL, '1', NULL, NULL, NULL, NULL, NULL, '0');
 
 -- ----------------------------
 -- Table structure for sys_user_role

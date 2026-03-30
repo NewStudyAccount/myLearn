@@ -15,7 +15,7 @@ public interface SysMenuService extends IService<SysMenu> {
 
     List<SysMenu> listMenu();
 
-    List<SysMenu> listMenuByUserId(Long userId);
+    List<SysMenu> listMenuTree();
 
     List<String> listPermissionCodesByUserId(Long userId);
 

@@ -8,6 +8,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ResponseCodeEnum implements BaseExceptionInterface {
 
+    USER_NOT_FOUND("401", "获取用户信息异常"),
+    USER_NAME_NOT_FOUND("401", "获取用户账户异常"),
+    USER_ID_NOT_FOUND("401", "获取用户ID异常"),
+
+
+
     // ----------- 通用异常状态码 -----------
     SYSTEM_ERROR("10000", "出错啦，后台小哥正在努力修复中..."),
 
@@ -15,6 +21,7 @@ public enum ResponseCodeEnum implements BaseExceptionInterface {
     PARAM_NOT_VALID("10001", "参数错误"),
     // ----------- 业务异常状态码 -----------
     PRODUCT_NOT_FOUND("20000", "该产品不存在（测试使用）"),
+
     ;
 
     // 异常码

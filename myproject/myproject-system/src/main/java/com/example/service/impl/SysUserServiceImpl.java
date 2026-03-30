@@ -4,18 +4,14 @@ package com.example.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.domain.SysMenu;
-import com.example.domain.SysUser;
-import com.example.domain.SysUserDto;
-import com.example.domain.TableDataInfo;
+import com.example.domain.*;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
 import com.example.domain.vo.MenuTree;
-import com.example.domain.vo.SysRoleVo;
 import com.example.domain.vo.UserInfoVo;
 import com.example.domain.vo.UserVo;
 import com.example.mapper.SysUserMapper;
 import com.example.service.*;
-import com.example.utils.SecurityFrameworkUtils;
+import com.example.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,34 +71,30 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         return sysUserDto;
     }
 
-    /**
-     * 【Security】查询用户的权限
-     * @param userId
-     * @return
-     */
     @Override
     public List<String> getUserPermission(Long userId) {
-
-
-
-
-//        Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
-//        if (isAdmin(loginUserId)) {
-//            //todo 获取所有角色
-//        }
-
         return sysMenuService.listPermissionCodesByUserId(userId);
     }
 
 
+    @Override
+    public Map<String,Object> getUserInfo() {
 
-    public boolean isAdmin(Long userId){
+        Map<String,Object> resultMap = new HashMap<>();
 
-        List<SysRoleVo> sysRoleVos = sysRoleService.listRoleByUserId(userId);
-        return sysRoleVos.stream().anyMatch(sysRoleVo -> sysRoleVo.getRoleName().equals("admin"));
+        Long loginUserId = SecurityUtils.getLoginUserId();
+        MyUserDetails loginUser = SecurityUtils.getLoginUser();
+        Set<String> permissionSet = new HashSet<>(sysMenuService.listPermissionCodesByUserId(loginUserId));
+        Set<String> roleSet = sysRoleService.listRoleByUserId(loginUserId);
+
+        resultMap.put("user",loginUser);
+        resultMap.put("permissions",permissionSet);
+        resultMap.put("roles",roleSet);
+
+        return resultMap;
+
 
     }
-
 
 
 
@@ -142,50 +134,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     @Override
     public UserInfoVo queryUserInfoAfterLogin() {
 
-        Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
-
-
-        SysUser sysUser = sysUserMapper.selectById(loginUserId);
-        sysUser.setUserPwd("******");
-
-        List<String> userPermission = getUserPermission(loginUserId);
 
 
 
-        UserInfoVo userInfoVo = UserInfoVo.builder()
-                .sysUser(sysUser).permissionCodes(userPermission)
-                .build();
 
-        return userInfoVo;
+        return null;
 
     }
 
-    @Override
-    public List<MenuTree> queryUserDynamicRouter() {
-        Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
-        List<SysMenu> sysMenus = listDynamicRouterByUserId(loginUserId);
-
-        List<MenuTree> menuTrees = buildTreeMethod2(sysMenus);
-//        List<MenuTree> menuTrees = buildTree(sysMenus);
-        return menuTrees;
-    }
 
 
-    public List<SysMenu> listDynamicRouterByUserId(Long userId){
-        List<SysMenu> sysMenus = new ArrayList<>();
-        if (isAdmin(userId)) {
-            sysMenus = sysMenuService.listMenu();
-        }else {
-            sysMenus = sysMenuService.listMenuByUserId(userId);
-        }
-        if (CollectionUtils.isEmpty(sysMenus)){
-            return Collections.emptyList();
-        }
-        return sysMenus.stream().filter(item -> !"F".equals(item.getMenuType()))
-                .sorted(Comparator.comparing(SysMenu::getParentId)
-                        .thenComparing(SysMenu::getMenuSort))
-                .toList();
-    }
+
+
 
 
     public List<MenuTree> buildTree(List<SysMenu> sysMenus){

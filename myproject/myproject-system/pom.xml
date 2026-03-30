@@ -26,7 +26,7 @@
 
         <dependency>
             <groupId>com.example</groupId>
-            <artifactId>myproject-security</artifactId>
+            <artifactId>myproject-framework</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 

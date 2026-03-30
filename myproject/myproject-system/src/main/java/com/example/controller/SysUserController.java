@@ -2,18 +2,15 @@ package com.example.controller;
 
 
 import com.example.domain.Response;
-import com.example.domain.SysMenu;
-import com.example.domain.req.sysUser.SysUserQueryReq;
 import com.example.service.SysUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Map;
 
 
 @Tag(name = "用户信息")
@@ -26,11 +23,11 @@ public class SysUserController {
 
 
 
-
-    @Operation(summary = "查询用户动态路由信息")
-    @PostMapping("/queryUserDynamicRouter")
-    public Response<?> queryUserDynamicRouter(@RequestBody SysUserQueryReq sysUserQueryReq){
-        return Response.success("");
+    @Operation(summary = "获取用户信息")
+    @PostMapping("/me")
+    public Response<?> getUserInfo(){
+        Map<String, Object> userInfo = sysUserService.getUserInfo();
+        return Response.success(userInfo);
     }
 
 

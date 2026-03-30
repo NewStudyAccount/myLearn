@@ -1,0 +1,6 @@
+server:
+  port: 9000
+  servlet:
+    session:
+      cookie:
+        name: JSESSIONID_SERVER # 【关键】改名，避免冲突
