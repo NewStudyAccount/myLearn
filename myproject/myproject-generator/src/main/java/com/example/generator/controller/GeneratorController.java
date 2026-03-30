@@ -149,10 +149,10 @@ public class GeneratorController {
                 zipEntries.put(packagePath + "/controller/" + entityName + "Controller.java", generatedCode.get("controller"));
             }
             if (generatedCode.containsKey("frontendApi")) {
-                zipEntries.put("src/api/" + entityName.toLowerCase() + "Api.ts", generatedCode.get("frontendApi"));
+                zipEntries.put("src/api/" + entityName.substring(0,1).toLowerCase()+entityName.substring(1) + "Api.ts", generatedCode.get("frontendApi"));
             }
             if (generatedCode.containsKey("frontendVue")) {
-                zipEntries.put("src/views/" + entityName.toLowerCase() + ".vue", generatedCode.get("frontendVue"));
+                zipEntries.put("src/views/" + entityName.substring(0,1).toLowerCase()+entityName.substring(1) + "/index.vue", generatedCode.get("frontendVue"));
             }
 
             String fileName = entityName + "_code.zip";

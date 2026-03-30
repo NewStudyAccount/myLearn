@@ -34,7 +34,7 @@ public class FrontendApiGenerator {
         String apiName = tableInfo.getEntityName().replace("Entity", "") + "Api";
         context.put("apiName", apiName);
 
-        String fileName = toFileName(tableInfo.getLowerEntityName()) + "Api";
+        String fileName = tableInfo.getLowerEntityName() + "Api";
         context.put("fileName", fileName);
 
         String resourceName = extractResourceName(tableInfo.getTableName());
@@ -48,13 +48,22 @@ public class FrontendApiGenerator {
     private String getApiTemplate() {
         return """
 import http from '@/utils/http';
-import type { ${table.entityName} } from './types';
+import type {AxiosPromise} from "axios";
+
+
 
 #set($baseName = ${table.entityName})
 #if($baseName.endsWith("Entity"))
 #set($baseName = $baseName.substring(0, $baseName.length() - 6))
 #end
 
+
+export interface ${entityName} {
+#foreach($column in ${table.columns})
+  /** ${column.columnComment} */
+  #if($column.nullable)${column.fieldName}?: ${this.getTsType($column.javaType)}#else${column.fieldName}: ${this.getTsType($column.javaType)}#end
+#end
+}
 
 export function getList${baseName}(query?: any): AxiosPromise<any> {
   return http({
@@ -64,7 +73,7 @@ export function getList${baseName}(query?: any): AxiosPromise<any> {
   });
 }
 
-export function getById${baseName}(${table.primaryKey.fieldName}: ${table.primaryKey.javaType}): AxiosPromise<${table.entityName}> {
+export function getById${baseName}(${table.primaryKey.fieldName}: ${this.getTsType($table.primaryKey.javaType)}): AxiosPromise<${table.entityName}> {
   return http({
     url: '/system/${resourceName}/${table.primaryKey.fieldName}',
     method: 'get'
@@ -87,13 +96,30 @@ export function update${baseName}(data: ${table.entityName}): AxiosPromise<void>
   });
 }
 
-export function delete${baseName}(${table.primaryKey.fieldName}: ${table.primaryKey.javaType}): AxiosPromise<void> {
+export function delete${baseName}(${table.primaryKey.fieldName}: ${this.getTsType($table.primaryKey.javaType)}): AxiosPromise<void> {
   return http({
     url: '/system/${resourceName}/${table.primaryKey.fieldName}',
     method: 'delete'
   });
 }
 """;
+    }
+
+
+    private String getTsType(String javaType) {
+        if (javaType == null) {
+            return "any";
+        }
+        return switch (javaType) {
+            case "Long", "long" -> "string";  // Long 类型转为 string，避免精度丢失
+            case "Integer", "int", "Short", "short", "Byte", "byte" -> "number";
+            case "Double", "double", "Float", "float" -> "number";
+            case "BigDecimal" -> "string";  // BigDecimal 也建议转为 string
+            case "Boolean", "boolean" -> "boolean";
+            case "String", "Character", "char" -> "string";
+            case "Date", "LocalDateTime", "LocalDate", "LocalTime" -> "string";
+            default -> "any";
+        };
     }
 
     private String extractResourceName(String tableName) {
