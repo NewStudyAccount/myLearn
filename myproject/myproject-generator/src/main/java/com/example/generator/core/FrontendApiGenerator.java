@@ -1,12 +1,15 @@
 package com.example.generator.core;
 
 import com.example.generator.config.GeneratorProperties;
+import com.example.generator.domain.ColumnInfo;
 import com.example.generator.domain.TableInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -27,7 +30,7 @@ public class FrontendApiGenerator {
         context.put("table", tableInfo);
         context.put("entityName", tableInfo.getEntityName());
         context.put("entityLowerName", tableInfo.getLowerEntityName());
-        context.put("pkType", tableInfo.getPrimaryKey() != null ? tableInfo.getPrimaryKey().getJavaType() : "number");
+        context.put("pkType", tableInfo.getPrimaryKey() != null ? getTsType(tableInfo.getPrimaryKey().getJavaType()) : "number");
         context.put("pkName", tableInfo.getPrimaryKey() != null ? TableReader.toCamelCase(tableInfo.getPrimaryKey().getColumnName()) : "id");
         context.put("description", tableInfo.getTableComment());
 
@@ -41,10 +44,21 @@ public class FrontendApiGenerator {
         context.put("resourceName", resourceName);
         context.put("resourceNameLower", resourceName.substring(0, 1).toLowerCase() + resourceName.substring(1));
 
+        List<ColumnInfo> columns = new ArrayList<>();
+        for (ColumnInfo column : tableInfo.getColumns()) {
+            ColumnInfo col = new ColumnInfo(column);
+            col.setTsType(getTsType(column.getJavaType()));
+            columns.add(col);
+        }
+        context.put("columns", columns);
+
+        if (tableInfo.getPrimaryKey() != null) {
+            context.put("pkTsType", getTsType(tableInfo.getPrimaryKey().getJavaType()));
+        }
+
         String template = getApiTemplate();
         return templateEngine.renderString(template, context);
     }
-
     private String getApiTemplate() {
         return """
 import http from '@/utils/http';
@@ -59,9 +73,10 @@ import type {AxiosPromise} from "axios";
 
 
 export interface ${entityName} {
-#foreach($column in ${table.columns})
+#foreach($column in ${columns})
   /** ${column.columnComment} */
-  #if($column.nullable)${column.fieldName}?: ${this.getTsType($column.javaType)}#else${column.fieldName}: ${this.getTsType($column.javaType)}#end
+  #if($column.nullable)$column.fieldName?: $column.tsType#else$column.fieldName: $column.tsType#end
+
 #end
 }
 
@@ -73,14 +88,14 @@ export function getList${baseName}(query?: any): AxiosPromise<any> {
   });
 }
 
-export function getById${baseName}(${table.primaryKey.fieldName}: ${this.getTsType($table.primaryKey.javaType)}): AxiosPromise<${table.entityName}> {
+export function getById${baseName}(${pkName}: ${pkTsType}): AxiosPromise<${entityName}> {
   return http({
-    url: '/system/${resourceName}/${table.primaryKey.fieldName}',
+    url: `/system/${resourceName}/${${pkName}}`,
     method: 'get'
   });
 }
 
-export function create${baseName}(data: ${table.entityName}): AxiosPromise<void> {
+export function create${baseName}(data: ${entityName}): AxiosPromise<void> {
   return http({
     url: '/system/${resourceName}',
     method: 'post',
@@ -88,7 +103,7 @@ export function create${baseName}(data: ${table.entityName}): AxiosPromise<void>
   });
 }
 
-export function update${baseName}(data: ${table.entityName}): AxiosPromise<void> {
+export function update${baseName}(data: ${entityName}): AxiosPromise<void> {
   return http({
     url: '/system/${resourceName}',
     method: 'put',
@@ -96,9 +111,9 @@ export function update${baseName}(data: ${table.entityName}): AxiosPromise<void>
   });
 }
 
-export function delete${baseName}(${table.primaryKey.fieldName}: ${this.getTsType($table.primaryKey.javaType)}): AxiosPromise<void> {
+export function delete${baseName}(${pkName}: ${pkTsType}): AxiosPromise<void> {
   return http({
-    url: '/system/${resourceName}/${table.primaryKey.fieldName}',
+    url: `/system/${resourceName}/${${pkName}}`,
     method: 'delete'
   });
 }

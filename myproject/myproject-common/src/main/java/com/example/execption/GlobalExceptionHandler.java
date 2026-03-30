@@ -2,11 +2,14 @@ package com.example.execption;
 
 import com.example.domain.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 /**
@@ -54,6 +57,20 @@ public class GlobalExceptionHandler {
 
         return Response.fail(errorCode, message);
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseBody
+    public Response handleRuntimeException(RuntimeException e) {
+
+        return Response.fail("系统异常：" + e.getMessage());
+    }
+    @ExceptionHandler(SQLException.class)
+    @ResponseBody
+    public Response handleRuntimeException(SQLException e) {
+
+        return Response.fail("数据库异常：" + e.getMessage());
+    }
+
 
 }
 
