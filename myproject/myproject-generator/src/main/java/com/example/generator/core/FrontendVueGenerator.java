@@ -57,6 +57,17 @@ public class FrontendVueGenerator {
             entityName = entityName.substring(0, entityName.length() - 6);
         }
         context.put("baseName", entityName);
+        
+        // API function names (matching FrontendApiGenerator naming convention)
+        context.put("apiGetList", "getList" + entityName);
+        context.put("apiGetById", "getById" + entityName);
+        context.put("apiCreate", "create" + entityName);
+        context.put("apiUpdate", "update" + entityName);
+        context.put("apiDelete", "delete" + entityName);
+        
+        // API file path (matching FrontendApiGenerator fileName)
+        String apiFilePath = "@/api" + properties.getApiPath().replace("\\", "/") + "/" + tableInfo.getLowerEntityName() + "Api";
+        context.put("apiFilePath", apiFilePath);
 
         String template = getVueTemplate();
         return templateEngine.renderString(template, context);
@@ -139,8 +150,10 @@ public class FrontendVueGenerator {
             "</template>\n" +
             "\n" +
             "<script setup lang=\"ts\">\n" +
-            "import { ${entityLowerName}Api } from '@/api${apiPath}/${entityLowerName}'\n" +
-            "import type { ${baseName} } from '@/api${apiPath}/types'\n" +
+            "import { ref, reactive, onMounted } from 'vue'\n" +
+            "import { ${apiGetList}, ${apiGetById}, ${apiCreate}, ${apiUpdate}, ${apiDelete} } from '${apiFilePath}'\n" +
+            "import type { ${baseName} } from '${apiFilePath}'\n" +
+            "import { ElMessage, ElMessageBox } from 'element-plus'\n" +
             "\n" +
             "const loading = ref(false)\n" +
             "const dataList = ref<${baseName}[]>([])\n" +
@@ -172,7 +185,7 @@ public class FrontendVueGenerator {
             "const getList = async () => {\n" +
             "  loading.value = true\n" +
             "  try {\n" +
-            "    const res = await ${entityLowerName}Api.getList(queryParams)\n" +
+            "    const res = await ${apiGetList}(queryParams)\n" +
             "    dataList.value = res.list\n" +
             "    total.value = res.total\n" +
             "  } finally {\n" +
@@ -214,7 +227,7 @@ public class FrontendVueGenerator {
             "const handleDelete = async (row: ${baseName}) => {\n" +
             "  try {\n" +
             "    await ElMessageBox.confirm('是否确认删除选中的数据?', '警告', { type: 'warning' })\n" +
-            "    await ${entityLowerName}Api.delete(row.${pkName})\n" +
+            "    await ${apiDelete}(row.${pkName})\n" +
             "    ElMessage.success('删除成功')\n" +
             "    await getList()\n" +
             "  } catch {}\n" +
@@ -227,10 +240,10 @@ public class FrontendVueGenerator {
             "  try {\n" +
             "    const data = { ...formParams }\n" +
             "    if (data.${pkName}) {\n" +
-            "      await ${entityLowerName}Api.update(data)\n" +
+            "      await ${apiUpdate}(data)\n" +
             "      ElMessage.success('修改成功')\n" +
             "    } else {\n" +
-            "      await ${entityLowerName}Api.create(data)\n" +
+            "      await ${apiCreate}(data)\n" +
             "      ElMessage.success('新增成功')\n" +
             "    }\n" +
             "    dialogVisible.value = false\n" +

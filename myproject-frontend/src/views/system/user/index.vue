@@ -119,32 +119,30 @@
       </template>
     </el-dialog>
 
-<!--    <el-dialog v-model="viewDialogVisible" title="用户表详情" width="800px" destroy-on-close>-->
-<!--      <el-descriptions :column="2" border>-->
-<!--        <el-descriptions-item label="用户id">{{ rowData.userId }}</el-descriptions-item>-->
-<!--        <el-descriptions-item label="用户名">{{ rowData.userName }}</el-descriptions-item>-->
-<!--        <el-descriptions-item label="密码">{{ rowData.userPwd }}</el-descriptions-item>-->
-<!--        <el-descriptions-item label="头像">{{ rowData.userAvatorUrl }}</el-descriptions-item>-->
-<!--        <el-descriptions-item label="性别">{{ rowData.userSex }}</el-descriptions-item>-->
-<!--        <el-descriptions-item label="手机">{{ rowData.userPhone }}</el-descriptions-item>-->
-<!--        <el-descriptions-item label="创建人id">{{ rowData.createId }}</el-descriptions-item>-->
-<!--        <el-descriptions-item label="创建时间">{{ rowData.createDate }}</el-descriptions-item>-->
-<!--        <el-descriptions-item label="修改人id">{{ rowData.updateId }}</el-descriptions-item>-->
-<!--        <el-descriptions-item label="修改时间">{{ rowData.updateDate }}</el-descriptions-item>-->
-<!--        <el-descriptions-item label="逻辑删除0：有效，1删除">{{ rowData.isDeleted }}</el-descriptions-item>-->
-<!--      </el-descriptions>-->
-<!--    </el-dialog>-->
+    <el-dialog v-model="viewDialogVisible" title="用户表详情" width="800px" destroy-on-close>
+      <el-descriptions :column="2" border>
+        <el-descriptions-item label="用户id">{{ rowData.userId }}</el-descriptions-item>
+        <el-descriptions-item label="用户名">{{ rowData.userName }}</el-descriptions-item>
+        <el-descriptions-item label="密码">{{ rowData.userPwd }}</el-descriptions-item>
+        <el-descriptions-item label="头像">{{ rowData.userAvatorUrl }}</el-descriptions-item>
+        <el-descriptions-item label="性别">{{ rowData.userSex }}</el-descriptions-item>
+        <el-descriptions-item label="手机">{{ rowData.userPhone }}</el-descriptions-item>
+        <el-descriptions-item label="创建人id">{{ rowData.createId }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ rowData.createDate }}</el-descriptions-item>
+        <el-descriptions-item label="修改人id">{{ rowData.updateId }}</el-descriptions-item>
+        <el-descriptions-item label="修改时间">{{ rowData.updateDate }}</el-descriptions-item>
+        <el-descriptions-item label="逻辑删除0：有效，1删除">{{ rowData.isDeleted }}</el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue'
+import { getListSysUser, getByIdSysUser, createSysUser, updateSysUser, deleteSysUser } from '@/api/sysUserApi'
+import type { SysUser } from '@/api/sysUserApi'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
-
-// import type { SysUser } from '@/apisrc/api/types'
-// import {getListSysUser} from "@/api/sysUserApi.ts";
-
-import type {SysUser} from "@/api/sysUserApi.ts";
-import {ref, reactive, onMounted} from 'vue'
 const loading = ref(false)
 const dataList = ref<SysUser[]>([])
 const total = ref(0)
@@ -184,13 +182,13 @@ const rules = reactive({
 
 const getList = async () => {
   loading.value = true
-  // try {
-  //   const res = await sysUserApi.getList(queryParams)
-  //   dataList.value = res.list
-  //   total.value = res.total
-  // } finally {
-  //   loading.value = false
-  // }
+  try {
+    const res = await getListSysUser(queryParams)
+    dataList.value = res.list
+    total.value = res.total
+  } finally {
+    loading.value = false
+  }
 }
 
 const handleQuery = () => {
@@ -232,35 +230,35 @@ const handleView = (row: SysUser) => {
 }
 
 const handleDelete = async (row: SysUser) => {
-  // try {
-  //   await ElMessageBox.confirm('是否确认删除选中的数据?', '警告', { type: 'warning' })
-  //   await sysUserApi.delete(row.userId)
-  //   ElMessage.success('删除成功')
-  //   await getList()
-  // } catch {}
+  try {
+    await ElMessageBox.confirm('是否确认删除选中的数据?', '警告', { type: 'warning' })
+    await deleteSysUser(row.userId)
+    ElMessage.success('删除成功')
+    await getList()
+  } catch {}
 }
 
 const handleSubmit = async () => {
   const valid = await formRef.value?.validate()
   if (!valid) return
 
-  // try {
-  //   const data = { ...formParams }
-  //   if (data.userId) {
-  //     await sysUserApi.update(data)
-  //     ElMessage.success('修改成功')
-  //   } else {
-  //     await sysUserApi.create(data)
-  //     ElMessage.success('新增成功')
-  //   }
-  //   dialogVisible.value = false
-  //   await getList()
-  // } catch {}
+  try {
+    const data = { ...formParams }
+    if (data.userId) {
+      await updateSysUser(data)
+      ElMessage.success('修改成功')
+    } else {
+      await createSysUser(data)
+      ElMessage.success('新增成功')
+    }
+    dialogVisible.value = false
+    await getList()
+  } catch {}
 }
 
 const handleSelectionChange = (selection: SysUser[]) => {
-  // ids.value = selection.map((item) => item.userId)
-  // single.value = selection.length !== 1
+  ids.value = selection.map((item) => item.userId)
+  single.value = selection.length !== 1
 }
 
 const rowClick = (row: SysUser) => {
@@ -268,7 +266,7 @@ const rowClick = (row: SysUser) => {
 }
 
 onMounted(() => {
-  // getList()
+  getList()
 })
 </script>
 
