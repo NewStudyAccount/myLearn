@@ -56,68 +56,7 @@ public class FrontendApiGenerator {
             context.put("pkTsType", getTsType(tableInfo.getPrimaryKey().getJavaType()));
         }
 
-        String template = getApiTemplate();
-        return templateEngine.renderString(template, context);
-    }
-    private String getApiTemplate() {
-        return """
-import http from '@/utils/http';
-import type {AxiosPromise} from "axios";
-
-
-
-#set($baseName = ${table.entityName})
-#if($baseName.endsWith("Entity"))
-#set($baseName = $baseName.substring(0, $baseName.length() - 6))
-#end
-
-
-export interface ${entityName} {
-#foreach($column in ${columns})
-  /** ${column.columnComment} */
-  #if($column.nullable)$column.fieldName?: $column.tsType#else$column.fieldName: $column.tsType#end
-
-#end
-}
-
-export function getList${baseName}(query?: any): AxiosPromise<any> {
-  return http({
-    url: '/system/${resourceName}/list',
-    method: 'get',
-    params: query
-  });
-}
-
-export function getById${baseName}(${pkName}: ${pkTsType}): AxiosPromise<${entityName}> {
-  return http({
-    url: `/system/${resourceName}/${${pkName}}`,
-    method: 'get'
-  });
-}
-
-export function create${baseName}(data: ${entityName}): AxiosPromise<void> {
-  return http({
-    url: '/system/${resourceName}',
-    method: 'post',
-    data
-  });
-}
-
-export function update${baseName}(data: ${entityName}): AxiosPromise<void> {
-  return http({
-    url: '/system/${resourceName}',
-    method: 'put',
-    data
-  });
-}
-
-export function delete${baseName}(${pkName}: ${pkTsType}): AxiosPromise<void> {
-  return http({
-    url: `/system/${resourceName}/${${pkName}}`,
-    method: 'delete'
-  });
-}
-""";
+        return templateEngine.render("templates/frontend/api.vm", context);
     }
 
 

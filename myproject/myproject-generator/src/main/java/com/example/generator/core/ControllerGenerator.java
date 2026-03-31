@@ -45,68 +45,7 @@ public class ControllerGenerator {
         context.put("mappingName", mappingName);
         context.put("description", tableInfo.getTableComment());
 
-        String template = getControllerTemplate();
-        return templateEngine.renderString(template, context);
-    }
-
-    private String getControllerTemplate() {
-        return """
-package ${controllerPackage};
-
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import ${domainPackage}.${entityName};
-import ${servicePackage}.${serviceName};
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
-/**
- * ${table.tableComment}
- */
-@Tag(name = "${description}")
-@RestController
-@RequestMapping("/${mappingName}")
-public class ${controllerName} {
-
-    private final ${serviceName} ${entityLowerName}Service;
-
-    public ${controllerName}(${serviceName} ${entityLowerName}Service) {
-        this.${entityLowerName}Service = ${entityLowerName}Service;
-    }
-
-    @Operation(summary = "列表")
-    @GetMapping
-    public Page<${entityName}> list(Page<${entityName}> page) {
-        return ${entityLowerName}Service.page(page);
-    }
-
-    @Operation(summary = "详情")
-    @GetMapping("/{${pkName}}")
-    public ${entityName} getById(@PathVariable ${pkType} ${pkName}) {
-        return ${entityLowerName}Service.getById(${pkName});
-    }
-
-    @Operation(summary = "新增")
-    @PostMapping
-    public boolean save(@RequestBody ${entityName} ${entityLowerName}) {
-        return ${entityLowerName}Service.save(${entityLowerName});
-    }
-
-    @Operation(summary = "修改")
-    @PutMapping
-    public boolean update(@RequestBody ${entityName} ${entityLowerName}) {
-        return ${entityLowerName}Service.updateById(${entityLowerName});
-    }
-
-    @Operation(summary = "删除")
-    @DeleteMapping("/{${pkName}}")
-    public boolean delete(@PathVariable ${pkType} ${pkName}) {
-        return ${entityLowerName}Service.removeById(${pkName});
-    }
-}
-""";
+        return templateEngine.render("templates/backend/controller.vm", context);
     }
 
     private String toMappingName(String entityName) {

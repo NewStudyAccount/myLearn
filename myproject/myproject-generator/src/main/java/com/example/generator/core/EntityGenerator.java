@@ -43,11 +43,6 @@ public class EntityGenerator {
         tableInfo.setEntityName(entityName);
         tableInfo.setLowerEntityName(entityName.substring(0, 1).toLowerCase() + entityName.substring(1));
 
-        String template = getEntityTemplate();
-        return templateEngine.renderString(template, context);
-    }
-
-    private String getEntityTemplate() {
-        return "package ${packageName}.domain;\n\nimport com.baomidou.mybatisplus.annotation.*;\nimport lombok.Data;\n\nimport java.io.Serializable;\n#foreach($column in $table.columns)\nimport ${column.javaType};\n#end\n\n/**\n * ${table.tableComment}\n * @TableName ${table.tableName}\n */\n@Data\n@TableName(value =\"${table.tableName}\")\npublic class ${table.entityName} implements Serializable {\n#foreach($column in $table.columns)\n    /**\n     * ${column.columnComment}\n     */\n#if($column.primaryKey)\n    @TableId(type = IdType.AUTO, value = \"${column.columnName}\")\n#end\n    @TableField(\"${column.columnName}\")\n    private ${column.javaType} ${column.fieldName};\n\n#end\n    @TableField(exist = false)\n    private static final long serialVersionUID = 1L;\n}\n";
+        return templateEngine.render("templates/backend/entity.vm", context);
     }
 }

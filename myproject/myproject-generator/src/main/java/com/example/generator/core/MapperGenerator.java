@@ -22,7 +22,7 @@ public class MapperGenerator {
         this.properties = properties;
     }
 
-    public String generateInterface(TableInfo tableInfo) {
+public String generateInterface(TableInfo tableInfo) {
         Map<String, Object> context = new HashMap<>();
         context.put("table", tableInfo);
         context.put("packageName", properties.getBasePackage());
@@ -35,8 +35,18 @@ public class MapperGenerator {
         context.put("mapperName", tableInfo.getEntityName() + "Mapper");
         context.put("entityName", tableInfo.getEntityName());
 
-        String template = getMapperInterfaceTemplate();
-        return templateEngine.renderString(template, context);
+        return templateEngine.render("templates/backend/mapper.vm", context);
+    }
+
+    public String generateXml(TableInfo tableInfo) {
+        Map<String, Object> context = new HashMap<>();
+        context.put("table", tableInfo);
+        context.put("mapperPackage", properties.getBasePackage() + ".mapper");
+        context.put("mapperName", tableInfo.getEntityName() + "Mapper");
+        context.put("entityName", tableInfo.getEntityName());
+        context.put("entityFullName", properties.getBasePackage() + ".domain." + tableInfo.getEntityName());
+
+        return templateEngine.render("templates/backend/mapper-xml.vm", context);
     }
 
     public String generateXml(TableInfo tableInfo) {

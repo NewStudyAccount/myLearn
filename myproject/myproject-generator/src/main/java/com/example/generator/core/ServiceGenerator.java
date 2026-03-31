@@ -38,8 +38,7 @@ public class ServiceGenerator {
         context.put("entityName", tableInfo.getEntityName());
         context.put("entityLowerName", tableInfo.getLowerEntityName());
 
-        String template = getServiceInterfaceTemplate();
-        return templateEngine.renderString(template, context);
+        return templateEngine.render("templates/backend/service.vm", context);
     }
 
     public String generateImpl(TableInfo tableInfo) {
@@ -63,80 +62,6 @@ public class ServiceGenerator {
         context.put("pkType", tableInfo.getPrimaryKey() != null ? tableInfo.getPrimaryKey().getJavaType() : "Long");
         context.put("pkName", tableInfo.getPrimaryKey() != null ? tableInfo.getPrimaryKey().getFieldName() : "id");
 
-        String template = getServiceImplTemplate();
-        return templateEngine.renderString(template, context);
-    }
-
-    private String getServiceInterfaceTemplate() {
-        return """
-package ${servicePackage};
-
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
-import ${domainPackage}.${entityName};
-
-import java.io.Serializable;
-import java.util.Collection;
-
-/**
- * ${table.tableComment}
- */
-public interface ${serviceName} extends IService<${entityName}> {
-
-    /**
-     * 分页查询
-     */
-    Page<${entityName}> getPageList(Page<${entityName}> page, Wrapper<${entityName}> queryWrapper);
-
-    /**
-     * 条件查询单条
-     */
-    ${entityName} getOne(Wrapper<${entityName}> queryWrapper);
-
-    /**
-     * 条件查询列表
-     */
-    java.util.List<${entityName}> listByCondition(Wrapper<${entityName}> queryWrapper);
-}
-""";
-    }
-
-    private String getServiceImplTemplate() {
-        return """
-package ${serviceImplPackage};
-
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import ${mapperPackage}.${mapperName};
-import ${domainPackage}.${entityName};
-import ${servicePackage}.${serviceName};
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-/**
- * ${table.tableComment}
- */
-@Service
-public class ${implName} extends ServiceImpl<${mapperName}, ${entityName}> implements ${serviceName} {
-
-    @Override
-    public Page<${entityName}> getPageList(Page<${entityName}> page, Wrapper<${entityName}> queryWrapper) {
-        return this.page(page, queryWrapper);
-    }
-
-    @Override
-    public ${entityName} getOne(Wrapper<${entityName}> queryWrapper) {
-        return this.getOne(queryWrapper);
-    }
-
-    @Override
-    public List<${entityName}> listByCondition(Wrapper<${entityName}> queryWrapper) {
-        return this.list(queryWrapper);
-    }
-}
-""";
+        return templateEngine.render("templates/backend/service-impl.vm", context);
     }
 }

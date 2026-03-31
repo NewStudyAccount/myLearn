@@ -1,0 +1,31 @@
+package \${packageName}.domain;
+
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
+
+import java.io.Serializable;
+#foreach(\$column in \$table.columns)
+import \${column.javaType};
+#end
+
+/**
+ * \${table.tableComment}
+ * @TableName \${table.tableName}
+ */
+@Data
+@TableName(value = "\${table.tableName}")
+public class \${table.entityName} implements Serializable {
+#foreach(\$column in \$table.columns)
+    /**
+     * \${column.columnComment}
+     */
+#if(\$column.primaryKey)
+    @TableId(type = IdType.AUTO, value = "\${column.columnName}")
+#end
+    @TableField("\${column.columnName}")
+    private \${column.javaType} \${column.fieldName};
+
+#end
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
+}
