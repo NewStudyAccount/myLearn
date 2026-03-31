@@ -19,14 +19,21 @@ const constantRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/DashboardView.vue'),
         meta: { requiresAuth: true, title: '首页' },
       },
+      {
+        path: 'generator',
+        name: 'generator',
+        component: () => import('@/views/generator/index.vue'),
+        meta: { requiresAuth: true, title: '代码生成器' },
+      },
     ],
   },
-  {
-    path: '/:pathMatch(.*)*',
-    name: 'not-found',
-    component: () => import('@/views/NotFoundView.vue'),
-  },
 ]
+
+const notFoundRoute: RouteRecordRaw = {
+  path: '/:pathMatch(.*)*',
+  name: 'not-found',
+  component: () => import('@/views/NotFoundView.vue'),
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,4 +41,4 @@ const router = createRouter({
 })
 
 export default router
-export { constantRoutes }
+export { constantRoutes, notFoundRoute }

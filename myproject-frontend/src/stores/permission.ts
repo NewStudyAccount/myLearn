@@ -20,7 +20,7 @@ export const usePermissionStore = defineStore('permission', () => {
           path: menu.path,
           name: menu.menuName || menu.componentName ||`menu-${menu.menuId}`,
           component: MainLayout,
-          redirect: menu.children?.[0] ? `${menu.path}/${menu.children[0].path}` : undefined,
+          redirect: menu.children?.[0] ? `${menu.path}${menu.children[0].path}` : undefined,
           meta: { title: menu.menuName },
           children: [],
         }

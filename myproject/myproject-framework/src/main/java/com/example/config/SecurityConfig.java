@@ -88,6 +88,7 @@ public class SecurityConfig {
             "/doc.html/**",
             //代码自动生成
             "/generator/**",
+            "project/generator/**",
 
             // 登录注册接口
             "/project/auth/login",

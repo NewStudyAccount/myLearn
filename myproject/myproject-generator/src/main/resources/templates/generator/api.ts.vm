@@ -1,0 +1,55 @@
+import http from '@/utils/http'
+
+export interface ${className} {
+#foreach($column in $columns)
+  ${column.fieldName}: ${column.tsType}
+#end
+}
+
+export interface ${className}ListParams {
+  pageNo: number
+  pageSize: number
+#foreach($column in $columns)
+#if($column.dataType != 'bigint' && $column.dataType != 'int' && $column.dataType != 'integer')
+  ${column.fieldName}?: ${column.tsType}
+#end
+#end
+}
+
+export function list${className}(params: ${className}ListParams) {
+  return http({
+    url: '/project/${classNameLower}/list',
+    method: 'get',
+    params
+  })
+}
+
+export function getById${className}(id: number) {
+  return http({
+    url: `/project/${classNameLower}/${id}`,
+    method: 'get'
+  })
+}
+
+export function create${className}(data: Partial<${className}>) {
+  return http({
+    url: '/project/${classNameLower}',
+    method: 'post',
+    data
+  })
+}
+
+export function update${className}(data: Partial<${className}>) {
+  return http({
+    url: '/project/${classNameLower}',
+    method: 'put',
+    data
+  })
+}
+
+export function delete${className}(id: number) {
+  return http({
+    url: `/project/${classNameLower}/${id}`,
+    method: 'delete'
+  })
+}

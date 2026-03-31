@@ -1,69 +1,66 @@
-import http from '@/utils/http';
-import type {AxiosPromise} from "axios";
-
-
-
-
+import http from '@/utils/http'
 
 export interface SysUser {
-  /** 用户id */
-userId: string
-  /** 用户名 */
-userName: string
-  /** 密码 */
-userPwd: string
-  /** 头像 */
-userAvatorUrl?: string
-  /** 性别 */
-userSex?: string
-  /** 手机 */
-userPhone?: string
-  /** 创建人id */
-createId?: string
-  /** 创建时间 */
-createDate?: any
-  /** 修改人id */
-updateId?: string
-  /** 修改时间 */
-updateDate?: any
-  /** 逻辑删除0：有效，1删除 */
-isDeleted?: string
+  userId: number
+  userName: string
+  userPwd: string
+  userAvatorUrl: string
+  userSex: string
+  userPhone: string
+  createId: number
+  createDate: string
+  updateId: number
+  updateDate: string
+  isDeleted: string
 }
 
-export function getListSysUser(query?: any): AxiosPromise<any> {
+export interface SysUserListParams {
+  pageNo: number
+  pageSize: number
+  userName?: string
+  userPwd?: string
+  userAvatorUrl?: string
+  userSex?: string
+  userPhone?: string
+  createDate?: string
+  updateDate?: string
+  isDeleted?: string
+}
+
+export function listSysUser(params: SysUserListParams) {
   return http({
-    url: '/system/user/list',
+    url: '/project/sysUser/list',
     method: 'get',
-    params: query
-  });
+    params
+  })
 }
 
-export function getByIdSysUser(userId: string): AxiosPromise<SysUser> {
+export function getByIdSysUser(id: number) {
   return http({
-    url: `/system/user/${userId}`,
+    url: `/project/sysUser/${id}`,
     method: 'get'
-  });
+  })
 }
 
-export function createSysUser(data: SysUser): AxiosPromise<void> {
+export function createSysUser(data: Partial<SysUser>) {
   return http({
-    url: '/system/user',
+    url: '/project/sysUser',
     method: 'post',
     data
-  });
+  })
 }
 
-export function updateSysUser(data: SysUser): AxiosPromise<void> {
+export function updateSysUser(data: Partial<SysUser>) {
   return http({
-    url: '/system/user',
+    url: '/project/sysUser',
     method: 'put',
     data
-  });
+  })
 }
 
-export function deleteSysUser(userId: string): AxiosPromise<void> {
+export function deleteSysUser(id: number) {
   return http({
-    url: `/system/user/${userId}`,
+    url: `/project/sysUser/${id}`,
     method: 'delete'
-  });
+  })
 }

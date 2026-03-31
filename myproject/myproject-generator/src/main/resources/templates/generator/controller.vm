@@ -1,0 +1,56 @@
+package ${package}.controller;
+
+import com.example.domain.Response;
+import ${package}.domain.${className};
+import ${package}.service.${className}Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+@Tag(name = "${tableComment}")
+@RestController
+@RequestMapping("/${classNameLower}")
+public class ${className}Controller {
+
+    @Autowired
+    private ${className}Service ${classNameLower}Service;
+
+    @Operation(summary = "分页查询")
+    @GetMapping("/list")
+    public Response<Page<${className}>> list(
+            @RequestParam(defaultValue = "1") Long pageNum,
+            @RequestParam(defaultValue = "10") Long pageSize) {
+        Page<${className}> page = ${classNameLower}Service.page(new Page<>(pageNum, pageSize));
+        return Response.success(page);
+    }
+
+    @Operation(summary = "根据ID查询")
+    @GetMapping("/{id}")
+    public Response<${className}> getById(@PathVariable Long id) {
+        ${className} entity = ${classNameLower}Service.getById(id);
+        return Response.success(entity);
+    }
+
+    @Operation(summary = "新增")
+    @PostMapping
+    public Response<Boolean> save(@RequestBody ${className} entity) {
+        boolean result = ${classNameLower}Service.save(entity);
+        return Response.success(result);
+    }
+
+    @Operation(summary = "修改")
+    @PutMapping
+    public Response<Boolean> update(@RequestBody ${className} entity) {
+        boolean result = ${classNameLower}Service.updateById(entity);
+        return Response.success(result);
+    }
+
+    @Operation(summary = "删除")
+    @DeleteMapping("/{id}")
+    public Response<Boolean> delete(@PathVariable Long id) {
+        boolean result = ${classNameLower}Service.removeById(id);
+        return Response.success(result);
+    }
+}

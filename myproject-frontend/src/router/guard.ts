@@ -1,32 +1,33 @@
-import router from '@/router'
+import router, { notFoundRoute } from '@/router'
 import { useUserStore } from '@/stores/user'
 import { usePermissionStore } from '@/stores/permission'
 
 const whiteList = ['/login']
 
-router.beforeEach(async (to, _from, next) => {
+router.beforeEach(async (to, _from) => {
   const token = localStorage.getItem('token')
 
   if (token) {
     if (to.path === '/login') {
-      next({ path: '/' })
+      return { path: '/' }
     } else {
       const userStore = useUserStore()
       const permissionStore = usePermissionStore()
 
       if (userStore.userInfo) {
         if (permissionStore.isRoutesLoaded) {
-          next()
+          return true
         } else {
           try {
             const routes = await permissionStore.loadRoutes()
             routes.forEach((route) => {
               router.addRoute(route)
             })
-            next({ ...to, replace: true })
+            router.addRoute(notFoundRoute)
+            return { ...to, replace: true }
           } catch (error) {
             userStore.resetToken()
-            next({ path: '/login', query: { redirect: to.fullPath } })
+            return { path: '/login', query: { redirect: to.fullPath } }
           }
         }
       } else {
@@ -36,18 +37,19 @@ router.beforeEach(async (to, _from, next) => {
           routes.forEach((route) => {
             router.addRoute(route)
           })
-          next({ ...to, replace: true })
+          router.addRoute(notFoundRoute)
+          return { ...to, replace: true }
         } catch (error) {
           userStore.resetToken()
-          next({ path: '/login', query: { redirect: to.fullPath } })
+          return { path: '/login', query: { redirect: to.fullPath } }
         }
       }
     }
   } else {
     if (whiteList.includes(to.path)) {
-      next()
+      return true
     } else {
-      next({ path: '/login', query: { redirect: to.fullPath } })
+      return { path: '/login', query: { redirect: to.fullPath } }
     }
   }
 })

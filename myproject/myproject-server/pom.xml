@@ -36,6 +36,14 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>com.example</groupId>
+            <artifactId>myproject-generator</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+
         <dependency>
             <groupId>com.example</groupId>
             <artifactId>myproject-common</artifactId>
@@ -73,6 +81,5 @@
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
         </dependency>
-
     </dependencies>
 </project>
