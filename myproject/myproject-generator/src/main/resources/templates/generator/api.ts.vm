@@ -18,7 +18,7 @@ export interface ${className}ListParams {
 
 export function list${className}(params: ${className}ListParams) {
   return http({
-    url: '/project/${classNameLower}/list',
+    url: '/${classNameLower}/list',
     method: 'get',
     params
   })
@@ -26,14 +26,14 @@ export function list${className}(params: ${className}ListParams) {
 
 export function getById${className}(id: number) {
   return http({
-    url: `/project/${classNameLower}/${id}`,
+    url: `/${classNameLower}/${id}`,
     method: 'get'
   })
 }
 
 export function create${className}(data: Partial<${className}>) {
   return http({
-    url: '/project/${classNameLower}',
+    url: '/${classNameLower}',
     method: 'post',
     data
   })
@@ -41,7 +41,7 @@ export function create${className}(data: Partial<${className}>) {
 
 export function update${className}(data: Partial<${className}>) {
   return http({
-    url: '/project/${classNameLower}',
+    url: '/${classNameLower}',
     method: 'put',
     data
   })
@@ -49,7 +49,7 @@ export function update${className}(data: Partial<${className}>) {
 
 export function delete${className}(id: number) {
   return http({
-    url: `/project/${classNameLower}/${id}`,
+    url: `/${classNameLower}/${id}`,
     method: 'delete'
   })
 }

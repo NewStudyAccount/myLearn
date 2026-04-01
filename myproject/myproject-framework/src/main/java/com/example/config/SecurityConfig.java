@@ -108,9 +108,6 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(AbstractHttpConfigurer::disable)
 
-                // ★★★★★ 必须保留或启用匿名认证（强烈推荐）★★★★★
-                 .anonymous(AbstractHttpConfigurer::disable)   // ← 务必删除或注释掉这一行
-
                 .authorizeHttpRequests(auth -> auth
                         // 把所有公开路径集中写在一起，放在最前面，匹配更宽松
                         .requestMatchers(WHITE_LIST).permitAll()

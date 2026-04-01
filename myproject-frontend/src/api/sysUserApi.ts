@@ -29,7 +29,7 @@ export interface SysUserListParams {
 
 export function listSysUser(params: SysUserListParams) {
   return http({
-    url: '/project/sysUser/list',
+    url: '/sysUser/list',
     method: 'get',
     params
   })
@@ -37,14 +37,14 @@ export function listSysUser(params: SysUserListParams) {
 
 export function getByIdSysUser(id: number) {
   return http({
-    url: `/project/sysUser/${id}`,
+    url: `/sysUser/${id}`,
     method: 'get'
   })
 }
 
 export function createSysUser(data: Partial<SysUser>) {
   return http({
-    url: '/project/sysUser',
+    url: '/sysUser',
     method: 'post',
     data
   })
@@ -52,7 +52,7 @@ export function createSysUser(data: Partial<SysUser>) {
 
 export function updateSysUser(data: Partial<SysUser>) {
   return http({
-    url: '/project/sysUser',
+    url: '/sysUser',
     method: 'put',
     data
   })
@@ -60,7 +60,7 @@ export function updateSysUser(data: Partial<SysUser>) {
 
 export function deleteSysUser(id: number) {
   return http({
-    url: `/project/sysUser/${id}`,
+    url: `/sysUser/${id}`,
     method: 'delete'
   })
 }
