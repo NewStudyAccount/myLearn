@@ -1,9 +1,10 @@
 package ${package}.controller;
 
 import com.example.domain.Response;
+import com.example.domain.TableDataInfo;
 import ${package}.domain.${className};
+import ${package}.domain.req.${className}QueryPageReq;
 import ${package}.service.${className}Service;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,10 @@ public class ${className}Controller {
     private ${className}Service ${classNameLower}Service;
 
     @Operation(summary = "分页查询")
-    @GetMapping("/list")
-    public Response<Page<${className}>> list(
-            @RequestParam(defaultValue = "1") Long pageNum,
-            @RequestParam(defaultValue = "10") Long pageSize) {
-        Page<${className}> page = ${classNameLower}Service.page(new Page<>(pageNum, pageSize));
-        return Response.success(page);
+    @PostMapping("/list")
+    public Response<TableDataInfo<${className}>> list(@RequestBody ${className}QueryPageReq pageReq) {
+        TableDataInfo<${className}> tableDataInfo = ${classNameLower}Service.query${className}ListPage(pageReq);
+        return Response.success(tableDataInfo);
     }
 
     @Operation(summary = "根据ID查询")

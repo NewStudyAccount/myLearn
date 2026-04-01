@@ -48,7 +48,13 @@
         </el-table-column>
       </el-table>
 
-      <pagination v-model:page="queryParams.pageNo" v-model:limit="queryParams.pageSize" :total="total" @pagination="getList" />
+      <Pagination
+          :current-page="queryParams.pageQuery.pageNum"
+          :page-size="queryParams.pageQuery.pageSize"
+          :total="total"
+          @current-change="handlePageChange"
+          @size-change="handleSizeChange"
+      />
     </el-card>
 
     <FormDialog
@@ -80,8 +86,10 @@ const loading = ref(false)
 const dataList = ref<${className}[]>([])
 const total = ref(0)
 const queryParams = reactive({
-  pageNo: 1,
-  pageSize: 10,
+  pageQuery: {
+    pageNum: 1,
+    pageSize: 10
+  },
 #foreach($column in $columns)
 #if($column.dataType != 'bigint' && $column.dataType != 'int' && $column.dataType != 'integer')
   ${column.fieldName}: undefined,
@@ -100,15 +108,26 @@ const getList = async () => {
   loading.value = true
   try {
     const res = await list${className}(queryParams)
-    dataList.value = res.list
-    total.value = res.total
+    dataList.value = res.data.rows
+    total.value = res.data.total
   } finally {
     loading.value = false
   }
 }
 
+const handlePageChange = (page: number) => {
+  queryParams.pageQuery.pageNum = page
+  getList()
+}
+
+const handleSizeChange = (size: number) => {
+  queryParams.pageQuery.pageSize = size
+  queryParams.pageQuery.pageNum = 1
+  getList()
+}
+
 const handleQuery = () => {
-  queryParams.pageNo = 1
+  queryParams.pageQuery.pageNum = 1
   getList()
 }
 
