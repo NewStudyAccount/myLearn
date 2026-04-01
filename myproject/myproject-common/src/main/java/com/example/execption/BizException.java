@@ -1,11 +1,11 @@
 package com.example.execption;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 
-@Getter
-@Setter
+@Data
 public class BizException extends RuntimeException {
     // 异常码
     private String errorCode;
