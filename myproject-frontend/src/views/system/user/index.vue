@@ -87,7 +87,18 @@
         </el-table-column>
       </el-table>
 
-      <pagination v-model:page="queryParams.pageNo" v-model:limit="queryParams.pageSize" :total="total" @pagination="getList" />
+
+
+<!--          v-show="total > 0"-->
+      <Pagination
+          :current-page="queryParams.pageQuery.pageNum"
+          :page-size="queryParams.pageQuery.pageSize"
+          :total="total"
+          @current-change="handlePageChange"
+          @size-change="handleSizeChange"
+      />
+
+
     </el-card>
 
 <!--    <FormDialog-->
@@ -119,16 +130,16 @@
 import { ref, reactive, onMounted } from 'vue'
 import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { listSysUser, deleteSysUser } from '@/api/sysUserApi'
+import {listSysUser, deleteSysUser, type SysUserPageParams} from '@/api/sysUserApi'
 import type { SysUser } from '@/api/sysUserApi'
-// import FormDialog from './components/FormDialog.vue'
+// import FormDialog from "@/components/FormDialog.vue";
 
 const loading = ref(false)
 const dataList = ref<SysUser[]>([])
 const total = ref(0)
-const queryParams = reactive({
-  pageNo: 1,
-  pageSize: 10,
+
+
+const queryParams = reactive<SysUserPageParams>({
   userName: undefined,
   userPwd: undefined,
   userAvatorUrl: undefined,
@@ -137,7 +148,13 @@ const queryParams = reactive({
   createDate: undefined,
   updateDate: undefined,
   isDeleted: undefined,
+  pageQuery: {
+    pageNum: 1,
+    pageSize: 10
+  }
 })
+
+
 const queryFormRef = ref()
 const dialogVisible = ref(false)
 const viewDialogVisible = ref(false)
@@ -150,15 +167,33 @@ const getList = async () => {
   loading.value = true
   try {
     const res = await listSysUser(queryParams)
-    dataList.value = res.list
-    total.value = res.total
+
+    console.log( "分页返回值"+JSON.stringify(res))
+
+    dataList.value = res.data.rows
+    // total.value = Number(res.data.total ?? 0)
+    total.value = res.data.total
+    console.log("total",total.value)
+
   } finally {
     loading.value = false
   }
 }
 
+
+const handlePageChange = (page: number) => {
+  queryParams.pageQuery.pageNum = page
+  getList()
+}
+
+const handleSizeChange = (size: number) => {
+  queryParams.pageQuery.pageSize = size
+  queryParams.pageQuery.pageNum = 1
+  getList()
+}
+
 const handleQuery = () => {
-  queryParams.pageNo = 1
+  queryParams.pageQuery.pageNum = 1
   getList()
 }
 

@@ -35,13 +35,13 @@ public class AdminController {
     }
 
 
-    @PostMapping("/listUserPage")
-    public TableDataInfo<?> listUserPage(@RequestBody SysUserQueryPageReq sysUserQueryPageReq){
-
-        TableDataInfo<SysUser> sysUserTableDataInfo = sysUserService.queryUserListPage(sysUserQueryPageReq);
-
-        return sysUserTableDataInfo;
-    }
+//    @PostMapping("/listUserPage")
+//    public TableDataInfo<?> listUserPage(@RequestBody SysUserQueryPageReq sysUserQueryPageReq){
+//
+//        TableDataInfo<SysUser> sysUserTableDataInfo = sysUserService.queryUserListPage(sysUserQueryPageReq);
+//
+//        return sysUserTableDataInfo;
+//    }
 
 
 

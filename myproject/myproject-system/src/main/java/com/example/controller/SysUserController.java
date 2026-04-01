@@ -2,8 +2,8 @@ package com.example.controller;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.domain.Response;
-import com.example.domain.SysUser;
+import com.example.domain.*;
+import com.example.domain.req.sysUser.SysUserQueryPageReq;
 import com.example.service.SysUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,12 +33,12 @@ public class SysUserController {
 
 
     @Operation(summary = "分页查询")
-    @GetMapping("/list")
-    public Response<Page<SysUser>> list(
-            @RequestParam(defaultValue = "1") Long pageNum,
-            @RequestParam(defaultValue = "10") Long pageSize) {
-        Page<SysUser> page = sysUserService.page(new Page<>(pageNum, pageSize));
-        return Response.success(page);
+    @PostMapping("/list")
+    public Response<?> list(@RequestBody SysUserQueryPageReq pageReq) {
+        TableDataInfo<SysUser> sysUserTableDataInfo = sysUserService.queryUserListPage(pageReq);
+        return Response.success(sysUserTableDataInfo);
+
+
     }
 
     @Operation(summary = "根据ID查询")

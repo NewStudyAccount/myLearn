@@ -14,9 +14,7 @@ export interface SysUser {
   isDeleted: string
 }
 
-export interface SysUserListParams {
-  pageNo: number
-  pageSize: number
+export interface SysUserPageParams {
   userName?: string
   userPwd?: string
   userAvatorUrl?: string
@@ -25,26 +23,37 @@ export interface SysUserListParams {
   createDate?: string
   updateDate?: string
   isDeleted?: string
+
+  pageQuery:PageQuery
 }
 
-export function listSysUser(params: SysUserListParams) {
+
+export interface PageQuery {
+  pageNum: number
+  pageSize: number
+}
+
+export function listSysUser(params: SysUserPageParams) {
   return http({
-    url: '/sysUser/list',
-    method: 'get',
-    params
+    url: '/user/list',
+    headers: {
+      repeatSubmit: false
+    },
+    method: 'post',
+    data: params
   })
 }
 
 export function getByIdSysUser(id: number) {
   return http({
-    url: `/sysUser/${id}`,
+    url: `/user/${id}`,
     method: 'get'
   })
 }
 
 export function createSysUser(data: Partial<SysUser>) {
   return http({
-    url: '/sysUser',
+    url: '/user',
     method: 'post',
     data
   })
@@ -52,7 +61,7 @@ export function createSysUser(data: Partial<SysUser>) {
 
 export function updateSysUser(data: Partial<SysUser>) {
   return http({
-    url: '/sysUser',
+    url: '/user',
     method: 'put',
     data
   })
@@ -60,7 +69,7 @@ export function updateSysUser(data: Partial<SysUser>) {
 
 export function deleteSysUser(id: number) {
   return http({
-    url: `/sysUser/${id}`,
+    url: `/user/${id}`,
     method: 'delete'
   })
 }

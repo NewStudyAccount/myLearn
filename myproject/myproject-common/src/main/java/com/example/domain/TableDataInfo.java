@@ -21,30 +21,18 @@ public class TableDataInfo<T> implements Serializable {
     /**
      * 总记录数
      */
-    private long total;
+    private int total;
 
     /**
      * 列表数据
      */
     private List<T> rows;
 
-    /**
-     * 消息状态码
-     */
-    private int code;
-
-    /**
-     * 消息内容
-     */
-    private String msg;
-
 
     public static <T> TableDataInfo<T> build(IPage<T> page) {
         TableDataInfo<T> rspData = new TableDataInfo<>();
-        rspData.setCode(200);
-        rspData.setMsg("查询成功");
         rspData.setRows(page.getRecords());
-        rspData.setTotal(page.getTotal());
+        rspData.setTotal((int) page.getTotal());
         return rspData;
     }
 

@@ -42,8 +42,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
 import { ElMessage } from 'element-plus'
-import { createSysUser, updateSysUser } from '@/api/sysUser'
-import type { SysUser } from '@/api/sysUser'
+import { createSysUser, updateSysUser , type SysUser} from '@/api/sysUserApi.ts'
 
 const props = defineProps<{
   visible: boolean
