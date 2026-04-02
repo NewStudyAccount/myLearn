@@ -3,8 +3,8 @@ package com.example.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.config.OssClient;
 import com.example.domain.SysOssFile;
-import com.example.factory.OssFactory;
 import com.example.mapper.SysOssFileMapper;
+import com.example.oss.facade.OssClientFacade;
 import com.example.service.SysOssFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +15,9 @@ import java.io.InputStream;
 import java.util.UUID;
 
 /**
-* @description 针对表【sys_oss_file】的数据库操作Service实现
-* @createDate 2025-07-19 16:06:21
-*/
+ * @description 针对表【sys_oss_file】的数据库操作Service实现
+ * @createDate 2025-07-19 16:06:21
+ */
 @Service
 public class SysOssFileServiceImpl extends ServiceImpl<SysOssFileMapper, SysOssFile>
     implements SysOssFileService {
@@ -30,7 +30,7 @@ public class SysOssFileServiceImpl extends ServiceImpl<SysOssFileMapper, SysOssF
 //    private OssService ossService;
 
     @Autowired
-    private OssFactory ossFactory;
+    private OssClientFacade ossClientFacade;
 
     @Override
     public String uploadFile(MultipartFile file) {
@@ -42,7 +42,7 @@ public class SysOssFileServiceImpl extends ServiceImpl<SysOssFileMapper, SysOssF
             String[] split = originalFilename.split("\\.");
             String newFileName = UUID.randomUUID().toString() + "."+split[1];
 
-            OssClient defaultOssClient = ossFactory.getDefaultOssClient();
+            OssClient defaultOssClient = (OssClient) ossClientFacade.getDefaultClient();
             url = defaultOssClient.uploadFile(newFileName, inputStream);
 
 
@@ -67,7 +67,7 @@ public class SysOssFileServiceImpl extends ServiceImpl<SysOssFileMapper, SysOssF
             String[] split = originalFilename.split("\\.");
             String newFileName = UUID.randomUUID().toString() + "."+split[1];
 
-            OssClient defaultOssClient = ossFactory.getDefaultOssClient();
+            OssClient defaultOssClient = (OssClient) ossClientFacade.getDefaultClient();
             url = defaultOssClient.uploadBigFileFromStream(newFileName, inputStream);
 
 
@@ -88,7 +88,3 @@ public class SysOssFileServiceImpl extends ServiceImpl<SysOssFileMapper, SysOssF
         return sysOssFileMapper.insert(sysOssFile);
     }
 }
-
-
-
-

@@ -1,14 +1,17 @@
 package com.example.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.domain.SysRole;
+import com.example.domain.SysUser;
 import com.example.domain.SysUserRole;
 import com.example.domain.TableDataInfo;
 import com.example.domain.req.SysRoleAddReq;
 import com.example.domain.req.SysRoleQueryPageReq;
 import com.example.domain.req.SysRoleUpdateReq;
+import com.example.domain.req.sysUser.SysUserQueryPageReq;
 import com.example.domain.vo.SysRoleVo;
 import com.example.mapper.SysRoleMapper;
 import com.example.service.SysRoleService;
@@ -40,7 +43,6 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
 
     @Override
     public TableDataInfo<SysRole> queryRoleListPage(SysRoleQueryPageReq sysRoleQueryPageReq) {
-//        IPage<SysRole> page = this.lambdaQuery().page(sysRoleQueryPageReq.getPageQuery());
 
         Page<SysRole> sysRolePage = sysRoleMapper.selectPage(sysRoleQueryPageReq.getPageQuery().build(), null);
         TableDataInfo<SysRole> build = TableDataInfo.build(sysRolePage);
@@ -49,10 +51,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
 
     }
 
-    @Override
-    public void queryRoleList() {
 
-    }
 
     @Override
     public SysRoleVo queryByRoleId(Long roleId) {

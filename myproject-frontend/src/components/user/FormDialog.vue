@@ -58,6 +58,11 @@ const emit = defineEmits<{
 const visible = ref(props.visible)
 const formRef = ref()
 
+
+
+const form = reactive<Partial<SysUser>>({})
+const rules = reactive<Record<string, any[]>>({})
+
 watch(() => props.visible, (val) => {
   visible.value = val
 })
@@ -76,8 +81,7 @@ watch(() => props.data, (val) => {
   }
 }, { immediate: true })
 
-const form = reactive<Partial<SysUser>>({})
-const rules = reactive<Record<string, any[]>>({})
+
 
 const handleSubmit = async () => {
   const valid = await formRef.value?.validate()

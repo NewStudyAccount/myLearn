@@ -3,6 +3,8 @@ package com.example.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.domain.SysMenu;
 import com.example.domain.SysRoleMenu;
+import com.example.domain.TableDataInfo;
+import com.example.domain.req.sysMenu.SysMenuQueryPageReq;
 
 import java.util.List;
 
@@ -13,9 +15,12 @@ import java.util.List;
 */
 public interface SysMenuService extends IService<SysMenu> {
 
-    List<SysMenu> listMenu();
 
     List<SysMenu> listMenuTree();
+
+
+    TableDataInfo<SysMenu>  querySysMenuListPage(SysMenuQueryPageReq pageReq);
+
 
     List<String> listPermissionCodesByUserId(Long userId);
 

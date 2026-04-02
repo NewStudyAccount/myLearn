@@ -101,12 +101,12 @@
 
     </el-card>
 
-<!--    <FormDialog-->
-<!--      v-model:visible="dialogVisible"-->
-<!--      :title="dialogTitle"-->
-<!--      :data="currentRow"-->
-<!--      @success="getList"-->
-<!--    />-->
+    <FormDialog
+      v-model:visible="dialogVisible"
+      :title="dialogTitle"
+      :data="currentRow"
+      @success="getList"
+    />
 
     <el-dialog v-model="viewDialogVisible" title="详情" width="800px" destroy-on-close>
       <el-descriptions :column="2" border>
@@ -132,7 +132,7 @@ import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {listSysUser, deleteSysUser, type SysUserPageParams} from '@/api/sysUserApi'
 import type { SysUser } from '@/api/sysUserApi'
-// import FormDialog from "@/components/FormDialog.vue";
+import FormDialog from "@/components/user/FormDialog.vue";
 
 const loading = ref(false)
 const dataList = ref<SysUser[]>([])

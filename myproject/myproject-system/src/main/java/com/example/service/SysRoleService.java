@@ -22,9 +22,6 @@ public interface SysRoleService extends IService<SysRole> {
 
     TableDataInfo<SysRole> queryRoleListPage(SysRoleQueryPageReq sysRoleQueryPageReq);
 
-    void queryRoleList();
-
-
     SysRoleVo queryByRoleId(Long roleId);
 
     Set<String> listRoleByUserId(Long userId);
