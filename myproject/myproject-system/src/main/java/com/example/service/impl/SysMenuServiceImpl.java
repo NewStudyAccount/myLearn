@@ -1,9 +1,12 @@
 package com.example.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.domain.SysMenu;
 import com.example.domain.SysRoleMenu;
+import com.example.domain.TableDataInfo;
+import com.example.domain.req.sysMenu.SysMenuQueryPageReq;
 import com.example.mapper.SysMenuMapper;
 import com.example.service.SysMenuService;
 import com.example.utils.SecurityUtils;
@@ -30,10 +33,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
 
-    @Override
-    public List<SysMenu> listMenu() {
-        return sysMenuMapper.listMenu();
-    }
 
     @Override
     public List<SysMenu> listMenuTree() {
@@ -54,6 +53,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
         return buildMenuTree(menuList);
 
 
+    }
+
+    @Override
+    public TableDataInfo<SysMenu> querySysMenuListPage(SysMenuQueryPageReq pageReq) {
+        Page<SysMenu> sysMenuPage = sysMenuMapper.selectPage(pageReq.getPageQuery().build(), null);
+        return TableDataInfo.build(sysMenuPage);
     }
 
     /**

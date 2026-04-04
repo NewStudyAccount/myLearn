@@ -78,6 +78,11 @@ http.interceptors.request.use(
 // 响应拦截器
 http.interceptors.response.use(
   (response: AxiosResponse) => {
+
+    console.log('响应数据:', response)
+    console.log('响应数据:', response.data)
+
+
     return response.data
   },
   (error) => {

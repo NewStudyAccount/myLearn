@@ -1,0 +1,55 @@
+package ${package}.controller;
+
+import com.example.domain.Response;
+import com.example.domain.TableDataInfo;
+import ${package}.domain.${className};
+import ${package}.domain.req.${className}QueryPageReq;
+import ${package}.service.${className}Service;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+@Tag(name = "${tableComment}")
+@RestController
+@RequestMapping("/${classNameLower}")
+public class ${className}Controller {
+
+    @Autowired
+    private ${className}Service ${classNameLower}Service;
+
+    @Operation(summary = "分页查询")
+    @PostMapping("/list")
+    public Response<TableDataInfo<${className}>> list(@RequestBody ${className}QueryPageReq pageReq) {
+        TableDataInfo<${className}> tableDataInfo = ${classNameLower}Service.query${className}ListPage(pageReq);
+        return Response.success(tableDataInfo);
+    }
+
+    @Operation(summary = "根据ID查询")
+    @GetMapping("/{id}")
+    public Response<${className}> getById(@PathVariable Long id) {
+        ${className} entity = ${classNameLower}Service.getById(id);
+        return Response.success(entity);
+    }
+
+    @Operation(summary = "新增")
+    @PostMapping
+    public Response<Boolean> save(@RequestBody ${className} entity) {
+        boolean result = ${classNameLower}Service.save(entity);
+        return Response.success(result);
+    }
+
+    @Operation(summary = "修改")
+    @PutMapping
+    public Response<Boolean> update(@RequestBody ${className} entity) {
+        boolean result = ${classNameLower}Service.updateById(entity);
+        return Response.success(result);
+    }
+
+    @Operation(summary = "删除")
+    @DeleteMapping("/{id}")
+    public Response<Boolean> delete(@PathVariable Long id) {
+        boolean result = ${classNameLower}Service.removeById(id);
+        return Response.success(result);
+    }
+}

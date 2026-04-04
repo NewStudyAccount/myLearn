@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
-import { getMenuTree, type MenuItem } from '@/api/menu'
+import { getMenuTree, type MenuItem } from '@/api/sysMenuApi.ts'
 import MainLayout from '@/components/layout/MainLayout.vue'
 
 const viewModules = import.meta.glob('@/views/**/*.vue')
@@ -20,7 +20,7 @@ export const usePermissionStore = defineStore('permission', () => {
           path: menu.path,
           name: menu.menuName || menu.componentName ||`menu-${menu.menuId}`,
           component: MainLayout,
-          redirect: menu.children?.[0] ? `${menu.path}/${menu.children[0].path}` : undefined,
+          redirect: menu.children?.[0] ? `${menu.path}${menu.children[0].path}` : undefined,
           meta: { title: menu.menuName },
           children: [],
         }

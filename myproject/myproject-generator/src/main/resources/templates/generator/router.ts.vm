@@ -1,0 +1,12 @@
+import type { RouteRecordRaw } from 'vue-router'
+
+const ${className}Routes: RouteRecordRaw[] = [
+  {
+    path: '/${classNameLower}',
+    name: '${className}',
+    component: () => import('@/views/${classNameLower}/index.vue'),
+    meta: { requiresAuth: true, title: '${tableComment}' },
+  },
+]
+
+export default ${className}Routes
