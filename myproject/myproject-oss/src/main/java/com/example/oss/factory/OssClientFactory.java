@@ -21,4 +21,24 @@ public interface OssClientFactory {
      * @return 提供商类型
      */
     String getProvider();
+
+
+    /**
+     * 上传文件
+     *
+     * @param ossConfig  OSS配置
+     * @param objectName 对象名称
+     * @param data       文件数据
+     * @return 对象的访问路径或key
+     */
+    String uploadFile(OssConfig ossConfig, String objectName, byte[] data);
+
+    /**
+     * 下载文件
+     *
+     * @param ossConfig  OSS配置
+     * @param objectName 对象名称
+     * @return 文件数据
+     */
+    byte[] downloadFile(OssConfig ossConfig, String objectName);
 }
