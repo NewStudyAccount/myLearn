@@ -2,10 +2,11 @@ package com.example.oss.controller;
 
 import com.example.oss.domain.OssConfig;
 import com.example.oss.factory.OssClientFactory;
-import com.example.oss.factory.OssClientFactoryProvider;
 import com.example.oss.service.OssConfigService;
+import com.example.oss.service.OssFileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/project/oss")
+@RequestMapping("/project/file")
 @RequiredArgsConstructor
 public class OssController {
 
@@ -29,19 +30,25 @@ public class OssController {
 
     private final OssClientFactory ossClientFactory;
 
+
+    @Autowired
+    private OssFileService ossFileService;
+
     /**
      * 上传文件
      */
     @PostMapping("/upload")
-    public ResponseEntity<?> upload(@RequestParam("configName") String configName,
-                                    @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
         try {
-            OssConfig ossConfig = getActiveConfig(configName);
+            String url = ossFileService.uploadFile(file);
+
+
+//            OssConfig ossConfig = getActiveConfig(configName);
 //            OssClientFactory factory = factoryProvider.getFactory(ossConfig.getProvider());
-            String objectName = ossClientFactory.uploadFile(ossConfig, file.getOriginalFilename(), file.getBytes());
+//            String objectName = ossClientFactory.uploadFile(ossConfig, file.getOriginalFilename(), file.getBytes());
 
             Map<String, Object> result = new HashMap<>();
-            result.put("objectName", objectName);
+            result.put("url", url);
             result.put("size", file.getSize());
             return ResponseEntity.ok(result);
         } catch (Exception e) {

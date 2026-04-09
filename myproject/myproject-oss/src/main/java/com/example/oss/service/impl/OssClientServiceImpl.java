@@ -2,16 +2,11 @@ package com.example.oss.service.impl;
 
 import com.example.oss.domain.OssConfig;
 import com.example.oss.factory.OssClientFactory;
-import com.example.oss.factory.OssClientFactoryProvider;
 import com.example.oss.service.OssClientService;
 import com.example.oss.service.OssConfigService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.services.s3.S3Client;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * OSS客户端服务实现类
@@ -22,35 +17,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class OssClientServiceImpl implements OssClientService {
 
     private final OssConfigService ossConfigService;
-    private final OssClientFactoryProvider factoryProvider;
 
     private final OssClientFactory clientFactory;
 
-
-
-
-
     @Override
     public Object getClient(String configName) {
-        // 获取配置
-        OssConfig ossConfig = ossConfigService.getByConfigName(configName);
-        if (ossConfig == null) {
-            throw new RuntimeException("OSS配置不存在: " + configName);
-        }
-        
-        // 检查配置是否启用
-        if (!Boolean.TRUE.equals(ossConfig.getIsActive())) {
-            throw new RuntimeException("OSS配置未启用: " + configName);
-        }
-        
-        // 获取对应的工厂
-        OssClientFactory factory = factoryProvider.getFactory(ossConfig.getProvider());
 
-
-        Object client = clientFactory.createClient(ossConfig);
-
-        // 创建客户端
-        return factory.createClient(ossConfig);
     }
 
     @Override
