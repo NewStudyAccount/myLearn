@@ -15,15 +15,14 @@
         <module name="myproject-system" />
         <module name="myproject-server" />
       </profile>
-      <profile name="Annotation profile for demo-kafka" enabled="true">
+      <profile name="Annotation profile for demo-util" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="D:/develop/maven/myrepositroy/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
         </processorPath>
-        <module name="consumer-demo" />
-        <module name="producer-demo" />
+        <module name="demo" />
         <module name="demo-001" />
       </profile>
     </annotationProcessing>
@@ -31,7 +30,9 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="consumer-demo" options="-parameters" />
+      <module name="demo" options="-parameters" />
       <module name="demo-001" options="-parameters" />
+      <module name="demo-util" options="-parameters" />
       <module name="producer-demo" options="-parameters" />
     </option>
   </component>

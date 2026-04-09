@@ -8,6 +8,10 @@ import com.example.oss.service.OssConfigService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.S3Client;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * OSS客户端服务实现类
@@ -19,6 +23,12 @@ public class OssClientServiceImpl implements OssClientService {
 
     private final OssConfigService ossConfigService;
     private final OssClientFactoryProvider factoryProvider;
+
+    private final OssClientFactory clientFactory;
+
+
+
+
 
     @Override
     public Object getClient(String configName) {
@@ -35,7 +45,10 @@ public class OssClientServiceImpl implements OssClientService {
         
         // 获取对应的工厂
         OssClientFactory factory = factoryProvider.getFactory(ossConfig.getProvider());
-        
+
+
+        Object client = clientFactory.createClient(ossConfig);
+
         // 创建客户端
         return factory.createClient(ossConfig);
     }
@@ -60,6 +73,12 @@ public class OssClientServiceImpl implements OssClientService {
                 // 尝试列出存储桶（简单测试）
                 minioClient.listBuckets();
                 log.info("MinIO连接测试成功: {}", configName);
+                return true;
+            } else if (client instanceof software.amazon.awssdk.services.s3.S3Client) {
+                // S3客户端测试
+                software.amazon.awssdk.services.s3.S3Client s3Client = (software.amazon.awssdk.services.s3.S3Client) client;
+                s3Client.listBuckets();
+                log.info("S3连接测试成功: {}", configName);
                 return true;
             } else {
                 log.warn("未知的客户端类型，无法测试连接: {}", client.getClass().getName());

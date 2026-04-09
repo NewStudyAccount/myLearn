@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -15,11 +16,11 @@ import java.util.stream.Collectors;
 @Component
 public class OssClientFactoryProvider {
 
-    private final Map<String, OssClientFactory> factoryMap;
+    private final ConcurrentHashMap<String, OssClientFactory> factoryMap;
 
     public OssClientFactoryProvider(List<OssClientFactory> factories) {
         // 将工厂列表转换为Map，key为提供商类型
-        this.factoryMap = factories.stream()
+        this.factoryMap = (ConcurrentHashMap<String, OssClientFactory>) factories.stream()
                 .collect(Collectors.toMap(OssClientFactory::getProvider, Function.identity()));
         
         log.info("已注册OSS客户端工厂: {}", factoryMap.keySet());

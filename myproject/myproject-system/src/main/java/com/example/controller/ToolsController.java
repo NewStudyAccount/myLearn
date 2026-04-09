@@ -1,8 +1,5 @@
 package com.example.controller;
 
-
-import com.example.service.SysOssFileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +13,7 @@ public class ToolsController {
 
 
 
-//    @Autowired
-//    private OssService ossService;
 
-    @Autowired
-    private SysOssFileService sysOssFileService;
 
     /**
      * 文件上传接口
@@ -30,7 +23,7 @@ public class ToolsController {
      */
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-            sysOssFileService.uploadFile(file);
+//            sysOssFileService.uploadFile(file);
             return ResponseEntity.ok("result");
 
     }

@@ -41,6 +41,15 @@ public class App
         String attrValue5 = "GB_2";
         String newOrgValue5 = attrValue5.replaceAll("([A-Za-z])([A-Za-z])_(\\d+(?:\\.\\d+)?)", "$3$1$2");
         System.out.println(newOrgValue5);
+
+
+
+
+        String attrValue6 = "M20_M20";
+        String newOrgValue6 = attrValue6
+                .replaceAll("([A-Za-z])(\\d+(?:\\.\\d+)?)_(\\d+(?:\\.\\d+)?)", "$2$1/$3$1")
+                .replaceAll("([A-Za-z])(\\d+(?:\\.\\d+)?)_([A-Za-z])(\\d+(?:\\.\\d+)?)", "$2$1/$4$3");
+        System.out.println("newOrgValue6"+newOrgValue6);
     }
 
 
