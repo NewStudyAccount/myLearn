@@ -135,25 +135,32 @@ INSERT INTO `sys_menu` VALUES (2001, '标签列表', 's', 'C', 1, 2, '/blog/tag'
 -- Table structure for sys_oss_config
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_oss_config`;
-CREATE TABLE `sys_oss_config`  (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `config_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `bucket_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `access_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `key_secret` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `end_point` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `region` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `file_folder` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
-  `status` int NULL DEFAULT 1,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `sys_oss_config_pk`(`config_name` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+CREATE TABLE IF NOT EXISTS `sys_oss_config` (
+    `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `config_name` VARCHAR(100) NOT NULL COMMENT '配置名称（唯一标识）',
+    `provider` VARCHAR(50) NOT NULL COMMENT '提供商类型（aliyun、minio等）',
+    `endpoint` VARCHAR(255) NOT NULL COMMENT '服务端点',
+    `access_key` VARCHAR(255) NOT NULL COMMENT '访问密钥',
+    `secret_key` VARCHAR(255) NOT NULL COMMENT '秘密密钥',
+    `bucket_name` VARCHAR(100) NOT NULL COMMENT '存储桶名称',
+    `region` VARCHAR(50) DEFAULT NULL COMMENT '区域（可选）',
+    `extra_config` TEXT DEFAULT NULL COMMENT 'JSON格式的扩展配置',
+    `is_active` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '是否启用（1启用，0禁用）',
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_config_name` (`config_name`),
+    KEY `idx_provider` (`provider`),
+    KEY `idx_is_active` (`is_active`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='OSS配置表';
 
 -- ----------------------------
 -- Records of sys_oss_config
 -- ----------------------------
-INSERT INTO `sys_oss_config` VALUES (1, '阿里云', 'qjj-learn', 'LTAI5tSJf7HTwMp2ZkdENjgT', 'jpvy38MQpYfC6suwb3Q5KyHxBqNn1C', 'https://oss-cn-shanghai.aliyuncs.com', 'oss-cn-shanghai', 'test3', 0);
-
+-- INSERT INTO `sys_oss_config` VALUES (1, '阿里云', 'qjj-learn', 'LTAI5tSJf7HTwMp2ZkdENjgT', 'jpvy38MQpYfC6suwb3Q5KyHxBqNn1C', 'https://oss-cn-shanghai.aliyuncs.com', 'oss-cn-shanghai', 'test3', 0);
+INSERT INTO `sys_oss_config` (`config_name`, `provider`, `endpoint`, `access_key`, `secret_key`, `bucket_name`, `region`, `extra_config`, `is_active`) VALUES
+('aliyun-default', 'aliyun', 'https://oss-cn-hangzhou.aliyuncs.com', 'your-access-key-id', 'your-access-key-secret', 'my-bucket', 'cn-hangzhou', NULL, 0),
+('minio-local', 'minio', 'http://192.168.99.100:9000', 'c49ak3akZPzJpI0EoyUs', 'LQX4Cu3IbZd9nTr5g1LGQJYkTa5J3H5PVpQmuMBL', 'my-bucket', NULL, '{"pathStyleAccess": true}', 1);
 -- ----------------------------
 -- Table structure for sys_oss_file
 -- ----------------------------
