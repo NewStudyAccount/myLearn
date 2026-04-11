@@ -1,6 +1,5 @@
 package com.example.oss.controller;
 
-import com.example.oss.service.CacheRefreshService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;

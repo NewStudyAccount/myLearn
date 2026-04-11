@@ -21,46 +21,25 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig> implements OssConfigService {
 
-    private final OssConfigCacheService cacheService;
 
     @Override
     public OssConfig getByConfigName(String configName) {
-        // 先查缓存
-        OssConfig cached = cacheService.getConfig(configName);
-        if (cached != null) {
-            log.debug("从缓存获取OSS配置: configName={}", configName);
-            return cached;
-        }
-        
-        // 缓存没有，查数据库
+
         OssConfig config = baseMapper.selectOne(new LambdaQueryWrapper<OssConfig>()
                 .eq(OssConfig::getConfigName, configName));
         
-        // 如果配置存在且启用，放入缓存
-        if (config != null && Boolean.TRUE.equals(config.getIsActive())) {
-            cacheService.putConfig(configName, config);
-        }
+
         
         return config;
     }
 
     @Override
     public List<OssConfig> listActive() {
-        // 先查缓存
-        List<OssConfig> cached = cacheService.getActiveConfigs();
-        if (cached != null) {
-            log.debug("从缓存获取所有激活OSS配置");
-            return cached;
-        }
-        
+
         // 缓存没有，查数据库
         List<OssConfig> configs = baseMapper.selectList(new LambdaQueryWrapper<OssConfig>()
                 .eq(OssConfig::getIsActive, true));
-        
-        // 放入缓存
-        if (configs != null && !configs.isEmpty()) {
-            cacheService.putActiveConfigs(configs);
-        }
+
         
         return configs;
     }
@@ -85,9 +64,7 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig
         
         baseMapper.insert(ossConfig);
         
-        // 清除相关缓存
-        cacheService.evictConfig(ossConfig.getConfigName());
-        cacheService.evictActiveConfigs();
+
         
         log.info("创建OSS配置成功: configName={}", ossConfig.getConfigName());
         return ossConfig;
@@ -114,12 +91,7 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig
         
         baseMapper.updateById(ossConfig);
         
-        // 清除相关缓存
-        cacheService.evictConfig(existing.getConfigName());
-        if (!existing.getConfigName().equals(ossConfig.getConfigName())) {
-            cacheService.evictConfig(ossConfig.getConfigName());
-        }
-        cacheService.evictActiveConfigs();
+
         
         log.info("更新OSS配置成功: id={}", ossConfig.getId());
         return getById(ossConfig.getId());
@@ -134,13 +106,7 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig
         }
         
         boolean result = baseMapper.deleteById(id) > 0;
-        
-        if (result) {
-            // 清除相关缓存
-            cacheService.evictConfig(existing.getConfigName());
-            cacheService.evictActiveConfigs();
-            log.info("删除OSS配置成功: id={}", id);
-        }
+
         
         return result;
     }
