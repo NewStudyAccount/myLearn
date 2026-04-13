@@ -2,12 +2,12 @@ package com.example.oss.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.oss.cache.OssConfigCacheService;
 import com.example.oss.domain.OssConfig;
+import com.example.oss.factory.OssClientFactory;
 import com.example.oss.mapper.OssConfigMapper;
 import com.example.oss.service.OssConfigService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,18 +18,26 @@ import java.util.List;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig> implements OssConfigService {
 
+    @Autowired
+    private OssClientFactory ossClientFactory;
+
+
+
+    @Override
+    public void initConfig() {
+        List<OssConfig> ossConfigs = listActive();
+        for (OssConfig ossConfig : ossConfigs) {
+            ossClientFactory.createClient(ossConfig);
+        }
+    }
 
     @Override
     public OssConfig getByConfigName(String configName) {
 
         OssConfig config = baseMapper.selectOne(new LambdaQueryWrapper<OssConfig>()
                 .eq(OssConfig::getConfigName, configName));
-        
-
-        
         return config;
     }
 

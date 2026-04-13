@@ -21,12 +21,11 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/project/file")
+@RequestMapping("/project/oss/file")
 @RequiredArgsConstructor
 public class OssController {
 
     private final OssConfigService ossConfigService;
-    private final OssClientFactoryProvider factoryProvider;
 
     private final OssClientFactory ossClientFactory;
 

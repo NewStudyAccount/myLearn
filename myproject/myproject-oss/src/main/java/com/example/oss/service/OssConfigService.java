@@ -10,6 +10,10 @@ import java.util.List;
  */
 public interface OssConfigService extends IService<OssConfig> {
 
+
+    void initConfig();
+
+
     /**
      * 根据配置名称获取配置
      *

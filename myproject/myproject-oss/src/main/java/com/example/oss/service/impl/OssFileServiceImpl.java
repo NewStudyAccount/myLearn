@@ -43,7 +43,8 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, OssFile> impl
             OssConfig ossConfig = ossConfigService.getByConfigName("minio-local");
             url = ossClientFactory.uploadFile(ossConfig,newFileName,file.getBytes());
 
-
+            String endpoint = ossConfig.getEndpoint();
+//            http://192.168.99.100:9000/my-bucket/62237aa2-b510-4acf-9c5e-32a94e953540.png
             OssFile sysOssFile = new OssFile(newFileName,originalFilename,split[1],url);
 
             insertSysOssFile(sysOssFile);

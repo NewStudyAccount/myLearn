@@ -3,6 +3,10 @@ package com.example.oss.factory;
 import com.example.oss.domain.OssConfig;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.RemovalCause;
+import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -17,18 +21,36 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
-/**
- * S3协议兼容的OSS客户端工厂
- */
 @Slf4j
 @Component
 public class S3OssClientFactory implements OssClientFactory {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private final Map<String, S3Client> clientCache = new ConcurrentHashMap<>();
+
+    private final Cache<String, S3Client> clientCache;
+
+    public S3OssClientFactory() {
+        this.clientCache = Caffeine.newBuilder()
+                .maximumSize(50)
+                .expireAfterAccess(30, TimeUnit.MINUTES)
+                .expireAfterWrite(24, TimeUnit.HOURS)
+                .removalListener((String key, S3Client client, RemovalCause cause) -> {
+                    if (client != null) {
+                        try {
+                            client.close();
+                            log.info("S3客户端已关闭并移除: configName={}, reason={}", key, cause);
+                        } catch (Exception e) {
+                            log.error("关闭S3客户端失败: configName={}, error={}", key, e.getMessage());
+                        }
+                    }
+                })
+                .recordStats()
+                .build();
+
+        log.info("S3客户端缓存初始化完成: maxSize=50, expireAfterAccess=30min, expireAfterWrite=24h");
+    }
 
     @Override
     public Object createClient(OssConfig ossConfig) {
@@ -38,7 +60,7 @@ public class S3OssClientFactory implements OssClientFactory {
     private S3Client getClient(OssConfig ossConfig) {
         String cacheKey = ossConfig.getConfigName();
 
-        return clientCache.computeIfAbsent(cacheKey, key -> {
+        return clientCache.get(cacheKey, key -> {
             try {
                 S3ClientBuilder builder = S3Client.builder()
                         .endpointOverride(URI.create(ossConfig.getEndpoint()))
@@ -125,27 +147,30 @@ public class S3OssClientFactory implements OssClientFactory {
     }
 
     public void evictClient(String configName) {
-        S3Client client = clientCache.remove(configName);
-        if (client != null) {
-            try {
-                client.close();
-                log.info("S3客户端已关闭并移除缓存: configName={}", configName);
-            } catch (Exception e) {
-                log.error("关闭S3客户端失败: {}", e.getMessage(), e);
-            }
-        }
+        clientCache.invalidate(configName);
+        log.info("S3客户端缓存已失效: configName={}", configName);
     }
 
     public void clearAllClients() {
-        clientCache.forEach((configName, client) -> {
-            try {
-                client.close();
-                log.info("S3客户端已关闭: configName={}", configName);
-            } catch (Exception e) {
-                log.error("关闭S3客户端失败: configName={}, error={}", configName, e.getMessage());
-            }
-        });
-        clientCache.clear();
+        clientCache.invalidateAll();
         log.info("所有S3客户端缓存已清空");
+    }
+
+    public long getCacheSize() {
+        return clientCache.estimatedSize();
+    }
+
+    public CacheStats getCacheStats() {
+        return clientCache.stats();
+    }
+
+    public void printCacheStats() {
+        var stats = clientCache.stats();
+        log.info("S3客户端缓存统计 - 大小: {}, 命中率: {}%, 命中次数: {}, 未命中次数: {}, 驱逐次数: {}",
+                clientCache.estimatedSize(),
+                String.format("%.2f", stats.hitRate() * 100),
+                stats.hitCount(),
+                stats.missCount(),
+                stats.evictionCount());
     }
 }
