@@ -31,7 +31,7 @@ public interface OssClientFactory {
      * @param data       文件数据
      * @return 对象的访问路径或key
      */
-    String uploadFile(OssConfig ossConfig, String objectName, byte[] data);
+    void uploadFile(OssConfig ossConfig, String objectName,String contentType, byte[] data);
 
     /**
      * 下载文件

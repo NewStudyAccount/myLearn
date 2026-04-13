@@ -92,16 +92,18 @@ public class S3OssClientFactory implements OssClientFactory {
     }
 
     @Override
-    public String uploadFile(OssConfig ossConfig, String objectName, byte[] data) {
+    public void uploadFile(OssConfig ossConfig, String objectName,String contentType, byte[] data) {
         try {
             S3Client s3Client = getClient(ossConfig);
             PutObjectRequest request = PutObjectRequest.builder()
                     .bucket(ossConfig.getBucketName())
                     .key(objectName)
+                    .contentType(contentType)
+                    .contentDisposition("inline")
                     .build();
             s3Client.putObject(request, RequestBody.fromBytes(data));
             log.info("S3文件上传成功: bucket={}, object={}", ossConfig.getBucketName(), objectName);
-            return objectName;
+//            return objectName;
         } catch (Exception e) {
             log.error("S3文件上传失败: {}", e.getMessage(), e);
             throw new RuntimeException("S3文件上传失败: " + e.getMessage(), e);

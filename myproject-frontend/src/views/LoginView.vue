@@ -59,11 +59,6 @@ const handleLogin = async () => {
 </script>
 
 <template>
-
-  <div>
-    <img src="http://192.168.99.100:9000/my-bucket/62237aa2-b510-4acf-9c5e-32a94e953540.png">
-  </div>
-
   <div class="login-container">
     <div class="login-box">
       <div class="login-header">

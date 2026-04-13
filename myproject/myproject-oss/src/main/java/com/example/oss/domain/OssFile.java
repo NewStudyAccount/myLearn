@@ -42,10 +42,14 @@ public class OssFile {
      */
     private String fileUrl;
 
-    public OssFile(String fileName, String originalName, String fileSuffix, String fileUrl) {
+
+    private String contentType;
+
+    public OssFile(String fileName, String originalName, String fileSuffix, String fileUrl, String contentType) {
         this.fileName = fileName;
         this.originalName = originalName;
         this.fileSuffix = fileSuffix;
         this.fileUrl = fileUrl;
+        this.contentType = contentType;
     }
 }
