@@ -36,7 +36,7 @@ declare module 'vue' {
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElTable: typeof import('element-plus/es')['ElTable']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
-    FormDialog: typeof import('./src/components/user/FormDialog.vue')['default']
+    FormDialog: typeof import('./src/components/menu/FormDialog.vue')['default']
     HeaderNav: typeof import('./src/components/layout/HeaderNav.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     MainLayout: typeof import('./src/components/layout/MainLayout.vue')['default']
