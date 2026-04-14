@@ -47,6 +47,9 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig
         // 缓存没有，查数据库
         List<OssConfig> configs = baseMapper.selectList(new LambdaQueryWrapper<OssConfig>()
                 .eq(OssConfig::getIsActive, true));
+        if (configs.size()>1){
+            throw new RuntimeException("存在多个启用的配置");
+        }
 
         
         return configs;

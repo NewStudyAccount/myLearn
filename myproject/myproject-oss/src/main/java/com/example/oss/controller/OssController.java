@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,12 +42,6 @@ public class OssController {
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
         try {
             String url = ossFileService.uploadFile(file);
-
-
-//            OssConfig ossConfig = getActiveConfig(configName);
-//            OssClientFactory factory = factoryProvider.getFactory(ossConfig.getProvider());
-//            String objectName = ossClientFactory.uploadFile(ossConfig, file.getOriginalFilename(), file.getBytes());
-
             Map<String, Object> result = new HashMap<>();
             result.put("url", url);
             result.put("size", file.getSize());
@@ -59,16 +55,18 @@ public class OssController {
     /**
      * 下载文件
      */
-    @GetMapping("/download")
-    public ResponseEntity<?> download(@RequestParam("configName") String configName,
-                                      @RequestParam("objectName") String objectName) {
+    @GetMapping("/download/{fileName}")
+    public ResponseEntity<?> download(@PathVariable("fileName") String fileName) {
         try {
-            OssConfig ossConfig = getActiveConfig(configName);
-//            OssClientFactory factory = factoryProvider.getFactory(ossConfig.getProvider());
-            byte[] data = ossClientFactory.downloadFile(ossConfig, objectName);
+            List<OssConfig> ossConfigs = ossConfigService.listActive();
+            if (CollectionUtils.isEmpty(ossConfigs)) {
+                return ResponseEntity.badRequest().body("未找到有效的OSS配置");
+            }
+            OssConfig ossConfig = ossConfigs.getFirst();
+            byte[] data = ossClientFactory.downloadFile(ossConfig, fileName);
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + objectName + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(data);
         } catch (Exception e) {

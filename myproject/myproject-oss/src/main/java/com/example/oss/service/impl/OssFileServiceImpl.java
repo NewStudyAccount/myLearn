@@ -8,11 +8,14 @@ import com.example.oss.mapper.OssFileMapper;
 import com.example.oss.service.OssConfigService;
 import com.example.oss.service.OssFileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -35,7 +38,12 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, OssFile> impl
     public String uploadFile(MultipartFile file) {
         String url = "";
         try {
-            InputStream inputStream = file.getInputStream();
+
+            List<OssConfig> ossConfigs = ossConfigService.listActive();
+            if (CollectionUtils.isEmpty(ossConfigs)) {
+                throw new  RuntimeException("未找到有效的OSS配置");
+            }
+
             String originalFilename = file.getOriginalFilename();
             String[] split = originalFilename.split("\\.");
             String newFileName = UUID.randomUUID().toString() + "."+split[1];
