@@ -7,6 +7,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.benmanes.caffeine.cache.stats.CacheStats;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -52,6 +53,20 @@ public class S3OssClientFactory implements OssClientFactory {
         log.info("S3客户端缓存初始化完成: maxSize=50, expireAfterAccess=30min, expireAfterWrite=24h");
     }
 
+    @PreDestroy
+    public void destroy() {
+        log.info("开始清理所有S3客户端，当前缓存大小: {}", clientCache.estimatedSize());
+        clientCache.asMap().forEach((key, client) -> {
+            try {
+                client.close();
+                log.info("S3客户端已关闭: configName={}", key);
+            } catch (Exception e) {
+                log.error("关闭S3客户端失败: configName={}, error={}", key, e.getMessage());
+            }
+        });
+        clientCache.invalidateAll();
+        log.info("所有S3客户端已清理完成");
+    }
     @Override
     public Object createClient(OssConfig ossConfig) {
         return getClient(ossConfig);
@@ -98,12 +113,12 @@ public class S3OssClientFactory implements OssClientFactory {
             PutObjectRequest request = PutObjectRequest.builder()
                     .bucket(ossConfig.getBucketName())
                     .key(objectName)
+                    //设置contenType、contentDisposition 保证浏览器能直接显示 图片
                     .contentType(contentType)
                     .contentDisposition("inline")
                     .build();
             s3Client.putObject(request, RequestBody.fromBytes(data));
             log.info("S3文件上传成功: bucket={}, object={}", ossConfig.getBucketName(), objectName);
-//            return objectName;
         } catch (Exception e) {
             log.error("S3文件上传失败: {}", e.getMessage(), e);
             throw new RuntimeException("S3文件上传失败: " + e.getMessage(), e);

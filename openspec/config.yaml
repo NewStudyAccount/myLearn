@@ -3,5 +3,46 @@ schema: spec-driven
 context: |
   项目名称：myproject
 
+  项目描述：基于 Spring Boot 3.5 + Vue 3 的前后端分离项目
+
   技术栈：
-    - 前端：Vue 3, Element Plus,Pinia, Vite,Vue-Router, Axios,TypeScript
+    后端：
+      - Java 21
+      - Spring Boot 3.5.7
+      - MyBatis-Plus 3.5.8
+      - MySQL 8.0
+      - Lombok
+      - Fastjson2
+      - JWT (jjwt)
+      - SpringDoc OpenAPI + Knife4j
+      - AWS S3 SDK
+      - Caffeine Cache
+      - Apache Velocity (代码生成)
+      - P6spy (SQL日志)
+      - Flexmark (Markdown解析)
+      - Spring Boot Actuator
+
+    前端：
+      - Vue 3.5
+      - Element Plus
+      - Pinia + pinia-plugin-persistedstate
+      - Vue Router 5
+      - Vite
+      - TypeScript
+      - Axios
+
+  后端模块结构：
+    - myproject-common：公共模块（工具类、常量、通用响应等）
+    - myproject-server：启动入口模块
+    - myproject-system：系统管理模块
+    - myproject-blog：博客模块
+    - myproject-framework：框架核心模块（拦截器、AOP等）
+    - myproject-oss：对象存储模块
+    - myproject-generator：代码生成器模块
+
+  构建工具：
+    - 后端：Maven
+    - 前端：Vite + vue-tsc
+
+  API 文档：
+    - SpringDoc OpenAPI + Knife4j（访问路径：/swagger-ui.html 或 /doc.html）

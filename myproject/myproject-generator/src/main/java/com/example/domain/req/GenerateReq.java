@@ -1,6 +1,5 @@
 package com.example.domain.req;
 
-import lombok.Builder;
 import lombok.Data;
 
 @Data
