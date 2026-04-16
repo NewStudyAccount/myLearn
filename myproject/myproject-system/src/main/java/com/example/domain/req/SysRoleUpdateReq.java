@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
+import java.util.List;
+
 
 @Data
 public class SysRoleUpdateReq {
@@ -18,5 +20,7 @@ public class SysRoleUpdateReq {
      * 角色名
      */
     private String roleName;
+
+    private List<Integer> menuIds;
 
 }

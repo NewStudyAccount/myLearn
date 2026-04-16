@@ -4,6 +4,7 @@ import com.example.domain.Response;
 import com.example.domain.TableDataInfo;
 import com.example.domain.SysRole;
 import com.example.domain.req.SysRoleQueryPageReq;
+import com.example.domain.req.SysRoleUpdateReq;
 import com.example.service.SysRoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,10 +41,10 @@ public class SysRoleController {
     }
 
     @Operation(summary = "修改")
-    @PutMapping
-    public Response<Boolean> update(@RequestBody SysRole entity) {
-        boolean result = sysRoleService.updateById(entity);
-        return Response.success(result);
+    @PostMapping
+    public Response<Boolean> update(@RequestBody SysRoleUpdateReq sysRoleUpdateReq) {
+        sysRoleService.updateRole(sysRoleUpdateReq);
+        return Response.success(null);
     }
 
     @Operation(summary = "删除")

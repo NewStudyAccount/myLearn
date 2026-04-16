@@ -14,12 +14,14 @@ import com.example.domain.req.SysRoleUpdateReq;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
 import com.example.domain.vo.SysRoleVo;
 import com.example.mapper.SysRoleMapper;
+import com.example.service.SysRoleMenuService;
 import com.example.service.SysRoleService;
 import com.example.service.SysUserRoleService;
 import com.example.utils.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -41,6 +43,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
 
     @Autowired
     private SysUserRoleService sysUserRoleService;
+
+    @Autowired
+    private SysRoleMenuService sysRoleMenuService;
 
     @Override
     public TableDataInfo<SysRole> queryRoleListPage(SysRoleQueryPageReq sysRoleQueryPageReq) {
@@ -87,12 +92,22 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
         return this.baseMapper.insert(sysRole);
     }
 
+    /**
+     * 先更新角色，更新角色-菜单
+     * @param sysRoleUpdateReq
+     */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateRole(SysRoleUpdateReq sysRoleUpdateReq) {
         this.lambdaUpdate()
                 .set(!StringUtils.isEmpty(sysRoleUpdateReq.getRoleName()),SysRole::getRoleName, sysRoleUpdateReq.getRoleName())  // 设置待更新字段值
                 .eq(SysRole::getRoleId, sysRoleUpdateReq.getRoleId())       // WHERE 条件：role_id = 参数值
                 .update();                                         // 执行更新
+
+        //更新角色-菜单
+        sysRoleMenuService.updateRoleMenu(sysRoleUpdateReq.getRoleId(), sysRoleUpdateReq.getMenuIds());
+
+
     }
 
     @Override

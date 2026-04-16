@@ -8,6 +8,7 @@ import com.example.mapper.SysRoleMenuMapper;
 import com.example.service.SysRoleMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,16 +37,17 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
     }
 
     @Override
-    public void addRoleMenu(Long roleId, List<Long> menuIds) {
+    public void addRoleMenu(Long roleId, List<Integer> menuIds) {
 
         List<SysRoleMenu> sysRoleMenuList = new ArrayList<>();
         SysRoleMenu sysRoleMenu = new SysRoleMenu();
-        for (Long menuId : menuIds) {
+        for (Integer menuId : menuIds) {
             sysRoleMenu = new SysRoleMenu();
             sysRoleMenu.setRoleId(roleId);
             sysRoleMenu.setMeunId(menuId);
-            baseMapper.insert(sysRoleMenu);
+            sysRoleMenuList.add(sysRoleMenu);
         }
+        baseMapper.insert(sysRoleMenuList);
 
     }
 
@@ -63,7 +65,8 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
      * @param menuIds
      */
     @Override
-    public void updateRoleMenu(Long roleId, List<Long> menuIds) {
+    @Transactional(rollbackFor = Exception.class)
+    public void updateRoleMenu(Long roleId, List<Integer> menuIds) {
         deleteRoleMenu(roleId);
         addRoleMenu(roleId, menuIds);
 
