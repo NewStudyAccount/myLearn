@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.domain.SysUser;
 import com.example.domain.TableDataInfo;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
+import com.example.domain.req.sysUser.SysUserUpdateReq;
 import com.example.domain.vo.UserInfoVo;
 import com.example.domain.vo.UserVo;
 
@@ -27,6 +28,10 @@ public interface SysUserService extends IService<SysUser> {
     Map<String,Object> getUserInfo();
 
     UserInfoVo queryUserInfoAfterLogin();
+
+
+
+    void updateUserInfo(SysUserUpdateReq sysUserUpdateReq);
 
 
 }

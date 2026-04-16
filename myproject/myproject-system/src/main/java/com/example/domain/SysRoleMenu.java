@@ -19,7 +19,7 @@ public class SysRoleMenu implements Serializable {
     /**
      * 
      */
-    private Integer meunId;
+    private Long meunId;
 
     private static final long serialVersionUID = 1L;
 }

@@ -4,6 +4,7 @@ package com.example.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.domain.*;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
+import com.example.domain.req.sysUser.SysUserUpdateReq;
 import com.example.service.SysUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -57,7 +58,7 @@ public class SysUserController {
 
     @Operation(summary = "修改")
     @PutMapping
-    public Response<Boolean> update(@RequestBody SysUser entity) {
+    public Response<Boolean> update(@RequestBody SysUserUpdateReq sysUserUpdateReq) {
         boolean result = sysUserService.updateById(entity);
         return Response.success(result);
     }

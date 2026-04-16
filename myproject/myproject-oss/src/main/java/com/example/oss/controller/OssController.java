@@ -1,6 +1,6 @@
 package com.example.oss.controller;
 
-import com.example.oss.domain.OssConfig;
+import com.example.oss.domain.SysOssConfig;
 import com.example.oss.factory.OssClientFactory;
 import com.example.oss.service.OssConfigService;
 import com.example.oss.service.OssFileService;
@@ -58,12 +58,12 @@ public class OssController {
     @GetMapping("/download/{fileName}")
     public ResponseEntity<?> download(@PathVariable("fileName") String fileName) {
         try {
-            List<OssConfig> ossConfigs = ossConfigService.listActive();
-            if (CollectionUtils.isEmpty(ossConfigs)) {
+            List<SysOssConfig> sysOssConfigs = ossConfigService.listActive();
+            if (CollectionUtils.isEmpty(sysOssConfigs)) {
                 return ResponseEntity.badRequest().body("未找到有效的OSS配置");
             }
-            OssConfig ossConfig = ossConfigs.getFirst();
-            byte[] data = ossClientFactory.downloadFile(ossConfig, fileName);
+            SysOssConfig sysOssConfig = sysOssConfigs.getFirst();
+            byte[] data = ossClientFactory.downloadFile(sysOssConfig, fileName);
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
@@ -75,14 +75,14 @@ public class OssController {
         }
     }
 
-    private OssConfig getActiveConfig(String configName) {
-        OssConfig ossConfig = ossConfigService.getByConfigName(configName);
-        if (ossConfig == null) {
+    private SysOssConfig getActiveConfig(String configName) {
+        SysOssConfig sysOssConfig = ossConfigService.getByConfigName(configName);
+        if (sysOssConfig == null) {
             throw new RuntimeException("OSS配置不存在: " + configName);
         }
-        if (!Boolean.TRUE.equals(ossConfig.getIsActive())) {
+        if (!Boolean.TRUE.equals(sysOssConfig.getIsActive())) {
             throw new RuntimeException("OSS配置未启用: " + configName);
         }
-        return ossConfig;
+        return sysOssConfig;
     }
 }

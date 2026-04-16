@@ -1,8 +1,11 @@
 package com.example.oss.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.oss.domain.OssConfig;
+import com.example.domain.TableDataInfo;
+import com.example.oss.domain.SysOssConfig;
+import com.example.oss.domain.req.sysOssConfig.SysOssConfigQueryPageReq;
 import com.example.oss.factory.OssClientFactory;
 import com.example.oss.mapper.OssConfigMapper;
 import com.example.oss.service.OssConfigService;
@@ -18,7 +21,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig> implements OssConfigService {
+public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, SysOssConfig> implements OssConfigService {
 
     @Autowired
     private OssClientFactory ossClientFactory;
@@ -27,26 +30,26 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig
 
     @Override
     public void initConfig() {
-        List<OssConfig> ossConfigs = listActive();
-        for (OssConfig ossConfig : ossConfigs) {
-            ossClientFactory.createClient(ossConfig);
+        List<SysOssConfig> sysOssConfigs = listActive();
+        for (SysOssConfig sysOssConfig : sysOssConfigs) {
+            ossClientFactory.createClient(sysOssConfig);
         }
     }
 
     @Override
-    public OssConfig getByConfigName(String configName) {
+    public SysOssConfig getByConfigName(String configName) {
 
-        OssConfig config = baseMapper.selectOne(new LambdaQueryWrapper<OssConfig>()
-                .eq(OssConfig::getConfigName, configName));
+        SysOssConfig config = baseMapper.selectOne(new LambdaQueryWrapper<SysOssConfig>()
+                .eq(SysOssConfig::getConfigName, configName));
         return config;
     }
 
     @Override
-    public List<OssConfig> listActive() {
+    public List<SysOssConfig> listActive() {
 
         // 缓存没有，查数据库
-        List<OssConfig> configs = baseMapper.selectList(new LambdaQueryWrapper<OssConfig>()
-                .eq(OssConfig::getIsActive, true));
+        List<SysOssConfig> configs = baseMapper.selectList(new LambdaQueryWrapper<SysOssConfig>()
+                .eq(SysOssConfig::getIsActive, true));
         if (configs.size()>1){
             throw new RuntimeException("存在多个启用的配置");
         }
@@ -56,62 +59,62 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig
     }
 
     @Override
-    public OssConfig create(OssConfig ossConfig) {
+    public SysOssConfig create(SysOssConfig sysOssConfig) {
         // 验证配置名称唯一性
-        OssConfig existing = getByConfigName(ossConfig.getConfigName());
+        SysOssConfig existing = getByConfigName(sysOssConfig.getConfigName());
         if (existing != null) {
-            throw new RuntimeException("配置名称已存在: " + ossConfig.getConfigName());
+            throw new RuntimeException("配置名称已存在: " + sysOssConfig.getConfigName());
         }
         
         // 设置创建时间和更新时间
         LocalDateTime now = LocalDateTime.now();
-        ossConfig.setCreatedAt(now);
-        ossConfig.setUpdatedAt(now);
+        sysOssConfig.setCreatedAt(now);
+        sysOssConfig.setUpdatedAt(now);
         
         // 默认启用
-        if (ossConfig.getIsActive() == null) {
-            ossConfig.setIsActive(true);
+        if (sysOssConfig.getIsActive() == null) {
+            sysOssConfig.setIsActive(true);
         }
         
-        baseMapper.insert(ossConfig);
+        baseMapper.insert(sysOssConfig);
         
 
         
-        log.info("创建OSS配置成功: configName={}", ossConfig.getConfigName());
-        return ossConfig;
+        log.info("创建OSS配置成功: configName={}", sysOssConfig.getConfigName());
+        return sysOssConfig;
     }
 
     @Override
-    public OssConfig update(OssConfig ossConfig) {
+    public SysOssConfig update(SysOssConfig sysOssConfig) {
         // 检查配置是否存在
-        OssConfig existing = getById(ossConfig.getId());
+        SysOssConfig existing = getById(sysOssConfig.getId());
         if (existing == null) {
-            throw new RuntimeException("配置不存在: " + ossConfig.getId());
+            throw new RuntimeException("配置不存在: " + sysOssConfig.getId());
         }
         
         // 如果修改了配置名称，检查新名称是否已存在
-        if (!existing.getConfigName().equals(ossConfig.getConfigName())) {
-            OssConfig nameExists = getByConfigName(ossConfig.getConfigName());
+        if (!existing.getConfigName().equals(sysOssConfig.getConfigName())) {
+            SysOssConfig nameExists = getByConfigName(sysOssConfig.getConfigName());
             if (nameExists != null) {
-                throw new RuntimeException("配置名称已存在: " + ossConfig.getConfigName());
+                throw new RuntimeException("配置名称已存在: " + sysOssConfig.getConfigName());
             }
         }
         
         // 更新时间
-        ossConfig.setUpdatedAt(LocalDateTime.now());
+        sysOssConfig.setUpdatedAt(LocalDateTime.now());
         
-        baseMapper.updateById(ossConfig);
+        baseMapper.updateById(sysOssConfig);
         
 
         
-        log.info("更新OSS配置成功: id={}", ossConfig.getId());
-        return getById(ossConfig.getId());
+        log.info("更新OSS配置成功: id={}", sysOssConfig.getId());
+        return getById(sysOssConfig.getId());
     }
 
     @Override
     public boolean delete(Long id) {
         // 检查配置是否存在
-        OssConfig existing = getById(id);
+        SysOssConfig existing = getById(id);
         if (existing == null) {
             throw new RuntimeException("配置不存在: " + id);
         }
@@ -121,4 +124,12 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig
         
         return result;
     }
+
+    @Override
+    public TableDataInfo<SysOssConfig> querySysOssConfigListPage(SysOssConfigQueryPageReq pageReq) {
+        Page<SysOssConfig> sysOssConfigPage = this.baseMapper.selectPage(pageReq.getPageQuery().build(), null);
+        return TableDataInfo.build(sysOssConfigPage);
+    }
+
+
 }

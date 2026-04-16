@@ -2,6 +2,10 @@ package ${package}.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import ${package}.domain.${className};
+import ${package}.domain.TableDataInfo;
+import ${package}.domain.req.${className}.${className}QueryPageReq;
 
 public interface ${className}Service extends IService<${className}> {
+
+TableDataInfo<${className}> query${className}ListPage(${className}QueryPageReq pageReq);
 }

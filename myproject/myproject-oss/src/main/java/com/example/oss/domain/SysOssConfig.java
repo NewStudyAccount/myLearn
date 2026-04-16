@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName("sys_oss_config")
-public class OssConfig {
+public class SysOssConfig {
 
     /**
      * 主键ID
@@ -79,11 +80,13 @@ public class OssConfig {
      * 创建时间
      */
     @TableField("created_at")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     /**
      * 更新时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @TableField("updated_at")
     private LocalDateTime updatedAt;
 }

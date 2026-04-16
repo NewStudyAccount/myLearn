@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import {login as loginApi, getUserInfo as getUserInfoApi, type UserInfo, type LoginParams} from '@/api/auth'
+import {usePermissionStore} from "@/stores/permission.ts";
 
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>(localStorage.getItem('token') || '')
@@ -43,6 +44,8 @@ export const useUserStore = defineStore('user', () => {
 
   async function logout() {
     resetToken()
+    const permissionStore = usePermissionStore()
+    permissionStore.resetRoutes()
   }
 
   return {

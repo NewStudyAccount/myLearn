@@ -9,6 +9,7 @@ import com.example.service.SysRoleMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +33,40 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
         List<SysRoleMenu> sysRoleMenus = sysRoleMenuMapper.selectList(lambdaQueryWrapper);
 
         return sysRoleMenus;
+    }
+
+    @Override
+    public void addRoleMenu(Long roleId, List<Long> menuIds) {
+
+        List<SysRoleMenu> sysRoleMenuList = new ArrayList<>();
+        SysRoleMenu sysRoleMenu = new SysRoleMenu();
+        for (Long menuId : menuIds) {
+            sysRoleMenu = new SysRoleMenu();
+            sysRoleMenu.setRoleId(roleId);
+            sysRoleMenu.setMeunId(menuId);
+            baseMapper.insert(sysRoleMenu);
+        }
+
+    }
+
+    @Override
+    public void deleteRoleMenu(Long roleId) {
+        LambdaQueryWrapper<SysRoleMenu> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SysRoleMenu::getRoleId,roleId);
+        baseMapper.delete(lambdaQueryWrapper);
+
+    }
+
+    /**
+     * 更新role-menu 先删后增
+     * @param roleId
+     * @param menuIds
+     */
+    @Override
+    public void updateRoleMenu(Long roleId, List<Long> menuIds) {
+        deleteRoleMenu(roleId);
+        addRoleMenu(roleId, menuIds);
+
     }
 }
 

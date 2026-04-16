@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.domain.*;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
+import com.example.domain.req.sysUser.SysUserUpdateReq;
 import com.example.domain.vo.MenuTree;
 import com.example.domain.vo.UserInfoVo;
 import com.example.domain.vo.UserVo;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -142,10 +144,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUserInfo(SysUserUpdateReq sysUserUpdateReq) {
+        List<Long> roleIds = sysUserUpdateReq.getRoleIds();
+        //更新用户信息
+        sysUserMapper.updateById(sysUserUpdateReq);
 
 
+        //更新用户-角色信息
+        sysUserRoleService.updateUserRole(roleIds);
 
-
+    }
 
 
     public List<MenuTree> buildTree(List<SysMenu> sysMenus){

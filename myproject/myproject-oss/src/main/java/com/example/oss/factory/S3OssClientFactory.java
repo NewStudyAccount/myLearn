@@ -1,6 +1,6 @@
 package com.example.oss.factory;
 
-import com.example.oss.domain.OssConfig;
+import com.example.oss.domain.SysOssConfig;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
@@ -68,31 +68,31 @@ public class S3OssClientFactory implements OssClientFactory {
         log.info("所有S3客户端已清理完成");
     }
     @Override
-    public Object createClient(OssConfig ossConfig) {
-        return getClient(ossConfig);
+    public Object createClient(SysOssConfig sysOssConfig) {
+        return getClient(sysOssConfig);
     }
 
-    private S3Client getClient(OssConfig ossConfig) {
-        String cacheKey = ossConfig.getConfigName();
+    private S3Client getClient(SysOssConfig sysOssConfig) {
+        String cacheKey = sysOssConfig.getConfigName();
 
         return clientCache.get(cacheKey, key -> {
             try {
                 S3ClientBuilder builder = S3Client.builder()
-                        .endpointOverride(URI.create(ossConfig.getEndpoint()))
+                        .endpointOverride(URI.create(sysOssConfig.getEndpoint()))
                         .credentialsProvider(StaticCredentialsProvider.create(
-                                AwsBasicCredentials.create(ossConfig.getAccessKey(), ossConfig.getSecretKey())
+                                AwsBasicCredentials.create(sysOssConfig.getAccessKey(), sysOssConfig.getSecretKey())
                         ));
 
-                if (ossConfig.getRegion() != null && !ossConfig.getRegion().isEmpty()) {
-                    builder.region(Region.of(ossConfig.getRegion()));
+                if (sysOssConfig.getRegion() != null && !sysOssConfig.getRegion().isEmpty()) {
+                    builder.region(Region.of(sysOssConfig.getRegion()));
                 } else {
                     builder.region(Region.of("us-east-1"));
                 }
 
-                applyExtraConfig(builder, ossConfig.getExtraConfig());
+                applyExtraConfig(builder, sysOssConfig.getExtraConfig());
 
                 S3Client s3Client = builder.build();
-                log.info("S3客户端创建成功: endpoint={}, bucket={}", ossConfig.getEndpoint(), ossConfig.getBucketName());
+                log.info("S3客户端创建成功: endpoint={}, bucket={}", sysOssConfig.getEndpoint(), sysOssConfig.getBucketName());
                 return s3Client;
             } catch (Exception e) {
                 log.error("创建S3客户端失败: {}", e.getMessage(), e);
@@ -107,18 +107,18 @@ public class S3OssClientFactory implements OssClientFactory {
     }
 
     @Override
-    public void uploadFile(OssConfig ossConfig, String objectName,String contentType, byte[] data) {
+    public void uploadFile(SysOssConfig sysOssConfig, String objectName, String contentType, byte[] data) {
         try {
-            S3Client s3Client = getClient(ossConfig);
+            S3Client s3Client = getClient(sysOssConfig);
             PutObjectRequest request = PutObjectRequest.builder()
-                    .bucket(ossConfig.getBucketName())
+                    .bucket(sysOssConfig.getBucketName())
                     .key(objectName)
                     //设置contenType、contentDisposition 保证浏览器能直接显示 图片
                     .contentType(contentType)
                     .contentDisposition("inline")
                     .build();
             s3Client.putObject(request, RequestBody.fromBytes(data));
-            log.info("S3文件上传成功: bucket={}, object={}", ossConfig.getBucketName(), objectName);
+            log.info("S3文件上传成功: bucket={}, object={}", sysOssConfig.getBucketName(), objectName);
         } catch (Exception e) {
             log.error("S3文件上传失败: {}", e.getMessage(), e);
             throw new RuntimeException("S3文件上传失败: " + e.getMessage(), e);
@@ -126,11 +126,11 @@ public class S3OssClientFactory implements OssClientFactory {
     }
 
     @Override
-    public byte[] downloadFile(OssConfig ossConfig, String objectName) {
+    public byte[] downloadFile(SysOssConfig sysOssConfig, String objectName) {
         try {
-            S3Client s3Client = getClient(ossConfig);
+            S3Client s3Client = getClient(sysOssConfig);
             GetObjectRequest request = GetObjectRequest.builder()
-                    .bucket(ossConfig.getBucketName())
+                    .bucket(sysOssConfig.getBucketName())
                     .key(objectName)
                     .build();
             try (InputStream in = s3Client.getObject(request);
@@ -140,7 +140,7 @@ public class S3OssClientFactory implements OssClientFactory {
                 while ((bytesRead = in.read(buffer)) != -1) {
                     out.write(buffer, 0, bytesRead);
                 }
-                log.info("S3文件下载成功: bucket={}, object={}", ossConfig.getBucketName(), objectName);
+                log.info("S3文件下载成功: bucket={}, object={}", sysOssConfig.getBucketName(), objectName);
                 return out.toByteArray();
             }
         } catch (Exception e) {

@@ -9,6 +9,7 @@ import com.example.domain.req.SysRoleQueryPageReq;
 import com.example.domain.req.SysRoleUpdateReq;
 import com.example.domain.vo.SysRoleVo;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -30,7 +31,7 @@ public interface SysRoleService extends IService<SysRole> {
 
     void updateRole(SysRoleUpdateReq sysRole);
 
-    int deleteRole(Long roleId);
+    int deleteRole(List<Long> roleIds);
 
 
 

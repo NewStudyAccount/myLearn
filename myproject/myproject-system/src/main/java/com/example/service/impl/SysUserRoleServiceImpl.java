@@ -6,10 +6,13 @@ import com.example.domain.SysUserRole;
 import com.example.domain.req.sysUserRole.SysUserRoleAddReq;
 import com.example.mapper.SysUserRoleMapper;
 import com.example.service.SysUserRoleService;
+import com.example.utils.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,8 +48,32 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
 
     }
 
+    /**
+     * 删除用户-角色关系
+     * @param roleId
+     */
     @Override
-    public void deleteUserRole(Long id) {
+    public void deleteUserRole(List<Long> roleId) {
+        baseMapper.deleteByIds(roleId);
+
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUserRole(List<Long> roleIds) {
+        Long loginUserId = SecurityUtils.getLoginUserId();
+        deleteUserRole(roleIds);
+
+        List<SysUserRole> sysUserRoleList = new ArrayList<>();
+        SysUserRole sysUserRole = new SysUserRole();
+        for (Long roleId : roleIds) {
+            sysUserRole = new SysUserRole();
+            sysUserRole.setRoleId(roleId);
+            sysUserRole.setUserId(loginUserId);
+            sysUserRoleList.add(sysUserRole);
+        }
+        //新增用户-角色关系
+        baseMapper.insert(sysUserRoleList);
 
     }
 }

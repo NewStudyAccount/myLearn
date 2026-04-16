@@ -1,7 +1,13 @@
 package com.example.oss.controller;
 
+import com.example.domain.Response;
+import com.example.domain.TableDataInfo;
+import com.example.oss.domain.SysOssConfig;
+import com.example.oss.domain.req.sysOssConfig.SysOssConfigQueryPageReq;
 import com.example.oss.factory.S3OssClientFactory;
 import com.example.oss.service.OssConfigService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +16,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+@Tag(name = "OSS配置表")
 @Slf4j
 @RestController
-@RequestMapping("/project/oss/config")
+@RequestMapping("/project/sysOssConfig")
 @RequiredArgsConstructor
 public class OssConfigController {
 
@@ -57,5 +64,41 @@ public class OssConfigController {
             return "S3客户端缓存已清空";
         }
         return "S3客户端工厂未启用";
+    }
+
+
+    @Operation(summary = "分页查询")
+    @PostMapping("/list")
+    public Response<TableDataInfo<SysOssConfig>> list(@RequestBody SysOssConfigQueryPageReq pageReq) {
+        TableDataInfo<SysOssConfig> tableDataInfo = ossConfigService.querySysOssConfigListPage(pageReq);
+        return Response.success(tableDataInfo);
+    }
+
+    @Operation(summary = "根据ID查询")
+    @GetMapping("/{id}")
+    public Response<SysOssConfig> getById(@PathVariable Long id) {
+        SysOssConfig entity = ossConfigService.getById(id);
+        return Response.success(entity);
+    }
+
+    @Operation(summary = "新增")
+    @PostMapping
+    public Response<Boolean> save(@RequestBody SysOssConfig entity) {
+        boolean result = ossConfigService.save(entity);
+        return Response.success(result);
+    }
+
+    @Operation(summary = "修改")
+    @PutMapping
+    public Response<Boolean> update(@RequestBody SysOssConfig entity) {
+        boolean result = ossConfigService.updateById(entity);
+        return Response.success(result);
+    }
+
+    @Operation(summary = "删除")
+    @DeleteMapping("/{id}")
+    public Response<Boolean> delete(@PathVariable Long id) {
+        boolean result = ossConfigService.removeById(id);
+        return Response.success(result);
     }
 }

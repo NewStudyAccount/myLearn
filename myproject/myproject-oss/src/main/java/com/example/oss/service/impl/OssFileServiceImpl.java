@@ -1,20 +1,18 @@
 package com.example.oss.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.oss.domain.OssConfig;
+import com.example.oss.domain.SysOssConfig;
 import com.example.oss.domain.OssFile;
 import com.example.oss.factory.OssClientFactory;
 import com.example.oss.mapper.OssFileMapper;
 import com.example.oss.service.OssConfigService;
 import com.example.oss.service.OssFileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,8 +37,8 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, OssFile> impl
         String url = "";
         try {
 
-            List<OssConfig> ossConfigs = ossConfigService.listActive();
-            if (CollectionUtils.isEmpty(ossConfigs)) {
+            List<SysOssConfig> sysOssConfigs = ossConfigService.listActive();
+            if (CollectionUtils.isEmpty(sysOssConfigs)) {
                 throw new  RuntimeException("未找到有效的OSS配置");
             }
 
@@ -48,12 +46,12 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, OssFile> impl
             String[] split = originalFilename.split("\\.");
             String newFileName = UUID.randomUUID().toString() + "."+split[1];
 
-            OssConfig ossConfig = ossConfigService.getByConfigName("minio-local");
+            SysOssConfig sysOssConfig = ossConfigService.getByConfigName("minio-local");
             String contentType = file.getContentType();
-            ossClientFactory.uploadFile(ossConfig,newFileName,contentType,file.getBytes());
+            ossClientFactory.uploadFile(sysOssConfig,newFileName,contentType,file.getBytes());
 
-            String endpoint = ossConfig.getEndpoint();
-            String bucketName = ossConfig.getBucketName();
+            String endpoint = sysOssConfig.getEndpoint();
+            String bucketName = sysOssConfig.getBucketName();
 //            http://192.168.99.100:9000/my-bucket/62237aa2-b510-4acf-9c5e-32a94e953540.png
             url = endpoint+"/"+bucketName+"/"+newFileName;
             OssFile sysOssFile = new OssFile(newFileName,originalFilename,split[1],url,contentType);

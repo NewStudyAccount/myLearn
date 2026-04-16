@@ -16,6 +16,7 @@ import com.example.domain.vo.SysRoleVo;
 import com.example.mapper.SysRoleMapper;
 import com.example.service.SysRoleService;
 import com.example.service.SysUserRoleService;
+import com.example.utils.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,7 +96,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     }
 
     @Override
-    public int deleteRole(Long roleId) {
+    public int deleteRole(List<Long> roleIds) {
+        Long loginUserId = SecurityUtils.getLoginUserId();
         return 0;
     }
 }
