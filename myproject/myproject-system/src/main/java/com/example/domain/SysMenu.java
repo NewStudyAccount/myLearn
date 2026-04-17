@@ -60,6 +60,8 @@ public class SysMenu implements Serializable {
      */
     private String componentName;
 
+    private Integer status;
+
     /**
      * 子菜单（非数据库字段）
      */

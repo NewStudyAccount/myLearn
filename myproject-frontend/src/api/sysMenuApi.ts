@@ -30,6 +30,7 @@ export interface SysMenu {
   path: string
   component: string
   componentName: string
+  status: number
 }
 
 export interface PageQuery {
@@ -51,6 +52,13 @@ export function getMenuTree(): Promise<ApiResponse<MenuItem[]>> {
   return http.post('/sysMenu/tree')
 }
 
+
+export function listSysMenuTree() {
+  return http({
+    url: '/sysMenu/listTree',
+    method: 'post',
+  })
+}
 
 
 export function listSysMenu(params: SysMenuListParams) {

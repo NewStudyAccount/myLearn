@@ -7,11 +7,12 @@ export interface SysUser {
   userAvatorUrl: string
   userSex: string
   userPhone: string
-  createId: number
-  createDate: string
-  updateId: number
-  updateDate: string
-  isDeleted: string
+  roleIds?: number[]
+  createId?: number
+  createDate?: string
+  updateId?: number
+  updateDate?: string
+  isDeleted?: string
 }
 
 export interface SysUserPageParams {

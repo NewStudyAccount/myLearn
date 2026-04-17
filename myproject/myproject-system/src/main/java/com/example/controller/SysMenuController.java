@@ -27,10 +27,17 @@ public class SysMenuController {
     @Operation(summary = "用户登录后获取动态路由信息")
     @PostMapping("/tree")
     public Response<?> getMenuTree(){
-        List<SysMenu> sysMenus = sysMenuService.listMenuTree();
+        List<SysMenu> sysMenus = sysMenuService.listRouterTree();
         return Response.success(sysMenus);
     }
 
+
+    @Operation(summary = "路由信息")
+    @PostMapping("/listTree")
+    public Response<?> getMenuListTree(){
+        List<SysMenu> sysMenus = sysMenuService.listMenuTree();
+        return Response.success(sysMenus);
+    }
 
     @Operation(summary = "分页查询")
     @PostMapping("/list")
@@ -48,9 +55,9 @@ public class SysMenuController {
 
     @Operation(summary = "新增")
     @PostMapping
-    public Response<Boolean> save(@RequestBody SysMenu entity) {
-        boolean result = sysMenuService.save(entity);
-        return Response.success(result);
+    public Response<?> save(@RequestBody SysMenu entity) {
+        int i = sysMenuService.addMenu(entity);
+        return Response.success(i);
     }
 
     @Operation(summary = "修改")

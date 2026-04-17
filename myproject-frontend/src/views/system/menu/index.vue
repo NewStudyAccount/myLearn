@@ -1,49 +1,5 @@
 <template>
   <div class="sysMenu-container">
-    <el-card class="search-card">
-      <el-form :model="queryParams" ref="queryFormRef" label-width="100px">
-        <el-row :gutter="20">
-                  <el-col :span="8">
-                    <el-form-item label="菜单名称" prop="menuName">
-                      <el-input v-model="queryParams.menuName" placeholder="请输入菜单名称" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="权限code" prop="perCode">
-                      <el-input v-model="queryParams.perCode" placeholder="请输入权限code" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="菜单类型" prop="menuType">
-                      <el-input v-model="queryParams.menuType" placeholder="请输入菜单类型" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="路由地址" prop="path">
-                      <el-input v-model="queryParams.path" placeholder="请输入路由地址" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="组件路径" prop="component">
-                      <el-input v-model="queryParams.component" placeholder="请输入组件路径" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="" prop="componentName">
-                      <el-input v-model="queryParams.componentName" placeholder="请输入" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
-          <el-col :span="8" style="margin-top: 4px;">
-            <el-button type="primary" @click="handleQuery">
-              <el-icon><Search /></el-icon>搜索
-            </el-button>
-            <el-button @click="resetQuery">
-              <el-icon><Refresh /></el-icon>重置
-            </el-button>
-          </el-col>
-        </el-row>
-      </el-form>
-    </el-card>
 
     <el-card class="table-card">
       <div class="toolbar">
@@ -55,33 +11,51 @@
         </el-button>
       </div>
 
-      <el-table v-loading="loading" :data="dataList" @row-click="rowClick" @selection-change="handleSelectionChange">
+      <el-table
+          v-loading="loading"
+          :data="dataList"
+          row-key="menuId"
+          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+          default-expand-all
+          @row-click="rowClick"
+          @selection-change="handleSelectionChange"
+      >
         <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="菜单id" align="center" prop="menuId" />
-            <el-table-column label="菜单名称" align="center" prop="menuName" />
-            <el-table-column label="权限code" align="center" prop="perCode" />
-            <el-table-column label="菜单类型" align="center" prop="menuType" />
-            <el-table-column label="排序" align="center" prop="menuSort" />
-            <el-table-column label="父级id" align="center" prop="parentId" />
-            <el-table-column label="路由地址" align="center" prop="path" />
-            <el-table-column label="组件路径" align="center" prop="component" />
-            <el-table-column label="" align="center" prop="componentName" />
-        <el-table-column label="操作" width="180" align="center">
+        <el-table-column label="菜单名称" align="left" prop="menuName" min-width="200" />
+        <el-table-column label="菜单ID" align="center" prop="menuId" width="100" />
+        <el-table-column label="图标" align="center" prop="icon" width="80">
           <template #default="{ row }">
-            <el-button type="text" @click.stop="handleView(row)">查看</el-button>
-            <el-button type="text" @click.stop="handleEdit(row)">编辑</el-button>
-            <el-button type="text" @click.stop="handleDelete(row)">删除</el-button>
+            <el-icon v-if="row.icon"><component :is="row.icon" /></el-icon>
+          </template>
+        </el-table-column>
+        <el-table-column label="菜单类型" align="center" prop="menuType" width="100">
+          <template #default="{ row }">
+            <el-tag v-if="row.menuType === 'M'" type="primary">目录</el-tag>
+            <el-tag v-else-if="row.menuType === 'C'" type="success">菜单</el-tag>
+            <el-tag v-else-if="row.menuType === 'F'" type="warning">按钮</el-tag>
+            <el-tag v-else>{{ row.menuType }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="权限标识" align="center" prop="perCode" min-width="150" show-overflow-tooltip />
+        <el-table-column label="排序" align="center" prop="menuSort" width="80" />
+        <el-table-column label="路由地址" align="center" prop="path" min-width="150" show-overflow-tooltip />
+        <el-table-column label="组件路径" align="center" prop="component" min-width="200" show-overflow-tooltip />
+        <el-table-column label="状态" align="center" prop="status" width="80">
+          <template #default="{ row }">
+            <el-tag v-if="row.status === 0" type="success">正常</el-tag>
+            <el-tag v-else type="danger">停用</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="200" align="center" fixed="right">
+          <template #default="{ row }">
+            <el-button link type="primary" size="small" @click.stop="handleView(row)">查看</el-button>
+            <el-button link type="primary" size="small" @click.stop="handleEdit(row)">编辑</el-button>
+            <el-button link type="danger" size="small" @click.stop="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
 
-      <Pagination
-          :current-page="queryParams.pageQuery.pageNum"
-          :page-size="queryParams.pageQuery.pageSize"
-          :total="total"
-          @current-change="handlePageChange"
-          @size-change="handleSizeChange"
-      />
+
     </el-card>
 
     <el-dialog v-model="formDialogVisible" :title="dialogTitle" width="800px" destroy-on-close>
@@ -107,8 +81,11 @@
                 <el-form-item label="组件路径" prop="component">
                       <el-input v-model="form.component" placeholder="请输入组件路径" />
                 </el-form-item>
-                <el-form-item label="" prop="componentName">
+                <el-form-item label="组件名称" prop="componentName">
                       <el-input v-model="form.componentName" placeholder="请输入" />
+                </el-form-item>
+                <el-form-item label="状态" prop="status">
+                  <el-input v-model="form.status" placeholder="请输入" />
                 </el-form-item>
       </el-form>
       <template #footer>
@@ -135,27 +112,13 @@
 
 <script setup lang="ts">
   import { ref, reactive, onMounted, watch } from 'vue'
-  import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
+  import {  Plus, Delete } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { listSysMenu, deleteSysMenu, createSysMenu, updateSysMenu } from '@/api/sysMenuApi'
+  import { deleteSysMenu, createSysMenu, updateSysMenu, listSysMenuTree} from '@/api/sysMenuApi'
   import type { SysMenu } from '@/api/sysMenuApi'
 
   const loading = ref(false)
   const dataList = ref<SysMenu[]>([])
-  const total = ref(0)
-  const queryParams = reactive({
-    pageQuery: {
-      pageNum: 1,
-      pageSize: 10
-    },
-                  menuName: undefined,
-                  perCode: undefined,
-                  menuType: undefined,
-                  path: undefined,
-                  component: undefined,
-                  componentName: undefined,
-  })
-  const queryFormRef = ref()
   const formDialogVisible = ref(false)
   const viewDialogVisible = ref(false)
   const dialogTitle = ref('')
@@ -169,33 +132,11 @@
   const getList = async () => {
     loading.value = true
     try {
-      const res = await listSysMenu(queryParams)
-      dataList.value = res.data.rows
-      total.value = res.data.total
+      const res = await listSysMenuTree()
+      dataList.value = res.data
     } finally {
       loading.value = false
     }
-  }
-
-  const handlePageChange = (page: number) => {
-    queryParams.pageQuery.pageNum = page
-    getList()
-  }
-
-  const handleSizeChange = (size: number) => {
-    queryParams.pageQuery.pageSize = size
-    queryParams.pageQuery.pageNum = 1
-    getList()
-  }
-
-  const handleQuery = () => {
-    queryParams.pageQuery.pageNum = 1
-    getList()
-  }
-
-  const resetQuery = () => {
-    queryFormRef.value?.resetFields()
-    handleQuery()
   }
 
   const handleAdd = () => {

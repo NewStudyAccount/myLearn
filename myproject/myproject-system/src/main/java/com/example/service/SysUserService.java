@@ -21,6 +21,8 @@ public interface SysUserService extends IService<SysUser> {
 
     public int register(UserVo userVo);
 
+    public int addUser(SysUser sysUser);
+
     TableDataInfo<SysUser> queryUserListPage(SysUserQueryPageReq sysUserQueryPageReq);
 
 //    List<String> queryUserInfoPermission(Long userId);

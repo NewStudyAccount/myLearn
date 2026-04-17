@@ -2,6 +2,7 @@ package com.example.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.domain.*;
@@ -111,6 +112,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     }
 
 
+    public int addUser(SysUser sysUser) {
+        sysUser.setUserPwd(new BCryptPasswordEncoder().encode(sysUser.getUserPwd()));
+
+        return sysUserMapper.insert(sysUser);
+    }
+
+
     //分页查询所有用户
     @Override
     public TableDataInfo<SysUser> queryUserListPage(SysUserQueryPageReq sysUserQueryPageReq) {
@@ -149,7 +157,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     public void updateUserInfo(SysUserUpdateReq sysUserUpdateReq) {
         List<Long> roleIds = sysUserUpdateReq.getRoleIds();
         //更新用户信息
-        sysUserMapper.updateById(sysUserUpdateReq);
+        LambdaUpdateWrapper<SysUser> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper
+                .eq(SysUser::getUserId,sysUserUpdateReq.getUserId())
+                .set(StringUtils.isNotEmpty(sysUserUpdateReq.getUserName()),SysUser::getUserName,sysUserUpdateReq.getUserName())
+                .set(StringUtils.isNotEmpty(sysUserUpdateReq.getUserAvatorUrl()),SysUser::getUserAvatorUrl,sysUserUpdateReq.getUserAvatorUrl())
+                .set(StringUtils.isNotEmpty(sysUserUpdateReq.getUserSex()),SysUser::getUserSex,sysUserUpdateReq.getUserSex())
+                .set(StringUtils.isNotEmpty(sysUserUpdateReq.getUserPhone()),SysUser::getUserPhone,sysUserUpdateReq.getUserPhone());
+        sysUserMapper.update(updateWrapper);
 
 
         //更新用户-角色信息

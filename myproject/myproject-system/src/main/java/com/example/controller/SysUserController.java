@@ -3,6 +3,7 @@ package com.example.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.domain.*;
+import com.example.domain.req.sysUser.SysUserAddReq;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
 import com.example.domain.req.sysUser.SysUserUpdateReq;
 import com.example.service.SysUserService;
@@ -51,16 +52,16 @@ public class SysUserController {
 
     @Operation(summary = "新增")
     @PostMapping
-    public Response<Boolean> save(@RequestBody SysUser entity) {
-        boolean result = sysUserService.save(entity);
-        return Response.success(result);
+    public Response<?> save(@RequestBody SysUserAddReq entity) {
+        int i = sysUserService.addUser(entity);
+        return Response.success(i);
     }
 
     @Operation(summary = "修改")
     @PutMapping
-    public Response<Boolean> update(@RequestBody SysUserUpdateReq sysUserUpdateReq) {
-        boolean result = sysUserService.updateById(sysUserUpdateReq);
-        return Response.success(result);
+    public Response<?> update(@RequestBody SysUserUpdateReq sysUserUpdateReq) {
+        sysUserService.updateUserInfo(sysUserUpdateReq);
+        return Response.success(1);
     }
 
     @Operation(summary = "删除")

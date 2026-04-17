@@ -35,10 +35,41 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
 
 
     @Override
+    public List<SysMenu> listRouterTree() {
+        Long loginUserId = SecurityUtils.getLoginUserId();
+        boolean admin = SecurityUtils.isAdmin(loginUserId);
+        List<SysMenu> sysMenus = new ArrayList<>();
+        if (admin){
+            sysMenus = sysMenuMapper.listMenu();
+        }else {
+            sysMenus = sysMenuMapper.listMenuByUserId(loginUserId);
+        }
+
+        if (CollectionUtils.isEmpty(sysMenus)){
+            return Collections.emptyList();
+        }
+
+        // 过滤掉按钮类型（F），只保留目录（M）和菜单（C）
+        List<SysMenu> menuList = sysMenus.stream()
+                .filter(item -> !"F".equals(item.getMenuType()))
+                .filter(item-> item.getStatus() == 0)
+                .toList();
+
+        // 构建树形结构
+        return buildMenuTree(menuList);
+    }
+
+
+    @Override
     public List<SysMenu> listMenuTree() {
         Long loginUserId = SecurityUtils.getLoginUserId();
         boolean admin = SecurityUtils.isAdmin(loginUserId);
-        List<SysMenu> sysMenus = sysMenuMapper.listMenuByUserId(loginUserId);
+        List<SysMenu> sysMenus = new ArrayList<>();
+        if (admin){
+            sysMenus = sysMenuMapper.listMenu();
+        }else {
+            sysMenus = sysMenuMapper.listMenuByUserId(loginUserId);
+        }
 
         if (CollectionUtils.isEmpty(sysMenus)){
             return Collections.emptyList();
@@ -51,9 +82,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
 
         // 构建树形结构
         return buildMenuTree(menuList);
-
-
     }
+
+
 
     @Override
     public TableDataInfo<SysMenu> querySysMenuListPage(SysMenuQueryPageReq pageReq) {
@@ -159,6 +190,21 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
 
     @Override
     public int addMenu(SysMenu sysMenu) {
+        String menuType = sysMenu.getMenuType();
+        Integer parentId = sysMenu.getParentId();
+
+        if (sysMenu.getMenuId() == null) {
+            LambdaQueryWrapper<SysMenu> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(SysMenu::getParentId, parentId)
+            .eq(SysMenu::getMenuType, menuType)
+            .orderByDesc(SysMenu::getMenuId)
+            .last("LIMIT 1");
+            SysMenu maxMenu = sysMenuMapper.selectOne(wrapper);
+
+            int nextId = (maxMenu != null) ? maxMenu.getMenuId() + 1 : 1;
+            sysMenu.setMenuId(nextId);
+        }
+
         return sysMenuMapper.insert(sysMenu);
     }
 
