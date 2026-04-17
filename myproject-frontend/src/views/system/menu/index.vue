@@ -3,36 +3,36 @@
     <el-card class="search-card">
       <el-form :model="queryParams" ref="queryFormRef" label-width="100px">
         <el-row :gutter="20">
-          <el-col :span="8">
-            <el-form-item label="菜单名称" prop="menuName">
-              <el-input v-model="queryParams.menuName" placeholder="请输入菜单名称" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="权限code" prop="perCode">
-              <el-input v-model="queryParams.perCode" placeholder="请输入权限code" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="菜单类型" prop="menuType">
-              <el-input v-model="queryParams.menuType" placeholder="请输入菜单类型" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="路由地址" prop="path">
-              <el-input v-model="queryParams.path" placeholder="请输入路由地址" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="组件路径" prop="component">
-              <el-input v-model="queryParams.component" placeholder="请输入组件路径" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="" prop="componentName">
-              <el-input v-model="queryParams.componentName" placeholder="请输入" clearable @keyup.enter="handleQuery" />
-            </el-form-item>
-          </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="菜单名称" prop="menuName">
+                      <el-input v-model="queryParams.menuName" placeholder="请输入菜单名称" clearable @keyup.enter="handleQuery" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="权限code" prop="perCode">
+                      <el-input v-model="queryParams.perCode" placeholder="请输入权限code" clearable @keyup.enter="handleQuery" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="菜单类型" prop="menuType">
+                      <el-input v-model="queryParams.menuType" placeholder="请输入菜单类型" clearable @keyup.enter="handleQuery" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="路由地址" prop="path">
+                      <el-input v-model="queryParams.path" placeholder="请输入路由地址" clearable @keyup.enter="handleQuery" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="组件路径" prop="component">
+                      <el-input v-model="queryParams.component" placeholder="请输入组件路径" clearable @keyup.enter="handleQuery" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="" prop="componentName">
+                      <el-input v-model="queryParams.componentName" placeholder="请输入" clearable @keyup.enter="handleQuery" />
+                    </el-form-item>
+                  </el-col>
           <el-col :span="8" style="margin-top: 4px;">
             <el-button type="primary" @click="handleQuery">
               <el-icon><Search /></el-icon>搜索
@@ -57,15 +57,15 @@
 
       <el-table v-loading="loading" :data="dataList" @row-click="rowClick" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="菜单id" align="center" prop="menuId" />
-        <el-table-column label="菜单名称" align="center" prop="menuName" />
-        <el-table-column label="权限code" align="center" prop="perCode" />
-        <el-table-column label="菜单类型" align="center" prop="menuType" />
-        <el-table-column label="排序" align="center" prop="menuSort" />
-        <el-table-column label="父级id" align="center" prop="parentId" />
-        <el-table-column label="路由地址" align="center" prop="path" />
-        <el-table-column label="组件路径" align="center" prop="component" />
-        <el-table-column label="" align="center" prop="componentName" />
+            <el-table-column label="菜单id" align="center" prop="menuId" />
+            <el-table-column label="菜单名称" align="center" prop="menuName" />
+            <el-table-column label="权限code" align="center" prop="perCode" />
+            <el-table-column label="菜单类型" align="center" prop="menuType" />
+            <el-table-column label="排序" align="center" prop="menuSort" />
+            <el-table-column label="父级id" align="center" prop="parentId" />
+            <el-table-column label="路由地址" align="center" prop="path" />
+            <el-table-column label="组件路径" align="center" prop="component" />
+            <el-table-column label="" align="center" prop="componentName" />
         <el-table-column label="操作" width="180" align="center">
           <template #default="{ row }">
             <el-button type="text" @click.stop="handleView(row)">查看</el-button>
@@ -84,145 +84,205 @@
       />
     </el-card>
 
-    <FormDialog
-      v-model:visible="dialogVisible"
-      :title="dialogTitle"
-      :data="currentRow"
-      @success="getList"
-    />
+    <el-dialog v-model="formDialogVisible" :title="dialogTitle" width="800px" destroy-on-close>
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
+                <el-form-item label="菜单名称" prop="menuName">
+                      <el-input v-model="form.menuName" placeholder="请输入菜单名称" />
+                </el-form-item>
+                <el-form-item label="权限code" prop="perCode">
+                      <el-input v-model="form.perCode" placeholder="请输入权限code" />
+                </el-form-item>
+                <el-form-item label="菜单类型" prop="menuType">
+                      <el-input v-model="form.menuType" placeholder="请输入菜单类型" />
+                </el-form-item>
+                <el-form-item label="排序" prop="menuSort">
+                      <el-input v-model="form.menuSort" placeholder="请输入排序" />
+                </el-form-item>
+                <el-form-item label="父级id" prop="parentId">
+                      <el-input v-model="form.parentId" placeholder="请输入父级id" />
+                </el-form-item>
+                <el-form-item label="路由地址" prop="path">
+                      <el-input v-model="form.path" placeholder="请输入路由地址" />
+                </el-form-item>
+                <el-form-item label="组件路径" prop="component">
+                      <el-input v-model="form.component" placeholder="请输入组件路径" />
+                </el-form-item>
+                <el-form-item label="" prop="componentName">
+                      <el-input v-model="form.componentName" placeholder="请输入" />
+                </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="formDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSubmit">确定</el-button>
+      </template>
+    </el-dialog>
 
     <el-dialog v-model="viewDialogVisible" title="详情" width="800px" destroy-on-close>
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="菜单id">{{ currentRow?.menuId }}</el-descriptions-item>
-        <el-descriptions-item label="菜单名称">{{ currentRow?.menuName }}</el-descriptions-item>
-        <el-descriptions-item label="权限code">{{ currentRow?.perCode }}</el-descriptions-item>
-        <el-descriptions-item label="菜单类型">{{ currentRow?.menuType }}</el-descriptions-item>
-        <el-descriptions-item label="排序">{{ currentRow?.menuSort }}</el-descriptions-item>
-        <el-descriptions-item label="父级id">{{ currentRow?.parentId }}</el-descriptions-item>
-        <el-descriptions-item label="路由地址">{{ currentRow?.path }}</el-descriptions-item>
-        <el-descriptions-item label="组件路径">{{ currentRow?.component }}</el-descriptions-item>
-        <el-descriptions-item label="">{{ currentRow?.componentName }}</el-descriptions-item>
+            <el-descriptions-item label="菜单id">{{ currentRow?.menuId }}</el-descriptions-item>
+            <el-descriptions-item label="菜单名称">{{ currentRow?.menuName }}</el-descriptions-item>
+            <el-descriptions-item label="权限code">{{ currentRow?.perCode }}</el-descriptions-item>
+            <el-descriptions-item label="菜单类型">{{ currentRow?.menuType }}</el-descriptions-item>
+            <el-descriptions-item label="排序">{{ currentRow?.menuSort }}</el-descriptions-item>
+            <el-descriptions-item label="父级id">{{ currentRow?.parentId }}</el-descriptions-item>
+            <el-descriptions-item label="路由地址">{{ currentRow?.path }}</el-descriptions-item>
+            <el-descriptions-item label="组件路径">{{ currentRow?.component }}</el-descriptions-item>
+            <el-descriptions-item label="">{{ currentRow?.componentName }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { listSysMenu, deleteSysMenu } from '@/api/sysMenuApi'
-import type { SysMenu } from '@/api/sysMenuApi'
-import FormDialog from '@/components/menu/FormDialog.vue'
+  import { ref, reactive, onMounted, watch } from 'vue'
+  import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
+  import { ElMessage, ElMessageBox } from 'element-plus'
+  import { listSysMenu, deleteSysMenu, createSysMenu, updateSysMenu } from '@/api/sysMenuApi'
+  import type { SysMenu } from '@/api/sysMenuApi'
 
-const loading = ref(false)
-const dataList = ref<SysMenu[]>([])
-const total = ref(0)
-const queryParams = reactive({
-  pageQuery: {
-    pageNum: 1,
-    pageSize: 10
-  },
-  menuName: undefined,
-  perCode: undefined,
-  menuType: undefined,
-  path: undefined,
-  component: undefined,
-  componentName: undefined,
-})
-const queryFormRef = ref()
-const dialogVisible = ref(false)
-const viewDialogVisible = ref(false)
-const dialogTitle = ref('')
-const currentRow = ref<SysMenu>()
-const selectedRow = ref<SysMenu>()
-const single = ref(true)
+  const loading = ref(false)
+  const dataList = ref<SysMenu[]>([])
+  const total = ref(0)
+  const queryParams = reactive({
+    pageQuery: {
+      pageNum: 1,
+      pageSize: 10
+    },
+                  menuName: undefined,
+                  perCode: undefined,
+                  menuType: undefined,
+                  path: undefined,
+                  component: undefined,
+                  componentName: undefined,
+  })
+  const queryFormRef = ref()
+  const formDialogVisible = ref(false)
+  const viewDialogVisible = ref(false)
+  const dialogTitle = ref('')
+  const currentRow = ref<SysMenu>()
+  const selectedRow = ref<SysMenu>()
+  const single = ref(true)
+  const formRef = ref()
+  const form = reactive<Partial<SysMenu>>({})
+  const rules = reactive<Record<string, any[]>>({})
 
-const getList = async () => {
-  loading.value = true
-  try {
-    const res = await listSysMenu(queryParams)
-    dataList.value = res.data.rows
-    total.value = res.data.total
-  } finally {
-    loading.value = false
+  const getList = async () => {
+    loading.value = true
+    try {
+      const res = await listSysMenu(queryParams)
+      dataList.value = res.data.rows
+      total.value = res.data.total
+    } finally {
+      loading.value = false
+    }
   }
-}
 
-const handlePageChange = (page: number) => {
-  queryParams.pageQuery.pageNum = page
-  getList()
-}
-
-const handleSizeChange = (size: number) => {
-  queryParams.pageQuery.pageSize = size
-  queryParams.pageQuery.pageNum = 1
-  getList()
-}
-
-const handleQuery = () => {
-  queryParams.pageQuery.pageNum = 1
-  getList()
-}
-
-const resetQuery = () => {
-  queryFormRef.value?.resetFields()
-  handleQuery()
-}
-
-const handleAdd = () => {
-  dialogTitle.value = '新增菜单权限表'
-  currentRow.value = undefined
-  dialogVisible.value = true
-}
-
-const handleEdit = (row: SysMenu) => {
-  dialogTitle.value = '编辑菜单权限表'
-  currentRow.value = row
-  dialogVisible.value = true
-}
-
-const handleView = (row: SysMenu) => {
-  currentRow.value = row
-  viewDialogVisible.value = true
-}
-
-const handleDelete = async (row?: SysMenu) => {
-  if (!row) return
-  try {
-    await ElMessageBox.confirm('是否确认删除选中的数据?', '警告', { type: 'warning' })
-    await deleteSysMenu(row.menuId)
-    ElMessage.success('删除成功')
-    await getList()
-  } catch {}
-}
-
-const handleSelectionChange = (selection: SysMenu[]) => {
-  single.value = selection.length !== 1
-  if (selection.length === 1) {
-    selectedRow.value = selection[0]
+  const handlePageChange = (page: number) => {
+    queryParams.pageQuery.pageNum = page
+    getList()
   }
-}
 
-const rowClick = (row: SysMenu) => {
-  currentRow.value = row
-}
+  const handleSizeChange = (size: number) => {
+    queryParams.pageQuery.pageSize = size
+    queryParams.pageQuery.pageNum = 1
+    getList()
+  }
 
-onMounted(() => {
-  getList()
-})
+  const handleQuery = () => {
+    queryParams.pageQuery.pageNum = 1
+    getList()
+  }
+
+  const resetQuery = () => {
+    queryFormRef.value?.resetFields()
+    handleQuery()
+  }
+
+  const handleAdd = () => {
+    dialogTitle.value = '新增菜单权限表'
+    currentRow.value = undefined
+    Object.keys(form).forEach(key => {
+      (form as any)[key] = undefined
+    })
+    formDialogVisible.value = true
+  }
+
+  const handleEdit = (row: SysMenu) => {
+    dialogTitle.value = '编辑菜单权限表'
+    currentRow.value = row
+    Object.assign(form, row)
+    formDialogVisible.value = true
+  }
+
+  const handleView = (row: SysMenu) => {
+    currentRow.value = row
+    viewDialogVisible.value = true
+  }
+
+  const handleDelete = async (row?: SysMenu) => {
+    if (!row) return
+    try {
+      await ElMessageBox.confirm('是否确认删除选中的数据?', '警告', { type: 'warning' })
+      await deleteSysMenu(row.menuId)
+      ElMessage.success('删除成功')
+      await getList()
+    } catch {}
+  }
+
+  const handleSelectionChange = (selection: SysMenu[]) => {
+    single.value = selection.length !== 1
+    if (selection.length === 1) {
+      selectedRow.value = selection[0]
+    }
+  }
+
+  const rowClick = (row: SysMenu) => {
+    currentRow.value = row
+  }
+
+  const handleSubmit = async () => {
+    const valid = await formRef.value?.validate()
+    if (!valid) return
+
+    try {
+      const data = { ...form }
+      if (data.menuId) {
+        await updateSysMenu(data)
+        ElMessage.success('修改成功')
+      } else {
+        await createSysMenu(data)
+        ElMessage.success('新增成功')
+      }
+      formDialogVisible.value = false
+      await getList()
+    } catch {}
+  }
+
+  watch(() => currentRow.value, (val) => {
+    if (val) {
+      Object.assign(form, val)
+    } else {
+      Object.keys(form).forEach(key => {
+        (form as any)[key] = undefined
+      })
+    }
+  }, { immediate: true })
+
+  onMounted(() => {
+    getList()
+  })
 </script>
 
 <style scoped lang="scss">
-.sysMenu-container {
-  padding: 20px;
-}
-.search-card {
-  margin-bottom: 20px;
-}
-.table-card {
-  .toolbar {
-    padding: 10px 0;
-  }
-}
+    .sysMenu-container {
+      padding: 20px;
+    }
+    .search-card {
+      margin-bottom: 20px;
+    }
+    .table-card {
+      .toolbar {
+        padding: 10px 0;
+      }
+    }
 </style>

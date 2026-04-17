@@ -1,17 +1,33 @@
 <template>
-  <div class="${classNameLower}-container">
+  <div class="sysOssFile-container">
     <el-card class="search-card">
       <el-form :model="queryParams" ref="queryFormRef" label-width="100px">
         <el-row :gutter="20">
-            #foreach($column in $columns)
-                #if($column.dataType != 'bigint' && $column.dataType != 'int' && $column.dataType != 'integer')
                   <el-col :span="8">
-                    <el-form-item label="${column.columnComment}" prop="${column.fieldName}">
-                      <el-input v-model="queryParams.${column.fieldName}" placeholder="请输入${column.columnComment}" clearable @keyup.enter="handleQuery" />
+                    <el-form-item label="" prop="fileName">
+                      <el-input v-model="queryParams.fileName" placeholder="请输入" clearable @keyup.enter="handleQuery" />
                     </el-form-item>
                   </el-col>
-                #end
-            #end
+                  <el-col :span="8">
+                    <el-form-item label="" prop="originalName">
+                      <el-input v-model="queryParams.originalName" placeholder="请输入" clearable @keyup.enter="handleQuery" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="" prop="fileSuffix">
+                      <el-input v-model="queryParams.fileSuffix" placeholder="请输入" clearable @keyup.enter="handleQuery" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="" prop="fileUrl">
+                      <el-input v-model="queryParams.fileUrl" placeholder="请输入" clearable @keyup.enter="handleQuery" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="" prop="contentType">
+                      <el-input v-model="queryParams.contentType" placeholder="请输入" clearable @keyup.enter="handleQuery" />
+                    </el-form-item>
+                  </el-col>
           <el-col :span="8" style="margin-top: 4px;">
             <el-button type="primary" @click="handleQuery">
               <el-icon><Search /></el-icon>搜索
@@ -36,9 +52,12 @@
 
       <el-table v-loading="loading" :data="dataList" @row-click="rowClick" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-          #foreach($column in $columns)
-            <el-table-column label="${column.columnComment}" align="center" prop="${column.fieldName}" />
-          #end
+            <el-table-column label="" align="center" prop="ossId" />
+            <el-table-column label="" align="center" prop="fileName" />
+            <el-table-column label="" align="center" prop="originalName" />
+            <el-table-column label="" align="center" prop="fileSuffix" />
+            <el-table-column label="" align="center" prop="fileUrl" />
+            <el-table-column label="" align="center" prop="contentType" />
         <el-table-column label="操作" width="180" align="center">
           <template #default="{ row }">
             <el-button type="text" @click.stop="handleView(row)">查看</el-button>
@@ -59,23 +78,21 @@
 
     <el-dialog v-model="formDialogVisible" :title="dialogTitle" width="800px" destroy-on-close>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
-          #foreach($column in $columns)
-              #if(!$column.primaryKey && !$column.autoIncrement)
-                <el-form-item label="${column.columnComment}" prop="${column.fieldName}">
-                    #if($column.dataType == 'text' || $column.dataType == 'longtext')
-                      <el-input v-model="form.${column.fieldName}" type="textarea" placeholder="请输入${column.columnComment}" />
-                    #elseif($column.dataType == 'datetime' || $column.dataType == 'timestamp')
-                      <el-date-picker v-model="form.${column.fieldName}" type="datetime" placeholder="请选择${column.columnComment}" />
-                    #elseif($column.dataType == 'date')
-                      <el-date-picker v-model="form.${column.fieldName}" type="date" placeholder="请选择${column.columnComment}" />
-                    #elseif($column.dataType == 'tinyint' && $column.maxLength == 1)
-                      <el-switch v-model="form.${column.fieldName}" />
-                    #else
-                      <el-input v-model="form.${column.fieldName}" placeholder="请输入${column.columnComment}" />
-                    #end
+                <el-form-item label="" prop="fileName">
+                      <el-input v-model="form.fileName" placeholder="请输入" />
                 </el-form-item>
-              #end
-          #end
+                <el-form-item label="" prop="originalName">
+                      <el-input v-model="form.originalName" placeholder="请输入" />
+                </el-form-item>
+                <el-form-item label="" prop="fileSuffix">
+                      <el-input v-model="form.fileSuffix" placeholder="请输入" />
+                </el-form-item>
+                <el-form-item label="" prop="fileUrl">
+                      <el-input v-model="form.fileUrl" placeholder="请输入" />
+                </el-form-item>
+                <el-form-item label="" prop="contentType">
+                      <el-input v-model="form.contentType" placeholder="请输入" />
+                </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="formDialogVisible = false">取消</el-button>
@@ -85,9 +102,12 @@
 
     <el-dialog v-model="viewDialogVisible" title="详情" width="800px" destroy-on-close>
       <el-descriptions :column="2" border>
-          #foreach($column in $columns)
-            <el-descriptions-item label="${column.columnComment}">{{ currentRow?.${column.fieldName} }}</el-descriptions-item>
-          #end
+            <el-descriptions-item label="">{{ currentRow?.ossId }}</el-descriptions-item>
+            <el-descriptions-item label="">{{ currentRow?.fileName }}</el-descriptions-item>
+            <el-descriptions-item label="">{{ currentRow?.originalName }}</el-descriptions-item>
+            <el-descriptions-item label="">{{ currentRow?.fileSuffix }}</el-descriptions-item>
+            <el-descriptions-item label="">{{ currentRow?.fileUrl }}</el-descriptions-item>
+            <el-descriptions-item label="">{{ currentRow?.contentType }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>
@@ -97,38 +117,38 @@
   import { ref, reactive, onMounted, watch } from 'vue'
   import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { list${className}, delete${className}, create${className}, update${className} } from '@/api/${classNameLower}Api'
-  import type { ${className} } from '@/api/${classNameLower}Api'
+  import { listSysOssFile, deleteSysOssFile, createSysOssFile, updateSysOssFile } from '@/api/sysOssFileApi'
+  import type { SysOssFile } from '@/api/sysOssFileApi'
 
   const loading = ref(false)
-  const dataList = ref<${className}[]>([])
+  const dataList = ref<SysOssFile[]>([])
   const total = ref(0)
   const queryParams = reactive({
     pageQuery: {
       pageNum: 1,
       pageSize: 10
     },
-      #foreach($column in $columns)
-          #if($column.dataType != 'bigint' && $column.dataType != 'int' && $column.dataType != 'integer')
-                  ${column.fieldName}: undefined,
-          #end
-      #end
+                  fileName: undefined,
+                  originalName: undefined,
+                  fileSuffix: undefined,
+                  fileUrl: undefined,
+                  contentType: undefined,
   })
   const queryFormRef = ref()
   const formDialogVisible = ref(false)
   const viewDialogVisible = ref(false)
   const dialogTitle = ref('')
-  const currentRow = ref<${className}>()
-  const selectedRow = ref<${className}>()
+  const currentRow = ref<SysOssFile>()
+  const selectedRow = ref<SysOssFile>()
   const single = ref(true)
   const formRef = ref()
-  const form = reactive<Partial<${className}>>({})
+  const form = reactive<Partial<SysOssFile>>({})
   const rules = reactive<Record<string, any[]>>({})
 
   const getList = async () => {
     loading.value = true
     try {
-      const res = await list${className}(queryParams)
+      const res = await listSysOssFile(queryParams)
       dataList.value = res.data.rows
       total.value = res.data.total
     } finally {
@@ -158,7 +178,7 @@
   }
 
   const handleAdd = () => {
-    dialogTitle.value = '新增${tableComment}'
+    dialogTitle.value = '新增'
     currentRow.value = undefined
     Object.keys(form).forEach(key => {
       (form as any)[key] = undefined
@@ -166,36 +186,36 @@
     formDialogVisible.value = true
   }
 
-  const handleEdit = (row: ${className}) => {
-    dialogTitle.value = '编辑${tableComment}'
+  const handleEdit = (row: SysOssFile) => {
+    dialogTitle.value = '编辑'
     currentRow.value = row
     Object.assign(form, row)
     formDialogVisible.value = true
   }
 
-  const handleView = (row: ${className}) => {
+  const handleView = (row: SysOssFile) => {
     currentRow.value = row
     viewDialogVisible.value = true
   }
 
-  const handleDelete = async (row?: ${className}) => {
+  const handleDelete = async (row?: SysOssFile) => {
     if (!row) return
     try {
       await ElMessageBox.confirm('是否确认删除选中的数据?', '警告', { type: 'warning' })
-      await delete${className}(row.${primaryKeyFieldName})
+      await deleteSysOssFile(row.ossId)
       ElMessage.success('删除成功')
       await getList()
     } catch {}
   }
 
-  const handleSelectionChange = (selection: ${className}[]) => {
+  const handleSelectionChange = (selection: SysOssFile[]) => {
     single.value = selection.length !== 1
     if (selection.length === 1) {
       selectedRow.value = selection[0]
     }
   }
 
-  const rowClick = (row: ${className}) => {
+  const rowClick = (row: SysOssFile) => {
     currentRow.value = row
   }
 
@@ -205,11 +225,11 @@
 
     try {
       const data = { ...form }
-      if (data.${primaryKeyFieldName}) {
-        await update${className}(data)
+      if (data.ossId) {
+        await updateSysOssFile(data)
         ElMessage.success('修改成功')
       } else {
-        await create${className}(data)
+        await createSysOssFile(data)
         ElMessage.success('新增成功')
       }
       formDialogVisible.value = false
@@ -233,7 +253,7 @@
 </script>
 
 <style scoped lang="scss">
-    .${classNameLower}-container {
+    .sysOssFile-container {
       padding: 20px;
     }
     .search-card {

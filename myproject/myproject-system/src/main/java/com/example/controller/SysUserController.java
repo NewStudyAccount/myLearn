@@ -59,7 +59,7 @@ public class SysUserController {
     @Operation(summary = "修改")
     @PutMapping
     public Response<Boolean> update(@RequestBody SysUserUpdateReq sysUserUpdateReq) {
-        boolean result = sysUserService.updateById(entity);
+        boolean result = sysUserService.updateById(sysUserUpdateReq);
         return Response.success(result);
     }
 

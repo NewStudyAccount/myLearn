@@ -41,7 +41,7 @@ public class SysRoleController {
     }
 
     @Operation(summary = "修改")
-    @PostMapping
+    @PostMapping("/updateRole")
     public Response<Boolean> update(@RequestBody SysRoleUpdateReq sysRoleUpdateReq) {
         sysRoleService.updateRole(sysRoleUpdateReq);
         return Response.success(null);

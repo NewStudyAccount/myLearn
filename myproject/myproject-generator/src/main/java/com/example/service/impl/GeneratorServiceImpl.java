@@ -77,7 +77,6 @@ public class GeneratorServiceImpl implements GeneratorService {
 
         // Frontend code
         result.put("frontend/views/" + classNameLower + "/index.vue", templateEngine.render("templates/generator/list.vue.vm", context));
-        result.put("frontend/views/" + classNameLower + "/components/FormDialog.vue", templateEngine.render("templates/generator/formDialog.vue.vm", context));
         result.put("frontend/api/" + classNameLower + "Api.ts", templateEngine.render("templates/generator/api.ts.vm", context));
         result.put("frontend/router/" + classNameLower + ".ts", templateEngine.render("templates/generator/router.ts.vm", context));
 
