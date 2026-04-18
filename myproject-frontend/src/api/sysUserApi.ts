@@ -1,18 +1,22 @@
 import http from '@/utils/http'
 
 export interface SysUser {
-  userId: number
+  userId?: number
   userName: string
   userPwd: string
   userAvatorUrl: string
   userSex: string
   userPhone: string
-  roleIds?: number[]
   createId?: number
   createDate?: string
   updateId?: number
   updateDate?: string
   isDeleted?: string
+}
+
+export interface SysUserVo {
+  sysUser: SysUser
+  roleIds?: any[]
 }
 
 export interface SysUserPageParams {
@@ -52,7 +56,7 @@ export function getByIdSysUser(id: number) {
   })
 }
 
-export function createSysUser(data: Partial<SysUser>) {
+export function createSysUser(data: Partial<SysUserVo>) {
   return http({
     url: '/user',
     method: 'post',
@@ -60,7 +64,7 @@ export function createSysUser(data: Partial<SysUser>) {
   })
 }
 
-export function updateSysUser(data: Partial<SysUser>) {
+export function updateSysUser(data: Partial<SysUserVo>) {
   return http({
     url: '/user',
     method: 'put',

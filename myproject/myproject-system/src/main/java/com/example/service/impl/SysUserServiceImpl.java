@@ -9,8 +9,9 @@ import com.example.domain.*;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
 import com.example.domain.req.sysUser.SysUserUpdateReq;
 import com.example.domain.vo.MenuTree;
+import com.example.domain.vo.SysUserVo;
 import com.example.domain.vo.UserInfoVo;
-import com.example.domain.vo.UserVo;
+import com.example.domain.req.sysUser.UserRegisterReq;
 import com.example.mapper.SysUserMapper;
 import com.example.service.*;
 import com.example.utils.SecurityUtils;
@@ -102,16 +103,30 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
 
     @Override
-    public int register(UserVo userVo) {
+    public int register(UserRegisterReq userRegisterReq) {
         SysUser sysUser = new SysUser();
-        sysUser.setUserName(userVo.getUserName());
-        sysUser.setUserPwd(new BCryptPasswordEncoder().encode(userVo.getPassword()));
-        sysUser.setUserSex(userVo.getSex());
+        sysUser.setUserName(userRegisterReq.getUserName());
+        sysUser.setUserPwd(new BCryptPasswordEncoder().encode(userRegisterReq.getPassword()));
+        sysUser.setUserSex(userRegisterReq.getSex());
 
         return sysUserMapper.insert(sysUser);
     }
 
 
+    @Override
+    public SysUserVo getUserById(Long userId) {
+        SysUserVo sysUserVo = new SysUserVo();
+
+        SysUser sysUser = sysUserMapper.selectById(userId);
+        Set<String> strings = sysRoleService.listRoleByUserId(userId);
+
+        sysUserVo.setSysUser(sysUser);
+        sysUserVo.setRoleIds(strings.stream().toList());
+
+        return sysUserVo;
+    }
+
+    @Override
     public int addUser(SysUser sysUser) {
         sysUser.setUserPwd(new BCryptPasswordEncoder().encode(sysUser.getUserPwd()));
 

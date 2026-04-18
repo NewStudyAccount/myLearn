@@ -1,14 +1,14 @@
 package com.example.service;
 
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.domain.SysUser;
 import com.example.domain.TableDataInfo;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
 import com.example.domain.req.sysUser.SysUserUpdateReq;
+import com.example.domain.vo.SysUserVo;
 import com.example.domain.vo.UserInfoVo;
-import com.example.domain.vo.UserVo;
+import com.example.domain.req.sysUser.UserRegisterReq;
 
 import java.util.Map;
 
@@ -19,7 +19,10 @@ import java.util.Map;
 */
 public interface SysUserService extends IService<SysUser> {
 
-    public int register(UserVo userVo);
+    public int register(UserRegisterReq userRegisterReq);
+
+
+    public SysUserVo getUserById(Long userId);
 
     public int addUser(SysUser sysUser);
 

@@ -1,4 +1,4 @@
-package com.example.domain.vo;
+package com.example.domain.req.sysUser;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserVo {
+public class UserRegisterReq {
 
 
 

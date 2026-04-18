@@ -1,10 +1,7 @@
 package com.example.controller;
 
 import com.example.domain.Response;
-import com.example.domain.SysUser;
-import com.example.domain.TableDataInfo;
-import com.example.domain.req.sysUser.SysUserQueryPageReq;
-import com.example.domain.vo.UserVo;
+import com.example.domain.req.sysUser.UserRegisterReq;
 import com.example.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,9 +17,9 @@ public class AdminController {
     private SysUserService sysUserService;
 
     @PostMapping("/register")
-    public Response registerUser(@RequestBody UserVo userVo){
+    public Response registerUser(@RequestBody UserRegisterReq userRegisterReq){
 
-        int register = sysUserService.register(userVo);
+        int register = sysUserService.register(userRegisterReq);
         return Response.success("注册成功",register);
     }
 

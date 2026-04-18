@@ -6,6 +6,7 @@ import com.example.domain.*;
 import com.example.domain.req.sysUser.SysUserAddReq;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
 import com.example.domain.req.sysUser.SysUserUpdateReq;
+import com.example.domain.vo.SysUserVo;
 import com.example.service.SysUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,9 +46,9 @@ public class SysUserController {
 
     @Operation(summary = "根据ID查询")
     @GetMapping("/{id}")
-    public Response<SysUser> getById(@PathVariable Long id) {
-        SysUser entity = sysUserService.getById(id);
-        return Response.success(entity);
+    public Response<SysUserVo> getById(@PathVariable Long id) {
+        SysUserVo userById = sysUserService.getUserById(id);
+        return Response.success(userById);
     }
 
     @Operation(summary = "新增")
