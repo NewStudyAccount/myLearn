@@ -316,9 +316,14 @@ const handleAdd = () => {
 
 const handleEdit = async (row: SysUser) => {
   dialogTitle.value = '编辑用户'
-
+  if (!row.userId) {
+    ElMessage.error('用户ID不存在')
+    return
+  }
   try {
     const res = await getByIdSysUser(row.userId)
+
+    console.log("查询用户信息",JSON.stringify(res))
     currentRow.value = res.data
     Object.assign(form, res.data)
 
@@ -335,6 +340,12 @@ const handleEdit = async (row: SysUser) => {
 }
 
 const handleView = async (row: SysUser) => {
+
+  if (!row.userId) {
+    ElMessage.error('用户ID不存在')
+    return
+  }
+
   try {
     const res = await getByIdSysUser(row.userId)
     currentRow.value = res.data

@@ -46,7 +46,7 @@ public class SysUserController {
 
     @Operation(summary = "根据ID查询")
     @GetMapping("/{id}")
-    public Response<SysUserVo> getById(@PathVariable Long id) {
+    public Response<SysUserVo> getById(@PathVariable("id") Long id) {
         SysUserVo userById = sysUserService.getUserById(id);
         return Response.success(userById);
     }
@@ -67,7 +67,8 @@ public class SysUserController {
 
     @Operation(summary = "删除")
     @DeleteMapping("/{id}")
-    public Response<Boolean> delete(@PathVariable Long id) {
+    public Response<Boolean> delete(@PathVariable("id") Long id) {
+        //todo 后续可以增加补全  删除用户、用户-角色 信息
         boolean result = sysUserService.removeById(id);
         return Response.success(result);
     }
