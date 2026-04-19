@@ -87,6 +87,21 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
 
 
     @Override
+    public List<SysMenu> listMenu() {
+
+        List<SysMenu> sysMenus = sysMenuMapper.listMenu();
+
+        // 过滤掉按钮类型（F），只保留目录（M）和菜单（C）
+        List<SysMenu> menuList = sysMenus.stream()
+                .filter(item -> !"F".equals(item.getMenuType()))
+                .toList();
+
+        // 构建树形结构
+        return menuList;
+    }
+
+
+    @Override
     public TableDataInfo<SysMenu> querySysMenuListPage(SysMenuQueryPageReq pageReq) {
         Page<SysMenu> sysMenuPage = sysMenuMapper.selectPage(pageReq.getPageQuery().build(), null);
         return TableDataInfo.build(sysMenuPage);

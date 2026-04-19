@@ -4,24 +4,19 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.example.domain.SysRole;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 角色表
  * @TableName sys_role
  */
 @Data
-public class SysRoleVo  {
-    /**
-     * 角色id
-     */
-    private Long roleId;
+public class SysRoleVo  extends SysRole{
 
-    /**
-     * 角色名
-     */
-    private String roleName;
+    private List<Integer> menuIds;
 
 }

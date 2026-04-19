@@ -15,7 +15,17 @@ export interface SysUser {
 }
 
 export interface SysUserVo {
-  sysUser: SysUser
+  userId?: number
+  userName: string
+  userPwd: string
+  userAvatorUrl: string
+  userSex: string
+  userPhone: string
+  createId?: number
+  createDate?: string
+  updateId?: number
+  updateDate?: string
+  isDeleted?: string
   roleIds?: any[]
 }
 

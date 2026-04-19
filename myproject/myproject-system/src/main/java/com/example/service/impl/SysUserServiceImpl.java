@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.domain.*;
+import com.example.domain.req.sysUser.SysUserAddReq;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
 import com.example.domain.req.sysUser.SysUserUpdateReq;
 import com.example.domain.vo.MenuTree;
@@ -118,19 +119,27 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         SysUserVo sysUserVo = new SysUserVo();
 
         SysUser sysUser = sysUserMapper.selectById(userId);
+        sysUser.setUserPwd(null);
         Set<String> strings = sysRoleService.listRoleByUserId(userId);
 
-        sysUserVo.setSysUser(sysUser);
+        BeanUtils.copyProperties(sysUser,sysUserVo);
+
         sysUserVo.setRoleIds(strings.stream().toList());
 
         return sysUserVo;
     }
 
     @Override
-    public int addUser(SysUser sysUser) {
-        sysUser.setUserPwd(new BCryptPasswordEncoder().encode(sysUser.getUserPwd()));
+    public int addUser(SysUserAddReq sysUserAddReq) {
+        sysUserAddReq.setUserPwd(new BCryptPasswordEncoder().encode(sysUserAddReq.getUserPwd()));
+        SysUser sysUser = new SysUser();
+        BeanUtils.copyProperties(sysUserAddReq,sysUser);
+        sysUserMapper.insert(sysUser);
 
-        return sysUserMapper.insert(sysUser);
+        List<Long> roleIds = sysUserAddReq.getRoleIds();
+        sysUserRoleService.addUserRoles(sysUser.getUserId(),roleIds);
+
+        return 1;
     }
 
 
@@ -170,11 +179,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateUserInfo(SysUserUpdateReq sysUserUpdateReq) {
+        Long userId = sysUserUpdateReq.getUserId();
         List<Long> roleIds = sysUserUpdateReq.getRoleIds();
         //更新用户信息
         LambdaUpdateWrapper<SysUser> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper
-                .eq(SysUser::getUserId,sysUserUpdateReq.getUserId())
+                .eq(SysUser::getUserId,userId)
                 .set(StringUtils.isNotEmpty(sysUserUpdateReq.getUserName()),SysUser::getUserName,sysUserUpdateReq.getUserName())
                 .set(StringUtils.isNotEmpty(sysUserUpdateReq.getUserAvatorUrl()),SysUser::getUserAvatorUrl,sysUserUpdateReq.getUserAvatorUrl())
                 .set(StringUtils.isNotEmpty(sysUserUpdateReq.getUserSex()),SysUser::getUserSex,sysUserUpdateReq.getUserSex())
@@ -183,7 +193,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
 
         //更新用户-角色信息
-        sysUserRoleService.updateUserRole(roleIds);
+        sysUserRoleService.updateUserRole(userId,roleIds);
 
     }
 

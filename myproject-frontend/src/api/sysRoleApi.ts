@@ -1,9 +1,11 @@
 import http from '@/utils/http'
 
 export interface SysRole {
-  roleId: number
+  roleId?: number
   roleName: string
+  menuIds: any[]
 }
+
 
 export interface PageQuery {
   pageNum: number
@@ -43,8 +45,8 @@ export function createSysRole(data: Partial<SysRole>) {
 
 export function updateSysRole(data: Partial<SysRole>) {
   return http({
-    url: '/sysRole',
-    method: 'put',
+    url: '/sysRole/updateRole',
+    method: 'post',
     data
   })
 }

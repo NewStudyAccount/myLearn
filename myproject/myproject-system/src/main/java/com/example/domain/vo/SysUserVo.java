@@ -6,9 +6,8 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class SysUserVo {
+public class SysUserVo extends SysUser{
 
-    SysUser sysUser;
 
     private List<String> roleIds;
 

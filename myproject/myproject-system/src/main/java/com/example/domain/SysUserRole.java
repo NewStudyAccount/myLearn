@@ -14,11 +14,6 @@ import lombok.Data;
 @TableName(value ="sys_user_role")
 @Data
 public class SysUserRole implements Serializable {
-    /**
-     * 
-     */
-    @TableId(type = IdType.AUTO,value = "id")
-    private Long id;
 
     /**
      * 

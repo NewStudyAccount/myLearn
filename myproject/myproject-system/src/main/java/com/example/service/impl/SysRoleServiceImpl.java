@@ -4,16 +4,14 @@ package com.example.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.example.domain.SysRole;
-import com.example.domain.SysUser;
-import com.example.domain.SysUserRole;
-import com.example.domain.TableDataInfo;
+import com.example.domain.*;
 import com.example.domain.req.SysRoleAddReq;
 import com.example.domain.req.SysRoleQueryPageReq;
 import com.example.domain.req.SysRoleUpdateReq;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
 import com.example.domain.vo.SysRoleVo;
 import com.example.mapper.SysRoleMapper;
+import com.example.service.SysMenuService;
 import com.example.service.SysRoleMenuService;
 import com.example.service.SysRoleService;
 import com.example.service.SysUserRoleService;
@@ -28,6 +26,7 @@ import org.springframework.util.StringUtils;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
 * @author QJJ
@@ -47,6 +46,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
     @Autowired
     private SysRoleMenuService sysRoleMenuService;
 
+    @Autowired
+    private SysMenuService sysMenuService;
+
     @Override
     public TableDataInfo<SysRole> queryRoleListPage(SysRoleQueryPageReq sysRoleQueryPageReq) {
 
@@ -61,9 +63,30 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole>
 
     @Override
     public SysRoleVo queryByRoleId(Long roleId) {
-        SysRole sysRole = this.lambdaQuery().eq(SysRole::getRoleId, roleId).one();
         SysRoleVo sysRoleVo = new SysRoleVo();
-        BeanUtils.copyProperties(sysRole,sysRoleVo);
+        SysRole sysRole = this.lambdaQuery().eq(SysRole::getRoleId, roleId).one();
+
+        BeanUtils.copyProperties(sysRole, sysRoleVo);
+
+        if (sysRole.getRoleId() == 1L){
+            List<SysMenu> sysMenus = sysMenuService.listMenu();
+            if (!CollectionUtils.isEmpty(sysMenus)){
+                sysRoleVo.setMenuIds(sysMenus.stream()
+                        .distinct()
+                        .map(SysMenu::getMenuId)
+                        .toList());
+            }
+        }else {
+            List<SysRoleMenu> sysRoleMenus = sysRoleMenuService.listRoleMenuByRoleId(roleId);
+            if (!CollectionUtils.isEmpty(sysRoleMenus)){
+                List<Integer> collect = sysRoleMenus.stream()
+                        .distinct()
+                        .map(SysRoleMenu::getMeunId)
+                        .toList();
+                sysRoleVo.setMenuIds(collect);
+            }
+        }
+
         return sysRoleVo;
     }
 

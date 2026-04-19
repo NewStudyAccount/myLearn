@@ -20,6 +20,8 @@ public interface SysMenuService extends IService<SysMenu> {
 
     List<SysMenu> listMenuTree();
 
+    public List<SysMenu> listMenu();
+
 
     TableDataInfo<SysMenu>  querySysMenuListPage(SysMenuQueryPageReq pageReq);
 

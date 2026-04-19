@@ -5,6 +5,7 @@ import com.example.domain.TableDataInfo;
 import com.example.domain.SysRole;
 import com.example.domain.req.SysRoleQueryPageReq;
 import com.example.domain.req.SysRoleUpdateReq;
+import com.example.domain.vo.SysRoleVo;
 import com.example.service.SysRoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,9 +29,9 @@ public class SysRoleController {
 
     @Operation(summary = "根据ID查询")
     @GetMapping("/{id}")
-    public Response<SysRole> getById(@PathVariable Long id) {
-        SysRole entity = sysRoleService.getById(id);
-        return Response.success(entity);
+    public Response<SysRoleVo> getById(@PathVariable("id") Long id) {
+        SysRoleVo sysRoleVo = sysRoleService.queryByRoleId(id);
+        return Response.success(sysRoleVo);
     }
 
     @Operation(summary = "新增")

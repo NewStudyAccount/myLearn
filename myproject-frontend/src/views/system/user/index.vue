@@ -97,27 +97,27 @@
     <el-dialog v-model="formDialogVisible" :title="dialogTitle" width="800px" destroy-on-close>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="用户名" prop="userName">
-          <el-input v-model="form.sysUser.userName" placeholder="请输入用户名" />
+          <el-input v-model="form.userName" placeholder="请输入用户名" />
         </el-form-item>
-        <el-form-item v-if="form.sysUser.userId == undefined" label="密码" prop="userPwd">
+        <el-form-item v-if="form.userId == undefined" label="密码" prop="userPwd">
           <el-input
-              v-model="form.sysUser.userPwd"
+              v-model="form.userPwd"
               type="password"
               placeholder="请输入密码"
               show-password
           />
         </el-form-item>
         <el-form-item label="性别" prop="userSex">
-          <el-radio-group v-model="form.sysUser.userSex">
+          <el-radio-group v-model="form.userSex">
             <el-radio label="0">男</el-radio>
             <el-radio label="1">女</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="手机" prop="userPhone">
-          <el-input v-model="form.sysUser.userPhone" placeholder="请输入手机号" maxlength="11" />
+          <el-input v-model="form.userPhone" placeholder="请输入手机号" maxlength="11" />
         </el-form-item>
         <el-form-item label="头像URL" prop="userAvatorUrl">
-          <el-input v-model="form.sysUser.userAvatorUrl" placeholder="请输入头像URL" />
+          <el-input v-model="form.userAvatorUrl" placeholder="请输入头像URL" />
         </el-form-item>
         <el-form-item label="角色" prop="roleIds">
           <el-select
@@ -210,37 +210,33 @@ const single = ref(true)
 const formRef = ref()
 
 const form = reactive<SysUserVo>({
-  sysUser: {
-    userId: undefined,
-    userName: '',
-    userPwd: '',
-    userAvatorUrl: '',
-    userSex: '0',
-    userPhone: '',
-    createId: undefined,
-    createDate: '',
-    updateId: undefined,
-    updateDate: '',
-    isDeleted: ''
-  },
+  userId: undefined,
+  userName: '',
+  userPwd: '',
+  userAvatorUrl: '',
+  userSex: '0',
+  userPhone: '',
+  createId: undefined,
+  createDate: '',
+  updateId: undefined,
+  updateDate: '',
+  isDeleted: '0',
   roleIds: []
 })
 
 
 const createEmptyForm = (): Partial<SysUserVo> => ({
-  sysUser: {
-    userId: undefined,
-    userName: '',
-    userPwd: '',
-    userAvatorUrl: '',
-    userSex: '0',
-    userPhone: '',
-    createId: undefined,
-    createDate: '',
-    updateId: undefined,
-    updateDate: '',
-    isDeleted: ''
-  },
+  userId: undefined,
+  userName: '',
+  userPwd: '',
+  userAvatorUrl: '',
+  userSex: '0',
+  userPhone: '',
+  createId: undefined,
+  createDate: '',
+  updateId: undefined,
+  updateDate: '',
+  isDeleted: '0',
   roleIds: []
 })
 
@@ -324,14 +320,7 @@ const handleEdit = async (row: SysUser) => {
     const res = await getByIdSysUser(row.userId)
 
     console.log("查询用户信息",JSON.stringify(res))
-    currentRow.value = res.data
     Object.assign(form, res.data)
-
-    // 填充表单数据
-    if (res.data.sysUser) {
-      form.sysUser = { ...res.data.sysUser }
-    }
-    form.roleIds = res.data.roleIds || []
     formDialogVisible.value = true
   } catch (error) {
     console.error('获取用户详情失败:', error)
@@ -383,7 +372,7 @@ const handleSubmit = async () => {
 
   try {
     const data = { ...form }
-    if (data.sysUser.userId) {
+    if (data.userId) {
       await updateSysUser(data)
       ElMessage.success('修改成功')
     } else {

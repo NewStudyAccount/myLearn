@@ -4,6 +4,7 @@ package com.example.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.domain.SysUser;
 import com.example.domain.TableDataInfo;
+import com.example.domain.req.sysUser.SysUserAddReq;
 import com.example.domain.req.sysUser.SysUserQueryPageReq;
 import com.example.domain.req.sysUser.SysUserUpdateReq;
 import com.example.domain.vo.SysUserVo;
@@ -24,7 +25,7 @@ public interface SysUserService extends IService<SysUser> {
 
     public SysUserVo getUserById(Long userId);
 
-    public int addUser(SysUser sysUser);
+    public int addUser(SysUserAddReq sysUserAddReq);
 
     TableDataInfo<SysUser> queryUserListPage(SysUserQueryPageReq sysUserQueryPageReq);
 

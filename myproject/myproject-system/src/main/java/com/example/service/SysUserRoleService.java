@@ -18,12 +18,12 @@ public interface SysUserRoleService extends IService<SysUserRole> {
 
     List<SysUserRole> queryUserRoleList(Long userId);
 
-    void addUserRole(SysUserRoleAddReq sysUserRoleAddReq);
+    public void addUserRoles(Long userId,List<Long> roleIds);
 
-    void deleteUserRole(List<Long> roleIds);
+    void deleteUserRole(Long roleIds);
 
 
-    void updateUserRole(List<Long> roleIds);
+    void updateUserRole(Long userId,List<Long> roleIds);
 
 
 

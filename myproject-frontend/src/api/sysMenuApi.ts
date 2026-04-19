@@ -90,7 +90,7 @@ export function createSysMenu(data: Partial<SysMenu>) {
 export function updateSysMenu(data: Partial<SysMenu>) {
   return http({
     url: '/sysMenu',
-    method: 'put',
+    method: 'post',
     data
   })
 }
