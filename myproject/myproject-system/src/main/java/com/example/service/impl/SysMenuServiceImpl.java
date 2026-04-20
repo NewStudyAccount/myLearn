@@ -216,7 +216,19 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu>
             .last("LIMIT 1");
             SysMenu maxMenu = sysMenuMapper.selectOne(wrapper);
 
-            int nextId = (maxMenu != null) ? maxMenu.getMenuId() + 1 : 1;
+            int nextId = 0;
+            if (parentId == null || parentId == 0) {
+                nextId = (maxMenu != null) ? maxMenu.getMenuId() + 1 : 1;
+            } else {
+                if (menuType.equals("C")){
+                    int baseId = parentId * 1000;
+                    nextId = (maxMenu != null) ? maxMenu.getMenuId() + 1 : baseId + 1;
+                }else if (menuType.equals("F")){
+                    int baseId = parentId * 100;
+                    nextId = (maxMenu != null) ? maxMenu.getMenuId() + 1 : baseId + 1;
+                }
+            }
+
             sysMenu.setMenuId(nextId);
         }
 

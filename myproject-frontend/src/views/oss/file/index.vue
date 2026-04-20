@@ -117,8 +117,8 @@
   import { ref, reactive, onMounted, watch } from 'vue'
   import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { listSysOssFile, deleteSysOssFile, createSysOssFile, updateSysOssFile } from '@/api/sysOssFileApi'
-  import type { SysOssFile } from '@/api/sysOssFileApi'
+  import { listSysOssFile, deleteSysOssFile, createSysOssFile, updateSysOssFile } from '@/api/oss/sysOssFileApi'
+  import type { SysOssFile } from '@/api/oss/sysOssFileApi'
 
   const loading = ref(false)
   const dataList = ref<SysOssFile[]>([])

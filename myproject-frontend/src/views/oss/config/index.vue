@@ -4,28 +4,13 @@
       <el-form :model="queryParams" ref="queryFormRef" label-width="100px">
         <el-row :gutter="20">
                   <el-col :span="8">
-                    <el-form-item label="配置名称（唯一标识）" prop="configName">
+                    <el-form-item label="配置名称" prop="configName">
                       <el-input v-model="queryParams.configName" placeholder="请输入配置名称（唯一标识）" clearable @keyup.enter="handleQuery" />
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="提供商类型（aliyun、minio等）" prop="provider">
+                    <el-form-item label="提供商类型" prop="provider">
                       <el-input v-model="queryParams.provider" placeholder="请输入提供商类型（aliyun、minio等）" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="服务端点" prop="endpoint">
-                      <el-input v-model="queryParams.endpoint" placeholder="请输入服务端点" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="访问密钥" prop="accessKey">
-                      <el-input v-model="queryParams.accessKey" placeholder="请输入访问密钥" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="秘密密钥" prop="secretKey">
-                      <el-input v-model="queryParams.secretKey" placeholder="请输入秘密密钥" clearable @keyup.enter="handleQuery" />
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
@@ -34,28 +19,11 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="区域（可选）" prop="region">
-                      <el-input v-model="queryParams.region" placeholder="请输入区域（可选）" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="JSON格式的扩展配置" prop="extraConfig">
-                      <el-input v-model="queryParams.extraConfig" placeholder="请输入JSON格式的扩展配置" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="是否启用（1启用，0禁用）" prop="isActive">
-                      <el-input v-model="queryParams.isActive" placeholder="请输入是否启用（1启用，0禁用）" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="创建时间" prop="createdAt">
-                      <el-input v-model="queryParams.createdAt" placeholder="请输入创建时间" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="更新时间" prop="updatedAt">
-                      <el-input v-model="queryParams.updatedAt" placeholder="请输入更新时间" clearable @keyup.enter="handleQuery" />
+                    <el-form-item label="是否启用" prop="isActive">
+                      <el-select v-model="queryParams.isActive" placeholder="请选择是否启用" clearable @change="handleQuery">
+                        <el-option label="启用" :value="1" />
+                        <el-option label="禁用" :value="0" />
+                      </el-select>
                     </el-form-item>
                   </el-col>
           <el-col :span="8" style="margin-top: 4px;">
@@ -82,16 +50,17 @@
 
       <el-table v-loading="loading" :data="dataList" @row-click="rowClick" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="主键ID" align="center" prop="id" />
-            <el-table-column label="配置名称（唯一标识）" align="center" prop="configName" />
-            <el-table-column label="提供商类型（aliyun、minio等）" align="center" prop="provider" />
+            <el-table-column label="配置名称" align="center" prop="configName" />
+            <el-table-column label="提供商类型" align="center" prop="provider" />
             <el-table-column label="服务端点" align="center" prop="endpoint" />
-            <el-table-column label="访问密钥" align="center" prop="accessKey" />
-            <el-table-column label="秘密密钥" align="center" prop="secretKey" />
             <el-table-column label="存储桶名称" align="center" prop="bucketName" />
             <el-table-column label="区域（可选）" align="center" prop="region" />
-            <el-table-column label="JSON格式的扩展配置" align="center" prop="extraConfig" />
-            <el-table-column label="是否启用（1启用，0禁用）" align="center" prop="isActive" />
+            <el-table-column label="是否启用" align="center" prop="isActive">
+              <template #default="{ row }">
+                <el-tag v-if="row.isActive === true" type="success">启用</el-tag>
+                <el-tag v-else type="danger">禁用</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="创建时间" align="center" prop="createdAt" />
             <el-table-column label="更新时间" align="center" prop="updatedAt" />
         <el-table-column label="操作" width="180" align="center">
@@ -138,15 +107,10 @@
                 <el-form-item label="JSON格式的扩展配置" prop="extraConfig">
                       <el-input v-model="form.extraConfig" type="textarea" placeholder="请输入JSON格式的扩展配置" />
                 </el-form-item>
-                <el-form-item label="是否启用（1启用，0禁用）" prop="isActive">
-                      <el-input v-model="form.isActive" placeholder="请输入是否启用（1启用，0禁用）" />
+                <el-form-item label="是否启用" prop="isActive">
+                  <el-switch v-model="form.isActive" :active-value="1" :inactive-value="0" active-text="启用" inactive-text="禁用" />
                 </el-form-item>
-                <el-form-item label="创建时间" prop="createdAt">
-                      <el-date-picker v-model="form.createdAt" type="datetime" placeholder="请选择创建时间" />
-                </el-form-item>
-                <el-form-item label="更新时间" prop="updatedAt">
-                      <el-date-picker v-model="form.updatedAt" type="datetime" placeholder="请选择更新时间" />
-                </el-form-item>
+
       </el-form>
       <template #footer>
         <el-button @click="formDialogVisible = false">取消</el-button>
@@ -165,7 +129,10 @@
             <el-descriptions-item label="存储桶名称">{{ currentRow?.bucketName }}</el-descriptions-item>
             <el-descriptions-item label="区域（可选）">{{ currentRow?.region }}</el-descriptions-item>
             <el-descriptions-item label="JSON格式的扩展配置">{{ currentRow?.extraConfig }}</el-descriptions-item>
-            <el-descriptions-item label="是否启用（1启用，0禁用）">{{ currentRow?.isActive }}</el-descriptions-item>
+            <el-descriptions-item label="是否启用">
+              <el-tag v-if="currentRow?.isActive === 1" type="success">启用</el-tag>
+              <el-tag v-else type="danger">禁用</el-tag>
+            </el-descriptions-item>
             <el-descriptions-item label="创建时间">{{ currentRow?.createdAt }}</el-descriptions-item>
             <el-descriptions-item label="更新时间">{{ currentRow?.updatedAt }}</el-descriptions-item>
       </el-descriptions>
@@ -177,8 +144,8 @@
   import { ref, reactive, onMounted, watch } from 'vue'
   import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { listSysOssConfig, deleteSysOssConfig, createSysOssConfig, updateSysOssConfig } from '@/api/sysOssConfigApi'
-  import type { SysOssConfig } from '@/api/sysOssConfigApi'
+  import { listSysOssConfig, deleteSysOssConfig, createSysOssConfig, updateSysOssConfig } from '@/api/oss/sysOssConfigApi'
+  import type { SysOssConfig } from '@/api/oss/sysOssConfigApi'
 
   const loading = ref(false)
   const dataList = ref<SysOssConfig[]>([])

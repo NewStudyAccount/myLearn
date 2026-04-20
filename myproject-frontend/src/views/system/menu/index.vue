@@ -9,6 +9,9 @@
         <el-button :disabled="single" type="danger" @click="handleDelete(selectedRow)">
           <el-icon><Delete /></el-icon>删除
         </el-button>
+        <el-button type="warning" @click="handleRefresh">
+          <el-icon><Refresh /></el-icon>刷新
+        </el-button>
       </div>
 
       <el-table
@@ -67,7 +70,11 @@
                       <el-input v-model="form.perCode" placeholder="请输入权限code" />
                 </el-form-item>
                 <el-form-item label="菜单类型" prop="menuType">
-                      <el-input v-model="form.menuType" placeholder="请输入菜单类型" />
+                  <el-select v-model="form.menuType" placeholder="请选择菜单类型" style="width: 100%">
+                    <el-option label="目录" value="M" />
+                    <el-option label="菜单" value="C" />
+                    <el-option label="按钮" value="F" />
+                  </el-select>
                 </el-form-item>
                 <el-form-item label="排序" prop="menuSort">
                       <el-input v-model="form.menuSort" placeholder="请输入排序" />
@@ -85,7 +92,7 @@
                       <el-input v-model="form.componentName" placeholder="请输入" />
                 </el-form-item>
                 <el-form-item label="状态" prop="status">
-                  <el-input v-model="form.status" placeholder="请输入" />
+                  <el-switch v-model="form.status" :active-value="0" :inactive-value="1" active-text="正常" inactive-text="停用" />
                 </el-form-item>
       </el-form>
       <template #footer>
@@ -99,7 +106,12 @@
             <el-descriptions-item label="菜单id">{{ currentRow?.menuId }}</el-descriptions-item>
             <el-descriptions-item label="菜单名称">{{ currentRow?.menuName }}</el-descriptions-item>
             <el-descriptions-item label="权限code">{{ currentRow?.perCode }}</el-descriptions-item>
-            <el-descriptions-item label="菜单类型">{{ currentRow?.menuType }}</el-descriptions-item>
+            <el-descriptions-item label="菜单类型">
+              <el-tag v-if="currentRow?.menuType === 'M'" type="primary">目录</el-tag>
+              <el-tag v-else-if="currentRow?.menuType === 'C'" type="success">菜单</el-tag>
+              <el-tag v-else-if="currentRow?.menuType === 'F'" type="warning">按钮</el-tag>
+              <el-tag v-else>{{ currentRow?.menuType }}</el-tag>
+            </el-descriptions-item>
             <el-descriptions-item label="排序">{{ currentRow?.menuSort }}</el-descriptions-item>
             <el-descriptions-item label="父级id">{{ currentRow?.parentId }}</el-descriptions-item>
             <el-descriptions-item label="路由地址">{{ currentRow?.path }}</el-descriptions-item>
@@ -111,8 +123,8 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, onMounted, watch } from 'vue'
-  import {  Plus, Delete } from '@element-plus/icons-vue'
+  import { ref, reactive, onMounted } from 'vue'
+  import {Plus, Delete, Refresh} from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { deleteSysMenu, createSysMenu, updateSysMenu, listSysMenuTree} from '@/api/sysMenuApi'
   import type { SysMenu } from '@/api/sysMenuApi'
@@ -170,6 +182,10 @@
     } catch {}
   }
 
+  const handleRefresh = async () => {
+    getList()
+  }
+
   const handleSelectionChange = (selection: SysMenu[]) => {
     single.value = selection.length !== 1
     if (selection.length === 1) {
@@ -199,15 +215,6 @@
     } catch {}
   }
 
-  watch(() => currentRow.value, (val) => {
-    if (val) {
-      Object.assign(form, val)
-    } else {
-      Object.keys(form).forEach(key => {
-        (form as any)[key] = undefined
-      })
-    }
-  }, { immediate: true })
 
   onMounted(() => {
     getList()

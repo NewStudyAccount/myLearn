@@ -82,14 +82,14 @@ public class OssConfigController {
     }
 
     @Operation(summary = "新增")
-    @PostMapping
+    @PostMapping("add")
     public Response<Boolean> save(@RequestBody SysOssConfig entity) {
         boolean result = ossConfigService.save(entity);
         return Response.success(result);
     }
 
     @Operation(summary = "修改")
-    @PutMapping
+    @PostMapping("update")
     public Response<Boolean> update(@RequestBody SysOssConfig entity) {
         boolean result = ossConfigService.updateById(entity);
         return Response.success(result);

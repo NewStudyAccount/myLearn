@@ -40,7 +40,7 @@ export function getById${className}(id: number) {
 
 export function create${className}(data: Partial<${className}>) {
   return http({
-    url: '/${classNameLower}',
+    url: '/${classNameLower}/add',
     method: 'post',
     data
   })
@@ -48,8 +48,8 @@ export function create${className}(data: Partial<${className}>) {
 
 export function update${className}(data: Partial<${className}>) {
   return http({
-    url: '/${classNameLower}',
-    method: 'put',
+    url: '/${classNameLower}/update',
+    method: 'post',
     data
   })
 }

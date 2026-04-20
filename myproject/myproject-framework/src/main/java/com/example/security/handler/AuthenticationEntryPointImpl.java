@@ -47,13 +47,35 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
      * 检查请求是否有对应的处理器
      */
     private boolean checkHasHandler(HttpServletRequest request) {
+//        try {
+//            // 使用 RequestMappingHandlerMapping 的 getHandler 方法检查请求是否有匹配的处理器
+//            HandlerExecutionChain handler = requestMappingHandlerMapping.getHandler(request);
+//            return handler != null && handler.getHandler() instanceof HandlerMethod;
+//        } catch (Exception ex) {
+//            // 如果检查失败，默认认为有处理器（保持原有行为）
+//            return true;
+//        }
         try {
-            // 使用 RequestMappingHandlerMapping 的 getHandler 方法检查请求是否有匹配的处理器
             HandlerExecutionChain handler = requestMappingHandlerMapping.getHandler(request);
-            return handler != null && handler.getHandler() instanceof HandlerMethod;
+
+            if (handler == null) {
+                return false;
+            }
+
+            Object handlerObj = handler.getHandler();
+
+            if (handlerObj instanceof HandlerMethod) {
+                return true;
+            }
+
+            String handlerClassName = handlerObj.getClass().getName();
+            if (handlerClassName.contains("ResourceHttpRequestHandler")) {
+                return false;
+            }
+
+            return false;
         } catch (Exception ex) {
-            // 如果检查失败，默认认为有处理器（保持原有行为）
-            return true;
+            return false;
         }
     }
 }

@@ -56,6 +56,9 @@ export function getMenuTree(): Promise<ApiResponse<MenuItem[]>> {
 export function listSysMenuTree() {
   return http({
     url: '/sysMenu/listTree',
+    headers: {
+      repeatSubmit: false
+    },
     method: 'post',
   })
 }

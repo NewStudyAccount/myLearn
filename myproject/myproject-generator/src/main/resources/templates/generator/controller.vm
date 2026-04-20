@@ -33,14 +33,14 @@ public class ${className}Controller {
     }
 
     @Operation(summary = "新增")
-    @PostMapping
+    @PostMapping("add")
     public Response<Boolean> save(@RequestBody ${className} entity) {
         boolean result = ${classNameLower}Service.save(entity);
         return Response.success(result);
     }
 
     @Operation(summary = "修改")
-    @PutMapping
+    @PostMapping("update)
     public Response<Boolean> update(@RequestBody ${className} entity) {
         boolean result = ${classNameLower}Service.updateById(entity);
         return Response.success(result);

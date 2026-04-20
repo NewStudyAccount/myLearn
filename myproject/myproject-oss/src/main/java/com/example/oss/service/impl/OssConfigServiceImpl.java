@@ -10,6 +10,7 @@ import com.example.oss.factory.OssClientFactory;
 import com.example.oss.mapper.OssConfigMapper;
 import com.example.oss.service.OssConfigService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -127,7 +128,12 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, SysOssCon
 
     @Override
     public TableDataInfo<SysOssConfig> querySysOssConfigListPage(SysOssConfigQueryPageReq pageReq) {
-        Page<SysOssConfig> sysOssConfigPage = this.baseMapper.selectPage(pageReq.getPageQuery().build(), null);
+        LambdaQueryWrapper<SysOssConfig> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotEmpty(pageReq.getConfigName()),SysOssConfig::getConfigName, pageReq.getConfigName())
+                .eq(StringUtils.isNotEmpty(pageReq.getProvider()),SysOssConfig::getProvider, pageReq.getProvider())
+                .eq(StringUtils.isNotEmpty(pageReq.getBucketName()),SysOssConfig::getBucketName, pageReq.getBucketName())
+                .eq(pageReq.getIsActive()!=null,SysOssConfig::getIsActive, pageReq.getIsActive());
+        Page<SysOssConfig> sysOssConfigPage = this.baseMapper.selectPage(pageReq.getPageQuery().build(), queryWrapper);
         return TableDataInfo.build(sysOssConfigPage);
     }
 

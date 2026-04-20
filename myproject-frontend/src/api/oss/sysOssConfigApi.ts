@@ -55,7 +55,7 @@ export function getByIdSysOssConfig(id: number) {
 
 export function createSysOssConfig(data: Partial<SysOssConfig>) {
   return http({
-    url: '/sysOssConfig',
+    url: '/sysOssConfig/add',
     method: 'post',
     data
   })
@@ -63,8 +63,8 @@ export function createSysOssConfig(data: Partial<SysOssConfig>) {
 
 export function updateSysOssConfig(data: Partial<SysOssConfig>) {
   return http({
-    url: '/sysOssConfig',
-    method: 'put',
+    url: '/sysOssConfig/update',
+    method: 'post',
     data
   })
 }

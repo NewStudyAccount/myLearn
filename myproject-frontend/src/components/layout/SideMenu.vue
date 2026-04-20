@@ -49,11 +49,15 @@ const dynamicMenus = computed<MenuDisplayItem[]>(() => {
 const handleSelect = (path: string) => {
   router.push(path)
 }
+const handleLogoClick = () => {
+  router.push('/')
+  window.location.reload()
+}
 </script>
 
 <template>
   <div class="side-menu">
-    <div class="logo">
+    <div class="logo" @click="handleLogoClick" style="cursor: pointer;">
       <h3 v-if="!isCollapse">MyProject</h3>
       <h3 v-else>MP</h3>
     </div>
