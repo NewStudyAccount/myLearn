@@ -14,6 +14,9 @@
  Date: 20/04/2026 00:00:34
 */
 
+create database if not exists myproject default character set utf8mb4;
+use myproject;
+
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
