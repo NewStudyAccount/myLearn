@@ -42,8 +42,11 @@
 
     <el-card class="table-card">
       <div class="toolbar">
-        <el-button type="primary" @click="handleAdd">
-          <el-icon><Plus /></el-icon>新增
+        <el-button type="primary" @click="handleUpload">
+          <el-icon><Upload /></el-icon>上传文件
+        </el-button>
+        <el-button type="success" @click="handleImageUpload">
+          <el-icon><Picture /></el-icon>上传图片
         </el-button>
         <el-button :disabled="single" type="danger" @click="handleDelete(selectedRow)">
           <el-icon><Delete /></el-icon>删除
@@ -52,16 +55,29 @@
 
       <el-table v-loading="loading" :data="dataList" @row-click="rowClick" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="" align="center" prop="ossId" />
-            <el-table-column label="" align="center" prop="fileName" />
-            <el-table-column label="" align="center" prop="originalName" />
-            <el-table-column label="" align="center" prop="fileSuffix" />
-            <el-table-column label="" align="center" prop="fileUrl" />
+            <el-table-column label="文件Id" align="center" prop="ossId" />
+            <el-table-column label="预览" align="center" width="100">
+              <template #default="{ row }">
+                <el-image
+                    v-if="isImage(row.fileSuffix)"
+                    :src="row.fileUrl"
+                    :preview-src-list="[row.fileUrl]"
+                    fit="cover"                  style="width: 60px; height: 60px; border-radius: 4px; cursor: pointer;"
+                    preview-teleported
+                />
+                <span v-else>-</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="文件名" align="center" prop="fileName" />
+            <el-table-column label="原始文件名" align="center" prop="originalName" />
+            <el-table-column label="后缀" align="center" prop="fileSuffix" />
+            <el-table-column label="文件访问Url" align="center" prop="fileUrl" />
             <el-table-column label="" align="center" prop="contentType" />
         <el-table-column label="操作" width="180" align="center">
           <template #default="{ row }">
+            <el-button type="text" @click.stop="handleDownload(row)">下载</el-button>
+            <el-button type="text" @click.stop="handlePreview(row)">预览</el-button>
             <el-button type="text" @click.stop="handleView(row)">查看</el-button>
-            <el-button type="text" @click.stop="handleEdit(row)">编辑</el-button>
             <el-button type="text" @click.stop="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -96,29 +112,52 @@
       </el-form>
       <template #footer>
         <el-button @click="formDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
 
     <el-dialog v-model="viewDialogVisible" title="详情" width="800px" destroy-on-close>
       <el-descriptions :column="2" border>
-            <el-descriptions-item label="">{{ currentRow?.ossId }}</el-descriptions-item>
-            <el-descriptions-item label="">{{ currentRow?.fileName }}</el-descriptions-item>
-            <el-descriptions-item label="">{{ currentRow?.originalName }}</el-descriptions-item>
-            <el-descriptions-item label="">{{ currentRow?.fileSuffix }}</el-descriptions-item>
-            <el-descriptions-item label="">{{ currentRow?.fileUrl }}</el-descriptions-item>
-            <el-descriptions-item label="">{{ currentRow?.contentType }}</el-descriptions-item>
+            <el-descriptions-item label="文件Id">{{ currentRow?.ossId }}</el-descriptions-item>
+            <el-descriptions-item label="文件名">{{ currentRow?.fileName }}</el-descriptions-item>
+            <el-descriptions-item label="原始文件名">{{ currentRow?.originalName }}</el-descriptions-item>
+            <el-descriptions-item label="后缀">{{ currentRow?.fileSuffix }}</el-descriptions-item>
+            <el-descriptions-item label="访问URL">{{ currentRow?.fileUrl }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
+
+    <FileUpload
+        v-model="uploadDialogVisible"
+        title="上传文件"
+        :limit="1"
+        tip="支持任意格式文件上传"
+        @success="handleUploadSuccess"
+    />
+
+    <el-dialog v-model="imageUploadDialogVisible" title="上传图片" width="600px" destroy-on-close>
+      <ImageUpload
+          v-model="uploadedImageUrl"
+          :limit="9"
+          :multiple="true"
+          tip="支持 jpg、png、gif 格式，单个文件不超过 5MB"
+      />
+      <template #footer>
+        <el-button @click="imageUploadDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleImageUploadConfirm">确定</el-button>
+      </template>
+    </el-dialog>
+
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref, reactive, onMounted, watch } from 'vue'
-  import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
+  import { Search, Refresh, Delete } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { listSysOssFile, deleteSysOssFile, createSysOssFile, updateSysOssFile } from '@/api/oss/sysOssFileApi'
+  import {listSysOssFile, deleteSysOssFile, uploadSysOssFile, downloadSysOssFile} from '@/api/oss/sysOssFileApi'
   import type { SysOssFile } from '@/api/oss/sysOssFileApi'
+  import { downloadFile } from '@/utils/fileDownload'
+  import FileUpload from '@/components/FileUpload/index.vue'
+  import ImageUpload from '@/components/ImageUpload/index.vue'
 
   const loading = ref(false)
   const dataList = ref<SysOssFile[]>([])
@@ -137,6 +176,10 @@
   const queryFormRef = ref()
   const formDialogVisible = ref(false)
   const viewDialogVisible = ref(false)
+  const uploadDialogVisible = ref(false)
+  const imageUploadDialogVisible = ref(false)
+  const uploadedImageUrl = ref<string | string[]>('')
+
   const dialogTitle = ref('')
   const currentRow = ref<SysOssFile>()
   const selectedRow = ref<SysOssFile>()
@@ -177,31 +220,95 @@
     handleQuery()
   }
 
-  const handleAdd = () => {
-    dialogTitle.value = '新增'
-    currentRow.value = undefined
-    Object.keys(form).forEach(key => {
-      (form as any)[key] = undefined
-    })
-    formDialogVisible.value = true
-  }
 
-  const handleEdit = (row: SysOssFile) => {
-    dialogTitle.value = '编辑'
-    currentRow.value = row
-    Object.assign(form, row)
-    formDialogVisible.value = true
-  }
+
+
 
   const handleView = (row: SysOssFile) => {
     currentRow.value = row
     viewDialogVisible.value = true
   }
 
+  const handleUpload = () => {
+    uploadDialogVisible.value = true
+  }
+
+
+  const handleImageUpload = () => {
+    uploadedImageUrl.value = ''
+    imageUploadDialogVisible.value = true
+  }
+
+  const handleImageUploadConfirm = async () => {
+    if (!uploadedImageUrl.value) {
+      ElMessage.warning('请至少上传一张图片')
+      return
+    }
+
+    try {
+      const urls = Array.isArray(uploadedImageUrl.value)
+          ? uploadedImageUrl.value
+          : [uploadedImageUrl.value]
+
+      for (const url of urls) {
+        ElMessage.success('图片上传成功')
+      }
+
+      imageUploadDialogVisible.value = false
+      await getList()
+    } catch (error) {
+      ElMessage.error('操作失败')
+    }
+  }
+
+  const handleUploadSuccess = async (files: File[]) => {
+    if (!files || files.length === 0) return
+
+    try {
+      await uploadSysOssFile(files[0])
+      ElMessage.success('上传成功')
+      uploadDialogVisible.value = false
+      await getList()
+    } catch (error) {
+      ElMessage.error('上传失败')
+    }
+  }
+
+  const handleDownload = async (row: SysOssFile) => {
+    if (!row.fileName) {
+      ElMessage.warning('文件不存在')
+      return
+    }
+    try {
+      const blob = await downloadSysOssFile(row.fileName)
+      downloadFile(blob, row.originalName || row.fileName)
+    } catch (error) {
+      ElMessage.error('下载失败')
+    }
+  }
+
+  const isImage = (suffix?: string) => {
+    if (!suffix) return false
+    const imageSuffixes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg']
+    return imageSuffixes.includes(suffix.toLowerCase())
+  }
+
+  const handlePreview = (row: SysOssFile) => {
+    if (row.fileUrl) {
+      window.open(row.fileUrl, '_blank')
+    } else {
+      ElMessage.warning('文件链接不存在')
+    }
+  }
+
+
+
   const handleDelete = async (row?: SysOssFile) => {
     if (!row) return
     try {
       await ElMessageBox.confirm('是否确认删除选中的数据?', '警告', { type: 'warning' })
+      console.log('是否确认删除选中的数据'+JSON.stringify(row))
+      console.log('是否确认删除选中的数据'+row.ossId)
       await deleteSysOssFile(row.ossId)
       ElMessage.success('删除成功')
       await getList()
@@ -219,23 +326,6 @@
     currentRow.value = row
   }
 
-  const handleSubmit = async () => {
-    const valid = await formRef.value?.validate()
-    if (!valid) return
-
-    try {
-      const data = { ...form }
-      if (data.ossId) {
-        await updateSysOssFile(data)
-        ElMessage.success('修改成功')
-      } else {
-        await createSysOssFile(data)
-        ElMessage.success('新增成功')
-      }
-      formDialogVisible.value = false
-      await getList()
-    } catch {}
-  }
 
   watch(() => currentRow.value, (val) => {
     if (val) {

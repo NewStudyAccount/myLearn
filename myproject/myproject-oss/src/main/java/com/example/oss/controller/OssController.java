@@ -1,9 +1,14 @@
 package com.example.oss.controller;
 
+import com.example.domain.Response;
+import com.example.domain.TableDataInfo;
 import com.example.oss.domain.SysOssConfig;
+import com.example.oss.domain.SysOssFile;
+import com.example.oss.domain.req.sysOssFile.SysOssFileQueryPageReq;
 import com.example.oss.factory.OssClientFactory;
 import com.example.oss.service.OssConfigService;
 import com.example.oss.service.OssFileService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +28,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping("/project/oss/file")
+@RequestMapping("/project/sysOssFile")
 @RequiredArgsConstructor
 public class OssController {
 
@@ -85,4 +90,33 @@ public class OssController {
         }
         return sysOssConfig;
     }
+
+
+
+    @Operation(summary = "分页查询")
+    @PostMapping("/list")
+    public Response<TableDataInfo<SysOssFile>> list(@RequestBody SysOssFileQueryPageReq pageReq) {
+        TableDataInfo<SysOssFile> tableDataInfo = ossFileService.querySysOssFileListPage(pageReq);
+        return Response.success(tableDataInfo);
+    }
+
+    @Operation(summary = "根据ID查询")
+    @GetMapping("/{id}")
+    public Response<SysOssFile> getById(@PathVariable Long id) {
+        SysOssFile entity = ossFileService.queryById(id);
+        return Response.success(entity);
+    }
+
+
+
+    @Operation(summary = "删除")
+    @DeleteMapping("/{id}")
+    public Response<?> delete(@PathVariable("id") Long id) {
+        int i = ossFileService.deleteById(id);
+        return Response.success(i);
+    }
+
+
+
+
 }

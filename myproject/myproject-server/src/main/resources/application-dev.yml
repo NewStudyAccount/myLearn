@@ -7,7 +7,23 @@
 #  config: classpath:logback.xml
 server:
   port: 38080
-
+# 日志配置 - 减少日志输出
+#logging:
+#  level:
+#    root: INFO
+#    # 仅保留必要的调试日志
+#    com.example: DEBUG
+#    # SQL 日志（使用 p6spy 时）
+#    p6spy: INFO
+#    # Spring Framework 相关日志
+#    org.springframework.web: WARN
+#    org.springframework.security: WARN
+#    org.springframework.boot.autoconfigure: WARN
+#    # MyBatis-Plus 日志
+#    com.baomidou.mybatisplus: WARN
+#    # Hibernate/SQL 日志
+#    org.hibernate.SQL: WARN
+#    org.hibernate.type.descriptor.sql.BasicBinder: WARN
 
 spring:
   datasource:
@@ -43,17 +59,3 @@ knife4j:
     language: zh_cn
 
 
-
-# MinIO 配置
-minio:
-  endpoint: http://localhost:9000
-  accessKey: your-minio-access-key
-  secretKey: your-minio-secret-key
-  bucketName: weblog
-
-# 阿里云OSS 配置
-aliyun:
-  oss:
-    endpoint: oss-cn-hangzhou.aliyuncs.com
-    accessKeyId: your-access-key
-    accessKeySecret: your-secret-key

@@ -41,25 +41,31 @@ export function getByIdSysOssFile(id: number) {
   })
 }
 
-export function createSysOssFile(data: Partial<SysOssFile>) {
-  return http({
-    url: '/sysOssFile/add',
-    method: 'post',
-    data
-  })
-}
-
-export function updateSysOssFile(data: Partial<SysOssFile>) {
-  return http({
-    url: '/sysOssFile/update',
-    method: 'post',
-    data
-  })
-}
-
 export function deleteSysOssFile(id: number) {
   return http({
     url: `/sysOssFile/${id}`,
     method: 'delete'
+  })
+}
+
+
+export function uploadSysOssFile(file: File) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return http({
+    url: '/sysOssFile/upload',
+    method: 'post',
+    data: formData,
+    headers: {
+      repeatSubmit: false
+    }
+  })
+}
+
+export function downloadSysOssFile(fileName: string) {
+  return http({
+    url: `/sysOssFile/download/${fileName}`,
+    method: 'get',
+    responseType: 'blob'
   })
 }

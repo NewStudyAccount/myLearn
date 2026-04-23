@@ -13,6 +13,8 @@
 
  Date: 21/04/2026 01:21:22
 */
+create database if not exists myproject default character set utf8mb4;
+use myproject;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;

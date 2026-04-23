@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @TableName(value ="sys_oss_file")
 @AllArgsConstructor
 @NoArgsConstructor
-public class OssFile {
+public class SysOssFile {
     /**
      * 
      */
@@ -45,7 +45,7 @@ public class OssFile {
 
     private String contentType;
 
-    public OssFile(String fileName, String originalName, String fileSuffix, String fileUrl, String contentType) {
+    public SysOssFile(String fileName, String originalName, String fileSuffix, String fileUrl, String contentType) {
         this.fileName = fileName;
         this.originalName = originalName;
         this.fileSuffix = fileSuffix;
