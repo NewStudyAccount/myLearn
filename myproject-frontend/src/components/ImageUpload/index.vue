@@ -1,18 +1,17 @@
 <template>
   <div class="image-upload-container">
+    <!-- 上传按钮 -->
     <el-upload
-      ref="uploadRef"
-      :action="uploadAction"
-      :headers="uploadHeaders"
-      :show-file-list="false"
-      :before-upload="beforeUpload"
-      :on-success="handleSuccess"
-      :on-error="handleError"
-      :accept="accept"
-      :multiple="multiple"
-      :limit="limit"
-      :on-exceed="handleExceed"
-      list-type="picture-card"
+        ref="uploadRef"
+        :show-file-list="false"
+        :before-upload="beforeUpload"
+        :on-change="handleFileChange"
+        :accept="accept"
+        :multiple="multiple"
+        :limit="limit"
+        :on-exceed="handleExceed"
+        :auto-upload="false"
+        list-type="picture-card"
     >
       <el-icon><Plus /></el-icon>
     </el-upload>
@@ -20,25 +19,25 @@
     <!-- 图片列表 -->
     <div v-if="imageList.length > 0" class="image-list">
       <div
-        v-for="(image, index) in imageList"
-        :key="index"
-        class="image-item"
+          v-for="(image, index) in imageList"
+          :key="index"
+          class="image-item"
       >
         <el-image
-          :src="image.url"
-          fit="cover"
-          class="image-preview"
-          :preview-src-list="imageList.map(img => img.url)"
-          :initial-index="index"
-          preview-teleported
+            :src="image.url"
+            fit="cover"
+            class="image-preview"
+            :preview-src-list="imageList.map(img => img.url)"
+            :initial-index="index"
+            preview-teleported
         />
         <div class="image-actions">
-          <el-icon class="action-icon" @click="handlePreview(index)">
-            <ZoomIn />
-          </el-icon>
-          <el-icon class="action-icon" @click="handleRemove(index)">
+          <el-icon class="action-icon" @click.stop="handleRemove(index)">
             <Delete />
           </el-icon>
+        </div>
+        <div v-if="image.uploading" class="upload-loading">
+          <el-icon class="is-loading"><Loading /></el-icon>
         </div>
       </div>
     </div>
@@ -50,13 +49,15 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { Plus, ZoomIn, Delete } from '@element-plus/icons-vue'
-import { ElMessage, type UploadProps } from 'element-plus'
+import { Plus, Delete, Loading } from '@element-plus/icons-vue'
+import { ElMessage, type UploadProps, type UploadUserFile } from 'element-plus'
+import { uploadSysOssFile } from '@/api/oss/sysOssFileApi'
 
 interface ImageItem {
   url: string
   file?: File
   uid?: number
+  uploading?: boolean
 }
 
 interface Props {
@@ -66,8 +67,6 @@ interface Props {
   maxSize?: number
   tip?: string
   multiple?: boolean
-  uploadUrl?: string
-  headers?: Record<string, any>
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -76,9 +75,7 @@ const props = withDefaults(defineProps<Props>(), {
   accept: 'image/*',
   maxSize: 5,
   tip: '支持 jpg、png、gif 格式，单个文件不超过 5MB',
-  multiple: false,
-  uploadUrl: '/sysOssFile/upload',
-  headers: () => ({})
+  multiple: false
 })
 
 const emit = defineEmits<{
@@ -88,8 +85,7 @@ const emit = defineEmits<{
 
 const uploadRef = ref()
 const imageList = ref<ImageItem[]>([])
-const uploadAction = ref(props.uploadUrl)
-const uploadHeaders = ref(props.headers)
+const pendingFiles = ref<File[]>([])
 
 // 初始化图片列表
 watch(() => props.modelValue, (val) => {
@@ -97,7 +93,7 @@ watch(() => props.modelValue, (val) => {
     imageList.value = []
     return
   }
-  
+
   const urls = Array.isArray(val) ? val : [val]
   imageList.value = urls.filter(url => url).map(url => ({ url }))
 }, { immediate: true })
@@ -132,48 +128,64 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
   return true
 }
 
-// 上传成功
-const handleSuccess: UploadProps['onSuccess'] = (response, file) => {
-  console.log('上传成功:', response)
-  
-  // 根据后端返回的数据结构获取图片URL
-  let imageUrl = ''
-  if (response.data?.url) {
-    imageUrl = response.data.url
-  } else if (response.url) {
-    imageUrl = response.url
-  } else if (typeof response === 'string') {
-    imageUrl = response
-  }
+// 文件选择变化
+const handleFileChange = async (uploadFile: UploadUserFile) => {
+  if (!uploadFile.raw) return
 
-  if (imageUrl) {
-    imageList.value.push({
-      url: imageUrl,
-      file: file.raw,
-      uid: file.uid
-    })
-    
-    updateModelValue()
-    ElMessage.success('上传成功')
-  } else {
-    ElMessage.error('上传失败，未返回图片地址')
-  }
+  // 添加到待上传列表
+  pendingFiles.value.push(uploadFile.raw)
+
+  // 创建临时预览
+  const tempUrl = URL.createObjectURL(uploadFile.raw)
+  const tempIndex = imageList.value.length
+
+  imageList.value.push({
+    url: tempUrl,
+    file: uploadFile.raw,
+    uid: uploadFile.uid,
+    uploading: true
+  })
+
+  // 立即上传
+  await uploadFileToServer(uploadFile.raw, tempIndex)
 }
 
-// 上传失败
-const handleError: UploadProps['onError'] = (error) => {
-  console.error('上传失败:', error)
-  ElMessage.error('上传失败，请重试')
+// 上传文件到服务器
+const uploadFileToServer = async (file: File, index: number) => {
+  try {
+    const response = await uploadSysOssFile(file)
+
+    // 根据后端返回的数据结构获取图片URL
+    let imageUrl = ''
+    if (response.data?.url) {
+      imageUrl = response.data.url
+    } else if (response.url) {
+      imageUrl = response.url
+    } else if (typeof response === 'string') {
+      imageUrl = response
+    }
+
+    if (imageUrl) {
+      // 更新图片URL
+      imageList.value[index].url = imageUrl
+      imageList.value[index].uploading = false
+
+      updateModelValue()
+      ElMessage.success('上传成功')
+    } else {
+      throw new Error('未返回图片地址')
+    }
+  } catch (error) {
+    console.error('上传失败:', error)
+    ElMessage.error('上传失败，请重试')
+    // 移除失败的图片
+    imageList.value.splice(index, 1)
+  }
 }
 
 // 超出限制
 const handleExceed = () => {
   ElMessage.warning(`最多只能上传 ${props.limit} 张图片`)
-}
-
-// 预览图片
-const handlePreview = (index: number) => {
-  // el-image 的 preview-src-list 会自动处理预览
 }
 
 // 删除图片
@@ -186,7 +198,7 @@ const handleRemove = (index: number) => {
 const updateModelValue = () => {
   const urls = imageList.value.map(img => img.url)
   const value = props.multiple ? urls : (urls[0] || '')
-  
+
   emit('update:modelValue', value)
   emit('change', value)
 }
@@ -195,6 +207,7 @@ const updateModelValue = () => {
 defineExpose({
   clearFiles: () => {
     imageList.value = []
+    pendingFiles.value = []
     updateModelValue()
     uploadRef.value?.clearFiles()
   },
@@ -240,14 +253,13 @@ defineExpose({
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
         background-color: rgba(0, 0, 0, 0.5);
         opacity: 0;
         transition: opacity 0.3s;
 
         .action-icon {
           color: #fff;
-          font-size: 18px;
+          font-size: 20px;
           cursor: pointer;
           padding: 4px;
           border-radius: 4px;
@@ -256,6 +268,23 @@ defineExpose({
           &:hover {
             background-color: rgba(255, 255, 255, 0.2);
           }
+        }
+      }
+
+      .upload-loading {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.8);
+
+        .el-icon {
+          font-size: 24px;
+          color: #409eff;
         }
       }
     }

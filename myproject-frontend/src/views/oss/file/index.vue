@@ -229,9 +229,7 @@
     viewDialogVisible.value = true
   }
 
-  const handleUpload = () => {
-    uploadDialogVisible.value = true
-  }
+
 
 
   const handleImageUpload = () => {
@@ -260,6 +258,12 @@
       ElMessage.error('操作失败')
     }
   }
+
+  // 文件上传
+  const handleUpload = () => {
+    uploadDialogVisible.value = true
+  }
+
 
   const handleUploadSuccess = async (files: File[]) => {
     if (!files || files.length === 0) return
