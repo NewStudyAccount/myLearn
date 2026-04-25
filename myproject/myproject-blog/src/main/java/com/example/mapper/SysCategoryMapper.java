@@ -1,19 +1,9 @@
 package com.example.mapper;
 
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.domain.pojo.SysCategory;
+import org.apache.ibatis.annotations.Mapper;
 
-/**
-* @author QJJ
-* @description 针对表【sys_category(文章分类)】的数据库操作Mapper
-* @createDate 2025-04-01 23:31:09
-* @Entity generator.domain.SysCategory
-*/
+@Mapper
 public interface SysCategoryMapper extends BaseMapper<SysCategory> {
-
 }
-
-
-
-

@@ -27,28 +27,28 @@ public class ${className}Controller {
 
     @Operation(summary = "根据ID查询")
     @GetMapping("/{id}")
-    public Response<${className}> getById(@PathVariable Long id) {
-        ${className} entity = ${classNameLower}Service.getById(id);
+    public Response<${className}> queryById(@PathVariable Long id) {
+        ${className} entity = ${classNameLower}Service.queryById(id);
         return Response.success(entity);
     }
 
     @Operation(summary = "新增")
     @PostMapping("add")
-    public Response<Boolean> save(@RequestBody ${className} entity) {
-        boolean result = ${classNameLower}Service.save(entity);
+    public Response<Boolean> add${className}(@RequestBody ${className} entity) {
+        int result = ${classNameLower}Service.add${className}(entity);
         return Response.success(result);
     }
 
     @Operation(summary = "修改")
-    @PostMapping("update)
-    public Response<Boolean> update(@RequestBody ${className} entity) {
-        boolean result = ${classNameLower}Service.updateById(entity);
+    @PostMapping("update")
+    public Response<?> update${className}(@RequestBody ${className} entity) {
+        int result = ${classNameLower}Service.updateBy${className}Id(entity);
         return Response.success(result);
     }
 
     @Operation(summary = "删除")
     @DeleteMapping("/{id}")
-    public Response<Boolean> delete(@PathVariable Long id) {
+    public Response<?> delete(@PathVariable Long id) {
         boolean result = ${classNameLower}Service.removeById(id);
         return Response.success(result);
     }

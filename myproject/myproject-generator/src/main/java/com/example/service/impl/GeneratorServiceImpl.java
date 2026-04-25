@@ -69,11 +69,12 @@ public class GeneratorServiceImpl implements GeneratorService {
         Map<String, String> result = new LinkedHashMap<>();
 
         // Backend code
-        result.put("backend/" + className + ".java", templateEngine.render("templates/generator/domain.vm", context));
-        result.put("backend/" + className + "Mapper.java", templateEngine.render("templates/generator/mapper.vm", context));
-        result.put("backend/" + className + "Service.java", templateEngine.render("templates/generator/service.vm", context));
-        result.put("backend/" + className + "ServiceImpl.java", templateEngine.render("templates/generator/serviceImpl.vm", context));
-        result.put("backend/" + className + "Controller.java", templateEngine.render("templates/generator/controller.vm", context));
+        result.put("backend/domain/" + className + ".java", templateEngine.render("templates/generator/domain.vm", context));
+        result.put("backend/domain/req/" + classNameLower + "/" + className + "QueryPageReq.java", templateEngine.render("templates/generator/pageQuery.vm", context));
+        result.put("backend/mapper/" + className + "Mapper.java", templateEngine.render("templates/generator/mapper.vm", context));
+        result.put("backend/service/" + className + "Service.java", templateEngine.render("templates/generator/service.vm", context));
+        result.put("backend/service/impl/" + className + "ServiceImpl.java", templateEngine.render("templates/generator/serviceImpl.vm", context));
+        result.put("backend/controller/" + className + "Controller.java", templateEngine.render("templates/generator/controller.vm", context));
 
         // Frontend code
         result.put("frontend/views/" + classNameLower + "/index.vue", templateEngine.render("templates/generator/list.vue.vm", context));
@@ -82,7 +83,6 @@ public class GeneratorServiceImpl implements GeneratorService {
 
         return result;
     }
-
     @Override
     public byte[] downloadCode(String tableName, String tablePrefix, String packageName) {
         Map<String, String> codeMap = generateCode(tableName, tablePrefix, packageName);

@@ -23,7 +23,7 @@ public class GeneratorController {
 
     @Operation(summary = "获取数据库表列表")
     @GetMapping("/tables")
-    public Response<List<TableInfo>> getTables() {
+    public Response<?> getTables() {
         List<TableInfo> tables = generatorService.getTables();
         return Response.success(tables);
     }

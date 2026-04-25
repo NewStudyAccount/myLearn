@@ -31,14 +31,14 @@ export function list${className}(params: ${className}ListParams) {
   })
 }
 
-export function getById${className}(id: number) {
+export function get${className}ById(id: number) {
   return http({
     url: `/${classNameLower}/${id}`,
     method: 'get'
   })
 }
 
-export function create${className}(data: Partial<${className}>) {
+export function add${className}(data: Partial<${className}>) {
   return http({
     url: '/${classNameLower}/add',
     method: 'post',

@@ -12,9 +12,26 @@ import org.springframework.stereotype.Service;
 @Service
 public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${className}> implements ${className}Service {
 
-@Override
-public TableDataInfo<${className}> query${className}ListPage(${className}QueryPageReq pageReq) {
-Page<${className}> page = baseMapper.selectPage(pageReq.getPageQuery().build(), null);
-return TableDataInfo.build(page);
-}
+    @Override
+    public TableDataInfo<${className}> query${className}ListPage(${className}QueryPageReq pageReq) {
+        Page<${className}> page = baseMapper.selectPage(pageReq.getPageQuery().build(), null);
+        return TableDataInfo.build(page);
+    }
+
+
+    @Override
+    public ${className} queryById(Long id) {
+        return baseMapper.selectById(id);
+    }
+
+    @Override
+    public int add${className}(${className} entity) {
+        return baseMapper.insert(entity);
+    }
+
+    @Override
+    public int update${className}ById(${className} entity) {
+        return baseMapper.updateById(entity);
+    }
+
 }

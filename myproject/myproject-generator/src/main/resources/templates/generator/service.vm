@@ -7,5 +7,11 @@ import ${package}.domain.req.${className}.${className}QueryPageReq;
 
 public interface ${className}Service extends IService<${className}> {
 
-TableDataInfo<${className}> query${className}ListPage(${className}QueryPageReq pageReq);
+    TableDataInfo<${className}> query${className}ListPage(${className}QueryPageReq pageReq);
+
+    ${className} queryById(Long id);
+
+    int add${className}(${className} entity);
+
+    int update${className}ById(${className} entity);
 }
