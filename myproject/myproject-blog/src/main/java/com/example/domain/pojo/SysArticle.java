@@ -1,7 +1,6 @@
 package com.example.domain.pojo;
 
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -19,7 +18,7 @@ public class SysArticle implements Serializable {
     /**
      * 文章id
      */
-    @TableId(type = IdType.AUTO)
+    @TableId
     private Long id;
 
     /**

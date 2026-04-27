@@ -34,7 +34,7 @@ public class ${className}Controller {
 
     @Operation(summary = "新增")
     @PostMapping("add")
-    public Response<Boolean> add${className}(@RequestBody ${className} entity) {
+    public Response<?> add${className}(@RequestBody ${className} entity) {
         int result = ${classNameLower}Service.add${className}(entity);
         return Response.success(result);
     }
@@ -42,7 +42,7 @@ public class ${className}Controller {
     @Operation(summary = "修改")
     @PostMapping("update")
     public Response<?> update${className}(@RequestBody ${className} entity) {
-        int result = ${classNameLower}Service.updateBy${className}Id(entity);
+        int result = ${classNameLower}Service.update${className}ById(entity);
         return Response.success(result);
     }
 

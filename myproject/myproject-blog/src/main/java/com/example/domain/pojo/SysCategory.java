@@ -20,8 +20,7 @@ public class SysCategory implements Serializable {
     /**
      * 分类id
      */
-    // 后端解决方案：Jackson 序列化时转为 String
-//    @JsonSerialize(using = NumberSerializer.class)
+    @TableId
     private Long id;
 
     /**

@@ -48,7 +48,7 @@ public class SysCategoryController {
 
     @Operation(summary = "删除")
     @DeleteMapping("/{id}")
-    public Response<?> delete(@PathVariable Long id) {
+    public Response<?> delete(@PathVariable("id") Long id) {
         boolean result = sysCategoryService.removeById(id);
         return Response.success(result);
     }

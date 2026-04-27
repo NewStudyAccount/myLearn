@@ -1,12 +1,11 @@
 package com.example.domain.req;
 
 import com.example.domain.PageQuery;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.example.domain.pojo.SysTag;
 import lombok.Data;
 
 @Data
-public class SysTagQueryPageReq {
+public class SysTagQueryPageReq extends SysTag {
 
-    @JsonProperty("PAGE_QUERY")
     private PageQuery pageQuery;
 }

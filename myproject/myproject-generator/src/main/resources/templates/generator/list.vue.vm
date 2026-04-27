@@ -181,7 +181,7 @@
   const handleView = async (row: ${className}) => {
     try {
       // 调用接口获取最新数据用于查看
-      const res = await get${className}(row.${primaryKeyFieldName})
+      const res = await get${className}ById(row.${primaryKeyFieldName})
       currentRow.value = res.data
       viewDialogVisible.value = true
     } catch (error) {

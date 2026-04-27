@@ -1,16 +1,16 @@
 <template>
-  <div class="sysCategory-container">
+  <div class="sysTag-container">
     <el-card class="search-card">
       <el-form :model="queryParams" ref="queryFormRef" label-width="100px">
         <el-row :gutter="20">
                   <el-col :span="8">
-                    <el-form-item label="分类名" prop="name">
-                      <el-input v-model="queryParams.name" placeholder="请输入分类名" clearable @keyup.enter="handleQuery" />
+                    <el-form-item label="标签名" prop="name">
+                      <el-input v-model="queryParams.name" placeholder="请输入标签名" clearable @keyup.enter="handleQuery" />
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
-                    <el-form-item label="删除标志" prop="isDeleted">
-                      <el-input v-model="queryParams.isDeleted" placeholder="请输入删除标志" clearable @keyup.enter="handleQuery" />
+                    <el-form-item label="" prop="idDeleted">
+                      <el-input v-model="queryParams.idDeleted" placeholder="请输入" clearable @keyup.enter="handleQuery" />
                     </el-form-item>
                   </el-col>
           <el-col :span="8" style="margin-top: 4px;">
@@ -37,9 +37,9 @@
 
       <el-table v-loading="loading" :data="dataList" @row-click="rowClick" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="分类id" align="center" prop="id" />
-            <el-table-column label="分类名" align="center" prop="name" />
-            <el-table-column label="删除标志" align="center" prop="isDeleted" />
+            <el-table-column label="" align="center" prop="id" />
+            <el-table-column label="标签名" align="center" prop="name" />
+            <el-table-column label="" align="center" prop="idDeleted" />
         <el-table-column label="操作" width="180" align="center">
           <template #default="{ row }">
             <el-button type="text" @click.stop="handleView(row)">查看</el-button>
@@ -60,11 +60,11 @@
 
     <el-dialog v-model="formDialogVisible" :title="dialogTitle" width="800px" destroy-on-close>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
-                <el-form-item label="分类名" prop="name">
-                      <el-input v-model="form.name" placeholder="请输入分类名" />
+                <el-form-item label="标签名" prop="name">
+                      <el-input v-model="form.name" placeholder="请输入标签名" />
                 </el-form-item>
-                <el-form-item label="删除标志" prop="isDeleted">
-                      <el-input v-model="form.isDeleted" placeholder="请输入删除标志" />
+                <el-form-item label="" prop="idDeleted">
+                      <el-input v-model="form.idDeleted" placeholder="请输入" />
                 </el-form-item>
       </el-form>
       <template #footer>
@@ -75,9 +75,9 @@
 
     <el-dialog v-model="viewDialogVisible" title="详情" width="800px" destroy-on-close>
       <el-descriptions :column="2" border>
-            <el-descriptions-item label="分类id">{{ currentRow?.id }}</el-descriptions-item>
-            <el-descriptions-item label="分类名">{{ currentRow?.name }}</el-descriptions-item>
-            <el-descriptions-item label="删除标志">{{ currentRow?.isDeleted }}</el-descriptions-item>
+            <el-descriptions-item label="">{{ currentRow?.id }}</el-descriptions-item>
+            <el-descriptions-item label="标签名">{{ currentRow?.name }}</el-descriptions-item>
+            <el-descriptions-item label="">{{ currentRow?.idDeleted }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>
@@ -87,11 +87,11 @@
   import { ref, reactive, onMounted } from 'vue'
   import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { listSysCategory, getSysCategoryById,deleteSysCategory, addSysCategory, updateSysCategory } from '@/api/blog/sysCategoryApi'
-  import type { SysCategory } from '@/api/blog/sysCategoryApi'
+  import { listSysTag, getSysTagById,deleteSysTag, addSysTag, updateSysTag } from '@/api/blog/sysTagApi'
+  import type { SysTag } from '@/api/blog/sysTagApi'
 
   const loading = ref(false)
-  const dataList = ref<SysCategory[]>([])
+  const dataList = ref<SysTag[]>([])
   const total = ref(0)
   const queryParams = reactive({
     pageQuery: {
@@ -99,23 +99,23 @@
       pageSize: 10
     },
                   name: undefined,
-                  isDeleted: undefined,
+                  idDeleted: undefined,
   })
   const queryFormRef = ref()
   const formDialogVisible = ref(false)
   const viewDialogVisible = ref(false)
   const dialogTitle = ref('')
-  const currentRow = ref<SysCategory>()
-  const selectedRow = ref<SysCategory>()
+  const currentRow = ref<SysTag>()
+  const selectedRow = ref<SysTag>()
   const single = ref(true)
   const formRef = ref()
-  const form = reactive<Partial<SysCategory>>({})
+  const form = reactive<Partial<SysTag>>({})
   const rules = reactive<Record<string, any[]>>({})
 
   const getList = async () => {
     loading.value = true
     try {
-      const res = await listSysCategory(queryParams)
+      const res = await listSysTag(queryParams)
       dataList.value = res.data.rows
       total.value = res.data.total
     } finally {
@@ -145,18 +145,18 @@
   }
 
   const handleAdd = () => {
-    dialogTitle.value = '新增文章分类'
+    dialogTitle.value = '新增标签'
     currentRow.value = undefined
     resetForm()
     formDialogVisible.value = true
   }
 
-  const handleEdit = async(row: SysCategory) => {
-    dialogTitle.value = '编辑文章分类'
+  const handleEdit = async(row: SysTag) => {
+    dialogTitle.value = '编辑标签'
     currentRow.value = row
     try {
       // 调用接口获取最新数据
-      const res = await getSysCategoryById(row.id)
+      const res = await getSysTagById(row.id)
       Object.assign(form, res.data)
     } catch (error) {
       ElMessage.error('获取数据失败')
@@ -165,10 +165,10 @@
     formDialogVisible.value = true
   }
 
-  const handleView = async (row: SysCategory) => {
+  const handleView = async (row: SysTag) => {
     try {
       // 调用接口获取最新数据用于查看
-      const res = await getSysCategoryById(row.id)
+      const res = await getSysTagById(row.id)
       currentRow.value = res.data
       viewDialogVisible.value = true
     } catch (error) {
@@ -176,24 +176,24 @@
     }
   }
 
-  const handleDelete = async (row?: SysCategory) => {
+  const handleDelete = async (row?: SysTag) => {
     if (!row) return
     try {
       await ElMessageBox.confirm('是否确认删除选中的数据?', '警告', { type: 'warning' })
-      await deleteSysCategory(row.id)
+      await deleteSysTag(row.id)
       ElMessage.success('删除成功')
       await getList()
     } catch {}
   }
 
-  const handleSelectionChange = (selection: SysCategory[]) => {
+  const handleSelectionChange = (selection: SysTag[]) => {
     single.value = selection.length !== 1
     if (selection.length === 1) {
       selectedRow.value = selection[0]
     }
   }
 
-  const rowClick = (row: SysCategory) => {
+  const rowClick = (row: SysTag) => {
     currentRow.value = row
   }
 
@@ -204,10 +204,10 @@
     try {
       const data = { ...form }
       if (data.id) {
-        await updateSysCategory(data)
+        await updateSysTag(data)
         ElMessage.success('修改成功')
       } else {
-        await addSysCategory(data)
+        await addSysTag(data)
         ElMessage.success('新增成功')
       }
       formDialogVisible.value = false
@@ -227,7 +227,7 @@
 </script>
 
 <style scoped lang="scss">
-    .sysCategory-container {
+    .sysTag-container {
       padding: 20px;
     }
     .search-card {

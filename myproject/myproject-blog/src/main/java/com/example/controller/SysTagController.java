@@ -4,43 +4,52 @@ import com.example.domain.Response;
 import com.example.domain.TableDataInfo;
 import com.example.domain.pojo.SysTag;
 import com.example.domain.req.SysTagQueryPageReq;
-import com.example.domain.req.SysTagReq;
 import com.example.service.SysTagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "tag标签接口")
+@Tag(name = "标签")
 @RestController
-@RequestMapping("/sysTag")
+@RequestMapping("/project/sysTag")
 public class SysTagController {
 
     @Autowired
     private SysTagService sysTagService;
 
-
-    @Operation(summary = "分页查询tag标签接口")
-    @PostMapping("/queryTagListPage")
-    public TableDataInfo<?> queryTagListPage(@RequestBody SysTagQueryPageReq sysTagQueryPageReq){
-        return sysTagService.queryTagListPage(sysTagQueryPageReq);
+    @Operation(summary = "分页查询")
+    @PostMapping("/list")
+    public Response<TableDataInfo<SysTag>> list(@RequestBody SysTagQueryPageReq pageReq) {
+        TableDataInfo<SysTag> tableDataInfo = sysTagService.querySysTagListPage(pageReq);
+        return Response.success(tableDataInfo);
     }
 
-    @Operation(summary = "查询tag标签接口")
-    @PostMapping("/queryTagList")
-    public Response<?> queryTagList(){
-        return Response.success(sysTagService.queryTagList());
+    @Operation(summary = "根据ID查询")
+    @GetMapping("/{id}")
+    public Response<SysTag> queryById(@PathVariable("id") Long id) {
+        SysTag entity = sysTagService.queryById(id);
+        return Response.success(entity);
     }
 
-    @Operation(summary = "添加tag标签接口")
-    @PostMapping("/addTag")
-    public Response<?> addTag(@RequestBody SysTagReq sysTagReq){
-        int i = sysTagService.addTag(sysTagReq);
-        return Response.success(i);
+    @Operation(summary = "新增")
+    @PostMapping("add")
+    public Response<?> addSysTag(@RequestBody SysTag entity) {
+        int result = sysTagService.addSysTag(entity);
+        return Response.success(result);
     }
 
+    @Operation(summary = "修改")
+    @PostMapping("update")
+    public Response<?> updateSysTag(@RequestBody SysTag entity) {
+        int result = sysTagService.updateSysTagById(entity);
+        return Response.success(result);
+    }
 
+    @Operation(summary = "删除")
+    @DeleteMapping("/{id}")
+    public Response<?> delete(@PathVariable("id") Long id) {
+        boolean result = sysTagService.removeById(id);
+        return Response.success(result);
+    }
 }

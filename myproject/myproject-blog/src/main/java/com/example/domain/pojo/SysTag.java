@@ -17,6 +17,7 @@ public class SysTag implements Serializable {
     /**
      * 
      */
+    @TableId
     private Long id;
 
     /**
