@@ -27,7 +27,7 @@ public class SysCategoryController {
 
     @Operation(summary = "根据ID查询")
     @GetMapping("/{id}")
-    public Response<SysCategory> queryById(@PathVariable Long id) {
+    public Response<SysCategory> queryById(@PathVariable("id") Long id) {
         SysCategory entity = sysCategoryService.queryById(id);
         return Response.success(entity);
     }

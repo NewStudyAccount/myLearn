@@ -156,7 +156,7 @@
     currentRow.value = row
     try {
       // 调用接口获取最新数据
-      const res = await getSysCategoryById(row.name)
+      const res = await getSysCategoryById(row.id)
       Object.assign(form, res.data)
     } catch (error) {
       ElMessage.error('获取数据失败')
@@ -168,7 +168,7 @@
   const handleView = async (row: SysCategory) => {
     try {
       // 调用接口获取最新数据用于查看
-      const res = await getSysCategory(row.name)
+      const res = await getSysCategoryById(row.id)
       currentRow.value = res.data
       viewDialogVisible.value = true
     } catch (error) {
@@ -180,7 +180,7 @@
     if (!row) return
     try {
       await ElMessageBox.confirm('是否确认删除选中的数据?', '警告', { type: 'warning' })
-      await deleteSysCategory(row.name)
+      await deleteSysCategory(row.id)
       ElMessage.success('删除成功')
       await getList()
     } catch {}

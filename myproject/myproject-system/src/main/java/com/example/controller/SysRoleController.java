@@ -7,6 +7,7 @@ import com.example.domain.req.SysRoleQueryPageReq;
 import com.example.domain.req.SysRoleUpdateReq;
 import com.example.domain.vo.SysRoleVo;
 import com.example.service.SysRoleService;
+import com.example.utils.SnowflakeIdUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,8 @@ public class SysRoleController {
     @Operation(summary = "新增")
     @PostMapping
     public Response<Boolean> save(@RequestBody SysRole entity) {
+        long systemNextId = SnowflakeIdUtil.systemNextId();
+        entity.setRoleId(systemNextId);
         boolean result = sysRoleService.save(entity);
         return Response.success(result);
     }

@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.NumberSerializer;
 import lombok.Data;
 
 /**
@@ -17,6 +20,8 @@ public class SysCategory implements Serializable {
     /**
      * 分类id
      */
+    // 后端解决方案：Jackson 序列化时转为 String
+//    @JsonSerialize(using = NumberSerializer.class)
     private Long id;
 
     /**

@@ -6,6 +6,7 @@ import com.example.oss.domain.SysOssConfig;
 import com.example.oss.domain.req.sysOssConfig.SysOssConfigQueryPageReq;
 import com.example.oss.factory.S3OssClientFactory;
 import com.example.oss.service.OssConfigService;
+import com.example.utils.SnowflakeIdUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -84,6 +85,8 @@ public class OssConfigController {
     @Operation(summary = "新增")
     @PostMapping("add")
     public Response<Boolean> save(@RequestBody SysOssConfig entity) {
+        long ossNextId = SnowflakeIdUtil.ossNextId();
+        entity.setId(ossNextId);
         boolean result = ossConfigService.save(entity);
         return Response.success(result);
     }

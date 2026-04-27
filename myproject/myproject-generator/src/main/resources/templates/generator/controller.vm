@@ -27,7 +27,7 @@ public class ${className}Controller {
 
     @Operation(summary = "根据ID查询")
     @GetMapping("/{id}")
-    public Response<${className}> queryById(@PathVariable Long id) {
+    public Response<${className}> queryById(@PathVariable("id") Long id) {
         ${className} entity = ${classNameLower}Service.queryById(id);
         return Response.success(entity);
     }
@@ -48,7 +48,7 @@ public class ${className}Controller {
 
     @Operation(summary = "删除")
     @DeleteMapping("/{id}")
-    public Response<?> delete(@PathVariable Long id) {
+    public Response<?> delete(@PathVariable("id") Long id) {
         boolean result = ${classNameLower}Service.removeById(id);
         return Response.success(result);
     }

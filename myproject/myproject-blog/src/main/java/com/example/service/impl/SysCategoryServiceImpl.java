@@ -7,6 +7,7 @@ import com.example.domain.pojo.SysCategory;
 import com.example.domain.req.SysCategoryQueryPageReq;
 import com.example.mapper.SysCategoryMapper;
 import com.example.service.SysCategoryService;
+import com.example.utils.SnowflakeIdUtil;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,6 +27,8 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 
     @Override
     public int addSysCategory(SysCategory entity) {
+        long blogNextId = SnowflakeIdUtil.blogNextId();
+        entity.setId(blogNextId);
         return baseMapper.insert(entity);
     }
 

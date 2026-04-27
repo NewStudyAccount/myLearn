@@ -16,6 +16,7 @@ import com.example.domain.req.sysUser.UserRegisterReq;
 import com.example.mapper.SysUserMapper;
 import com.example.service.*;
 import com.example.utils.SecurityUtils;
+import com.example.utils.SnowflakeIdUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,9 +132,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
     @Override
     public int addUser(SysUserAddReq sysUserAddReq) {
+
+        long systemNextId = SnowflakeIdUtil.systemNextId();
+
         sysUserAddReq.setUserPwd(new BCryptPasswordEncoder().encode(sysUserAddReq.getUserPwd()));
         SysUser sysUser = new SysUser();
         BeanUtils.copyProperties(sysUserAddReq,sysUser);
+        sysUser.setUserId(systemNextId);
         sysUserMapper.insert(sysUser);
 
         List<Long> roleIds = sysUserAddReq.getRoleIds();

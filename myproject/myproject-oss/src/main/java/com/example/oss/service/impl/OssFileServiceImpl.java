@@ -12,6 +12,7 @@ import com.example.oss.factory.OssClientFactory;
 import com.example.oss.mapper.OssFileMapper;
 import com.example.oss.service.OssConfigService;
 import com.example.oss.service.OssFileService;
+import com.example.utils.SnowflakeIdUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -100,6 +101,8 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
 
 
     public void insertSysOssFile(SysOssFile sysOssFile) {
+        long ossNextId = SnowflakeIdUtil.ossNextId();
+        sysOssFile.setOssId(ossNextId);
         this.baseMapper.insert(sysOssFile);
     }
 
