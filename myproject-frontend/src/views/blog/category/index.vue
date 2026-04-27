@@ -84,11 +84,11 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, onMounted, watch } from 'vue'
+  import { ref, reactive, onMounted } from 'vue'
   import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { listSysCategory, deleteSysCategory, createSysCategory, updateSysCategory } from '@/api/sysCategoryApi'
-  import type { SysCategory } from '@/api/sysCategoryApi'
+  import { listSysCategory, getSysCategoryById,deleteSysCategory, addSysCategory, updateSysCategory } from '@/api/blog/sysCategoryApi'
+  import type { SysCategory } from '@/api/blog/sysCategoryApi'
 
   const loading = ref(false)
   const dataList = ref<SysCategory[]>([])
@@ -147,22 +147,33 @@
   const handleAdd = () => {
     dialogTitle.value = '新增文章分类'
     currentRow.value = undefined
-    Object.keys(form).forEach(key => {
-      (form as any)[key] = undefined
-    })
+    resetForm()
     formDialogVisible.value = true
   }
 
-  const handleEdit = (row: SysCategory) => {
+  const handleEdit = async(row: SysCategory) => {
     dialogTitle.value = '编辑文章分类'
     currentRow.value = row
-    Object.assign(form, row)
+    try {
+      // 调用接口获取最新数据
+      const res = await getSysCategoryById(row.name)
+      Object.assign(form, res.data)
+    } catch (error) {
+      ElMessage.error('获取数据失败')
+      return
+    }
     formDialogVisible.value = true
   }
 
-  const handleView = (row: SysCategory) => {
-    currentRow.value = row
-    viewDialogVisible.value = true
+  const handleView = async (row: SysCategory) => {
+    try {
+      // 调用接口获取最新数据用于查看
+      const res = await getSysCategory(row.name)
+      currentRow.value = res.data
+      viewDialogVisible.value = true
+    } catch (error) {
+      ElMessage.error('获取数据失败')
+    }
   }
 
   const handleDelete = async (row?: SysCategory) => {
@@ -196,7 +207,7 @@
         await updateSysCategory(data)
         ElMessage.success('修改成功')
       } else {
-        await createSysCategory(data)
+        await addSysCategory(data)
         ElMessage.success('新增成功')
       }
       formDialogVisible.value = false
@@ -204,16 +215,12 @@
     } catch {}
   }
 
-  watch(() => currentRow.value, (val) => {
-    if (val) {
-      Object.assign(form, val)
-    } else {
-      Object.keys(form).forEach(key => {
-        (form as any)[key] = undefined
-      })
-    }
-  }, { immediate: true })
-
+  // 重置表单函数
+  const resetForm = () => {
+    Object.keys(form).forEach(key => {
+      (form as any)[key] = undefined
+    })
+  }
   onMounted(() => {
     getList()
   })

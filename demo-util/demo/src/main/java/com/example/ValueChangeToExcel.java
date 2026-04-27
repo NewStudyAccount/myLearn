@@ -13,86 +13,75 @@ import com.example.AttrInfoVo;
 public class ValueChangeToExcel {
 
     public static void main(String[] args) {
-//         List<AttrInfoVo> SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE = new ArrayList<>();
-//         List<AttrInfoVo> SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE = new ArrayList<>();
-//
-//        //子节点中从服务信息中增加的属性
-//         List<AttrInfoVo> SKY_SUB_SERVICE_PROPERTY_ATTR_CODE = new ArrayList<>();
-//         List<AttrInfoVo> SKY_SUB_DISCNT_PROPERTY_ATTR_CODE = new ArrayList<>();
-//
-//
-//        //SKY
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("deployment_method").attrName("Deployment Method").targetAttrCode("PM_DEPLOYMENT_METHOD").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("bandwidth_m_m").attrName("Download Bandwidth").targetAttrCode("PM_DOWNLOAD_BANDWIDTH").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("bandwidth_m_m").attrName("Upload Bandwidth").targetAttrCode("PM_UPLOAD_BANDWIDTH").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("intl_bandwidth_m_m").attrName("Intl Download Bandwidth").targetAttrCode("PM_INTL_DOWNLOAD_BANDWIDTH").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("intl_bandwidth_m_m").attrName("Intl Upload Bandwidth").targetAttrCode("PM_INTL_UPLOAD_BANDWIDTH").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("china_bandwidth_m_m").attrName("China Download Bandwidth").targetAttrCode("PM_CHI_DOWNLOAD_BANDWIDTH").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("china_bandwidth_m_m").attrName("China Upload Bandwidth").targetAttrCode("PM_CHI_UPLOAD_BANDWIDTH").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("noss_product_type").attrName("Product Type").targetAttrCode("PM_PRODUCT_TYPE").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("sub_order_type").attrName("Sub Product Type").targetAttrCode("PM_SUB_PRODUCT_TYPE").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("sub_order_type_cn").attrName("Sub Product Type").targetAttrCode("PM_SUB_PRODUCT_TYPE_CN").build());
-//
-////        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("ip_version").attrName("IP Version").targetAttrCode("PM_IP_VERSION").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("interface_type").attrName("Interface Type").targetAttrCode("PM_INTERFACE_TYPE").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("media_type").attrName("Media Type").targetAttrCode("PM_MEDIA_TYPE").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("routing_protocol").attrName("Routing Protocol").targetAttrCode("PM_ROUTING_PROTOCOL").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("line_type").attrName("Line Type").targetAttrCode("PM_LINE_TYPE").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("diversity").attrName("Diversity").targetAttrCode("PM_DIVERSITY").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("max_capactiy").attrName("Max Capacity").targetAttrCode("PM_MAX_CAPACITY").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("rack_id").attrName("Rack ID").targetAttrCode("PM_RACKID").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("room_id").attrName("Room ID").targetAttrCode("PM_ROOMID").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("site_code").attrName("Site Code").targetAttrCode("PM_SITE_CODE").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("pooling").attrName("Pooling").targetAttrCode("PM_POOLING").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("caged").attrName("Caged").targetAttrCode("PM_CAGED").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("correlated_rack_s_nf_number").attrName("Correlated Rack's NF Number").targetAttrCode("PM_CORR_RACK_NF_NUMBER").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("standard_rack").attrName("Standard rack").targetAttrCode("PM_STANDARD_RACK").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("standard_rack_other").attrName("Temp Standard rack").targetAttrCode("TEMP_PM_STANDARD_RACK").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("hkt_customer_ip").attrName("HKT Announce Customer Own IP").targetAttrCode("PM_HKT_ANNOUNCE_CUSTOMER_OWN_IP").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("Circuit_Remark").attrName("Circuit Remark").targetAttrCode("PM_CIRCUIT_REMARKS").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("Diversity_Service_no").attrName("Diversity Service Number").targetAttrCode("PM_DIVERSITY_SERVICE_NUMBER").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("Pre-study").attrName("Pre-Study No").targetAttrCode("PM_PRE_STUDY_NUMBER").build());
-//        SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("Resilience_Service_no").attrName("Resilience Service Number").targetAttrCode("PM_RESILIENCE_SERVICE_NUMBER").build());
-//
-//
-//
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("ip_version").attrName("IP Version").targetAttrCode("PM_IP_VERSION").build());
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("level").attrName("Level").targetAttrCode("PM_LEVEL").build());
-//        //BCP
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("correlated_rack_s_nf_number").attrName("Correlated Rack's NF Number").targetAttrCode("PM_CORR_RACK_NF_NUMBER").build());
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("room_no").attrName("Room No").targetAttrCode("PM_ROOM_NUMBER").build());
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("location").attrName("Location").targetAttrCode("PM_LOCATION").build());
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("seat").attrName("Seat").targetAttrCode("PM_SEAT_NUMBER").build());
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("no_of_seats").attrName("No. of Seats").targetAttrCode("PM_NO_OF_SEATS").build());
-//        // Customer Rack to Customer Rack/MMR Customer Rack to Customer Rack
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("a_end").attrName("A End").targetAttrCode("PM_AEND_CONNECTOR").build());
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("a_end_fibre_connector").attrName("A End Connector").targetAttrCode("PM_AEND_FIBRE_CONNECTOR").build());
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("z_end").attrName("Z End").targetAttrCode("PM_ZEND_CONNECTOR").build());
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("z_end_fibre_connector").attrName("Z End Connector").targetAttrCode("PM_FIBRE_CONNECTOR_END:ZEnd").build());
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("fibre_mode").attrName("Fibre Mode").targetAttrCode("PM_FIBRE_MODE").build());
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("cicuit_no").attrName("Circuit No").targetAttrCode("PM_CIRCUIT_NUMBER").build());
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("service_provider").attrName("Service Provider").targetAttrCode("PM_SERVICE_PROVVIDER").build());
-//
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("no_of_lan_ip_address").attrName("No of LAN IP").targetAttrCode("PM_NO_OF_LAN_IP").build());
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("hkt_customer_ip").attrName("HKT Announce Customer Own IP").targetAttrCode("PM_HKT_ANNOUNCE_CUSTOMER_OWN_IP").build());
-//
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("automatic_transfer_switch").attrName("Automatic Transfer Switch").targetAttrCode("PM_AUTOMATIC_TRANSFER_SWITCH").build());
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("backup_tape_rotation").attrName("Backup Tape Rotation").targetAttrCode("PM_BACKUP_TAPE_ROTATION").build());
-//        SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("change_of_power_bar_socket_type").attrName("Change of Power Bar Socket Type").targetAttrCode("PM_CHANGE_OF_POWER_BAR_SOCKET_TYPE").build());
-//
-//
-//        // 子节点
-//        // Router
-//        SKY_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("router_model").attrName("Model").targetAttrCode("PM_MODEL").build());
-//        SKY_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("item_code").attrName("Item Code").targetAttrCode("PM_ITEM_CODE").build());
-//        SKY_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("router_management_service_rms").attrName("RMS").targetAttrCode("PM_RMS").build());
-//
-//
+         List<AttrInfoVo> CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE = new ArrayList<>();
+         List<AttrInfoVo> SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE = new ArrayList<>();
+
+        //子节点中从服务信息中增加的属性
+         List<AttrInfoVo> CLOUD_SUB_SERVICE_PROPERTY_ATTR_CODE = new ArrayList<>();
+         List<AttrInfoVo> CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE = new ArrayList<>();
 
 
-//        exportToExcel(SKY_MAIN_DISCNT_PROPERTY_ATTR_CODE, "SKY_Main_DISCNT_Property_Attr.xlsx");
-//        exportToExcel(SKY_MAIN_SERVICE_PROPERTY_ATTR_CODE, "SKY_Main_Service_Property_Attr.xlsx");
-//        exportToExcel(SKY_SUB_DISCNT_PROPERTY_ATTR_CODE, "SKY_SUB_DISCNT_Property_Attr.xlsx");
+
+        CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("public_cloud_vendor_611").attrName("Cloud Vendor").targetAttrCode("PM_CLOUD_TYPE").build());
+        CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("managed_service_tier_611").attrName("Managed Service Tier").targetAttrCode("PM_CLOUD_TIER").build());
+        CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("premium_storage_611").attrName("Premium Storage").targetAttrCode("PM_CLOUD_PREMIUM_STORAGE").build());
+
+        //VM Ware
+        CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("cpu_611").attrName("CPU").targetAttrCode("PM_CLOUD_CPU").build());
+        CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("ram_611").attrName("RAM").targetAttrCode("PM_CLOUD_RAM").build());
+        CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("storage_611").attrName("Storage").targetAttrCode("PM_CLOUD_STORAGE").build());
+        CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("mpc_storage_611").attrName("Storage").targetAttrCode("PM_CLOUD_STORAGE").build());
+        CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("brand_611").attrName("Brand").targetAttrCode("PM_CLOUD_FW_BRAND").build());
+
+
+        CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("private_vlan_611").attrName("Private Vlan").targetAttrCode("PM_CLOUD_PRIVATE_VLAN").build());
+        CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("virtual_firewall_611").attrName("Virtual Firewall").targetAttrCode("PM_CLOUD_FIREWALL_VFW").build());
+        CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("portal_user_611").attrName("Portal User").targetAttrCode("PM_CLOUD_PORTAL_USER").build());
+        CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("cloudview_611").attrName("CloudView").targetAttrCode("PM_CLOUD_CLOUD_VIEW").build());
+        CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("product_type_611").attrName("Product Type").targetAttrCode("PM_PRODUCT_TYPE").build());
+        CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("extra").attrName("Cloud Extra").targetAttrCode("PM_CLOUD_MPC_EXTRA").build());
+
+
+
+
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("storage_611").attrName("STORAGE").targetAttrCode("PM_CLOUD_STORAGE").build());
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("cpu_611").attrName("CPU").targetAttrCode("PM_CLOUD_CPU").build());
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("ram_611").attrName("RAM").targetAttrCode("PM_CLOUD_RAM").build());
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("premium_storage_611").attrName("Premium Storage").targetAttrCode("PM_CLOUD_PREMIUM_STORAGE").build());
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("qty").attrName("Quantity").targetAttrCode("PM_QUANTITY").build());
+
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("bandwidth_611").attrName("Cloud Connect(IPv4) Bandwidth").targetAttrCode("PM_CLOUD_CLOUD_CONNECT_BANDWIDTH").build());
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("bandwidth_32").attrName("Premium Cloud Connect(IPv4) Bandwidth").targetAttrCode("PM_CLOUD_PREMIUM_CLOUD_CONNECT_BANDWIDTH").build());
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("anti_ddos_611").attrName("Premium Cloud Connect(IPv4) Anti-DDoS").targetAttrCode("PM_CLOUD_PREMIUM_CLOUD_CONNECT_ANTI_DDOS").build());
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("bandwidth_33").attrName("Metro-IP Connect Bandwidth").targetAttrCode("PM_CLOUD_MIP_CONNECT_BANDWIDTH").build());
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("bandwidth_34").attrName("IPVPN Connect Bandwidth").targetAttrCode("PM_CLOUD_IPVPN_CONNECT_BANDWIDTH").build());
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("bandwidth_35").attrName("CloudDirect Attach Bandwidth").targetAttrCode("PM_CLOUD_CLOUD_CIRECT_ATTACH_BANDWIDTH").build());
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("private_network_service_611").attrName("CloudDirect Attach Private Network Service Usage").targetAttrCode("PM_CLOUD_CLOUD_CIRECT_ATTACH_PRIVATE_NETWORK_SERVICE").build());
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("bandwidth_37").attrName("Equipment Hosting Bandwidth").targetAttrCode("PM_CLOUD_EQUIPMENT_HOSTING_BANDWIDTH").build());
+
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("size_611").attrName("Automated Snapshot Function Size").targetAttrCode("PM_CLOUD_AUTOMATED_SNAPSHOT_CAPACITY").build());
+
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("version_611").attrName("Microsoft SPLA - SQL Server Version").targetAttrCode("PM_CLOUD_MS_SPLA_SQL_SERVER_VERSION").build());
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("version_1").attrName("Microsoft SPLA - Office Version").targetAttrCode("PM_CLOUD_MS_SPLA_OFFICE_VERSION").build());
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("unit_611").attrName("CloudWAF-100").targetAttrCode("PM_CLOUD_CLOUD_WAF_100").build());
+        CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("unit_two").attrName("CloudWAF-200").targetAttrCode("PM_CLOUD_CLOUD_WAF_200").build());
+
+
+        CLOUD_SUB_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("location_611").attrName("PM_SKYEXCHANGE_LOCATION").targetAttrCode("PM_CLOUD_CLOUD_VIEW").build());
+        CLOUD_SUB_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("cpu_611").attrName("CPU").targetAttrCode("PM_CLOUD_CPU").build());
+        CLOUD_SUB_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("ram_611").attrName("RAM").targetAttrCode("PM_CLOUD_RAM").build());
+        CLOUD_SUB_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("storage_611").attrName("Storage").targetAttrCode("PM_CLOUD_STORAGE").build());
+        CLOUD_SUB_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("cloudview_611").attrName("CloudView").targetAttrCode("PM_CLOUD_CLOUD_VIEW").build());
+        CLOUD_SUB_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("premium_storage_611").attrName("Premium Storage").targetAttrCode("PM_CLOUD_PREMIUM_STORAGE").build());
+        CLOUD_SUB_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("quantity_1").attrName("Bulk Storage 100GB").targetAttrCode("PM_CLOUD_BULK_STORAGE_100GB").build());
+        CLOUD_SUB_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("quantity_2").attrName("Bulk Storage 500GB").targetAttrCode("PM_CLOUD_BULK_STORAGE_500GB").build());
+        CLOUD_SUB_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("quantity_3").attrName("Bulk Storage 1TB").targetAttrCode("PM_CLOUD_BULK_STORAGE_1TB").build());
+        CLOUD_SUB_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("quantity_4").attrName("Bulk Storage 5TB").targetAttrCode("PM_CLOUD_BULK_STORAGE_5TB").build());
+        CLOUD_SUB_SERVICE_PROPERTY_ATTR_CODE.add(AttrInfoVo.builder().attrCode("quantity_5").attrName("Bulk Storage 10TB").targetAttrCode("PM_CLOUD_BULK_STORAGE_10TB").build());
+
+        exportToExcel(CLOUD_MAIN_SERVICE_PROPERTY_ATTR_CODE, "CLOUD_MAIN_SERVICE_Property_Attr.xlsx");
+        exportToExcel(CLOUD_SUB_DISCNT_PROPERTY_ATTR_CODE, "CLOUD_SUB_DISCNT_Property_Attr.xlsx");
+        exportToExcel(CLOUD_SUB_SERVICE_PROPERTY_ATTR_CODE, "CLOUD_SUB_SERVICE_Property_Attr.xlsx");
     }
 
     private static void exportToExcel(List<AttrInfoVo> dataList, String fileName) {

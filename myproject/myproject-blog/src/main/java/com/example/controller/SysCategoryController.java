@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "文章分类")
 @RestController
-@RequestMapping("/sysCategory")
+@RequestMapping("/project/sysCategory")
 public class SysCategoryController {
 
     @Autowired

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "${tableComment}")
 @RestController
-@RequestMapping("/${classNameLower}")
+@RequestMapping("/project/${classNameLower}")
 public class ${className}Controller {
 
     @Autowired
