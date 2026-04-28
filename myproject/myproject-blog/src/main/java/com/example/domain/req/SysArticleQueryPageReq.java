@@ -1,17 +1,17 @@
 
-package ${package}.domain.req.${classNameLower};
+package com.example.domain.req;
 
 import com.example.domain.PageQuery;
-import ${package}.domain.${className};
+import com.example.domain.pojo.SysArticle;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
-* ${tableComment}分页查询请求对象
+* 文章表分页查询请求对象
 */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ${className}QueryPageReq extends ${className} {
+public class SysArticleQueryPageReq extends SysArticle {
 
     /**
     * 分页参数

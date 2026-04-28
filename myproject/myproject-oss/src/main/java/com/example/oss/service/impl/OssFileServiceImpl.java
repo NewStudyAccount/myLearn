@@ -6,7 +6,6 @@ import com.example.domain.PageQuery;
 import com.example.domain.TableDataInfo;
 import com.example.oss.domain.SysOssConfig;
 import com.example.oss.domain.SysOssFile;
-import com.example.oss.domain.req.sysOssConfig.SysOssConfigQueryPageReq;
 import com.example.oss.domain.req.sysOssFile.SysOssFileQueryPageReq;
 import com.example.oss.factory.OssClientFactory;
 import com.example.oss.mapper.OssFileMapper;
@@ -77,8 +76,62 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
     }
 
     @Override
+    public String uploadFile(String fileName,String contentType,byte[] data) {
+        String url = "";
+
+        List<SysOssConfig> sysOssConfigs = ossConfigService.listActive();
+        if (CollectionUtils.isEmpty(sysOssConfigs)) {
+            throw new  RuntimeException("未找到有效的OSS配置");
+        }
+
+        String[] split = fileName.split("\\.");
+        String newFileName = UUID.randomUUID().toString() + "."+split[1];
+
+        SysOssConfig sysOssConfig = ossConfigService.getByConfigName("minio-local");
+        ossClientFactory.uploadFile(sysOssConfig,newFileName,contentType,data);
+
+        String endpoint = sysOssConfig.getEndpoint();
+        String bucketName = sysOssConfig.getBucketName();
+//            http://192.168.99.100:9000/my-bucket/62237aa2-b510-4acf-9c5e-32a94e953540.png
+        url = endpoint+"/"+bucketName+"/"+newFileName;
+        SysOssFile sysOssFile = new SysOssFile(newFileName,fileName,split[1],url,contentType);
+
+        insertSysOssFile(sysOssFile);
+
+        return url;
+    }
+
+    @Override
     public String downloadFile(String fileName) {
         return "";
+    }
+
+    @Override
+    public byte[] downloadFileContent(String fileUrl) {
+        try {
+            List<SysOssConfig> sysOssConfigs = ossConfigService.listActive();
+            if (CollectionUtils.isEmpty(sysOssConfigs)) {
+                throw new RuntimeException("未找到有效的OSS配置");
+            }
+
+            SysOssConfig sysOssConfig = ossConfigService.getByConfigName("minio-local");
+            if (sysOssConfig == null) {
+                sysOssConfig = sysOssConfigs.get(0);
+            }
+
+            String endpoint = sysOssConfig.getEndpoint();
+            String bucketName = sysOssConfig.getBucketName();
+
+            String prefix = endpoint + "/" + bucketName + "/";
+            if (fileUrl.startsWith(prefix)) {
+                String objectName = fileUrl.substring(prefix.length());
+                return ossClientFactory.downloadFile(sysOssConfig, objectName);
+            } else {
+                throw new RuntimeException("无效的文件URL: " + fileUrl);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("下载文件内容失败: " + e.getMessage(), e);
+        }
     }
 
     @Override

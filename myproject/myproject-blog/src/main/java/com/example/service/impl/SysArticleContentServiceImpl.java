@@ -1,93 +1,75 @@
 package com.example.service.impl;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.domain.TableDataInfo;
 import com.example.domain.pojo.SysArticleContent;
-import com.example.domain.req.SysArticleContentReq;
-import com.example.domain.vo.SysArticleContentVo;
+import com.example.domain.req.SysArticleContentQueryPageReq;
 import com.example.mapper.SysArticleContentMapper;
+import com.example.oss.service.OssFileService;
 import com.example.service.SysArticleContentService;
-import com.example.utils.MarkDownUtil;
-import com.example.utils.SnowflakeIdGenerator;
-import org.springframework.beans.BeanUtils;
+import com.example.utils.SnowflakeIdUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import java.nio.charset.StandardCharsets;
 
-/**
-* @author QJJ
-* @description 针对表【sys_article_content(文章内容)】的数据库操作Service实现
-* @createDate 2025-04-01 23:31:09
-*/
 @Service
-public class SysArticleContentServiceImpl extends ServiceImpl<SysArticleContentMapper, SysArticleContent>
-    implements SysArticleContentService {
+public class SysArticleContentServiceImpl extends ServiceImpl<SysArticleContentMapper, SysArticleContent> implements SysArticleContentService {
 
 
-    /**
-     * 新增文章信息
-     * @param sysArticleContentReq
-     * @return
-     */
+    @Autowired
+    private OssFileService ossFileService;
+
     @Override
-    public int saveArticleContent(SysArticleContentReq sysArticleContentReq) {
-        SysArticleContent sysArticleContent = new SysArticleContent();
-        BeanUtils.copyProperties(sysArticleContentReq,sysArticleContent);
+    public TableDataInfo<SysArticleContent> querySysArticleContentListPage(SysArticleContentQueryPageReq pageReq) {
+        Page<SysArticleContent> page = baseMapper.selectPage(pageReq.getPageQuery().build(), null);
+        return TableDataInfo.build(page);
+    }
 
 
-        LambdaQueryWrapper<SysArticleContent> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(SysArticleContent::getId,sysArticleContent.getId());
+    @Override
+    public SysArticleContent queryById(Long id) {
+        SysArticleContent sysArticleContent = baseMapper.selectById(id);
+        String contentUrl = sysArticleContent.getContentUrl();
 
-        SysArticleContent isexist = this.baseMapper.selectOne(lambdaQueryWrapper);
-        if (Objects.nonNull(isexist)) {
-            LambdaUpdateWrapper<SysArticleContent> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            lambdaUpdateWrapper.eq(SysArticleContent::getId,sysArticleContent.getId());
-            return this.baseMapper.update(sysArticleContent,lambdaUpdateWrapper);
-        }else {
-            SnowflakeIdGenerator snowflakeIdGenerator = new SnowflakeIdGenerator(1);
-            sysArticleContent.setId(snowflakeIdGenerator.nextId());
-            sysArticleContent.setArticleId(11L);
-            return this.baseMapper.insert(sysArticleContent);
+        byte[] contentBytes = ossFileService.downloadFileContent(contentUrl);
+        String content = new String(contentBytes, StandardCharsets.UTF_8);
+        sysArticleContent.setContent( content);
+
+        return sysArticleContent;
+
+    }
+
+    @Override
+    public int addSysArticleContent(SysArticleContent entity) {
+        long blogNextId = SnowflakeIdUtil.blogNextId();
+        entity.setId(blogNextId);
+        String content = entity.getContent();
+        // 将 String 转为字节数组
+        byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
+        String fileName = "ssss.md";
+        String contentUrl = ossFileService.uploadFile(fileName, "text/markdown", contentBytes);
+
+        entity.setContentUrl(contentUrl);
+
+        return baseMapper.insert(entity);
+    }
+
+    @Override
+    public int updateSysArticleContentById(SysArticleContent entity) {
+
+        String content = entity.getContent();
+        if (content != null && !content.isEmpty()) {
+            byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
+            String fileName = "article/" + entity.getId() + "/content.md";
+            String contentUrl = ossFileService.uploadFile(fileName, "text/markdown", contentBytes);
+            entity.setContentUrl(contentUrl);
         }
 
 
+        return baseMapper.updateById(entity);
     }
 
-    /**
-     * 查询原始文章内容
-     * @param articleId
-     * @return
-     */
-    @Override
-    public SysArticleContent getArticleContent(Long articleId) {
-
-        SysArticleContent sysArticleContent = this.lambdaQuery().eq(SysArticleContent::getArticleId, articleId).one();
-
-        return sysArticleContent;
-    }
-
-
-    /**
-     * 查询文章信息，转换markdown信息
-     * @param articleId
-     * @return
-     */
-    @Override
-    public SysArticleContentVo getArticleContentWithConvert(Long articleId) {
-        SysArticleContent sysArticleContent = this.lambdaQuery().eq(SysArticleContent::getArticleId, articleId).one();
-        SysArticleContentVo sysArticleContentVo = new SysArticleContentVo();
-        BeanUtils.copyProperties(sysArticleContent,sysArticleContentVo);
-
-        //设置转换后的markdown文本信息
-        String kramdownHtml = MarkDownUtil.toKramdownHtml(sysArticleContent.getContent());
-        sysArticleContentVo.setContent(kramdownHtml);
-
-        return sysArticleContentVo;
-    }
 }
-
-
-
-

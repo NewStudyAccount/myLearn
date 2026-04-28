@@ -1,47 +1,41 @@
 package com.example.service.impl;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.domain.TableDataInfo;
 import com.example.domain.pojo.SysArticle;
-import com.example.domain.req.SysArticleReq;
+import com.example.domain.req.SysArticleQueryPageReq;
 import com.example.mapper.SysArticleMapper;
 import com.example.service.SysArticleService;
-import org.springframework.beans.BeanUtils;
+import com.example.utils.SnowflakeIdUtil;
 import org.springframework.stereotype.Service;
 
-/**
-* @author QJJ
-* @description 针对表【sys_article(文章表)】的数据库操作Service实现
-* @createDate 2025-04-01 23:31:09
-*/
 @Service
-public class SysArticleServiceImpl extends ServiceImpl<SysArticleMapper, SysArticle>
-    implements SysArticleService {
+public class SysArticleServiceImpl extends ServiceImpl<SysArticleMapper, SysArticle> implements SysArticleService {
 
-    /**
-     * 新建文章，打开一个页面，输入标题，分类等。点击创建，
-     * @param sysArticleReq
-     * @return
-     */
     @Override
-    public int saveArticle(SysArticleReq sysArticleReq) {
-
-        SysArticle sysArticle = new SysArticle();
-
-        BeanUtils.copyProperties(sysArticleReq,sysArticle);
-
-        this.baseMapper.insert(sysArticle);
+    public TableDataInfo<SysArticle> querySysArticleListPage(SysArticleQueryPageReq pageReq) {
+        Page<SysArticle> page = baseMapper.selectPage(pageReq.getPageQuery().build(), null);
+        return TableDataInfo.build(page);
+    }
 
 
-        return 0;
+    @Override
+    public SysArticle queryById(Long id) {
+        return baseMapper.selectById(id);
     }
 
     @Override
-    public int deleteArticle(Long articleId) {
-        return 0;
+    public int addSysArticle(SysArticle entity) {
+        long blogNextId = SnowflakeIdUtil.blogNextId();
+        entity.setId(blogNextId);
+        return baseMapper.insert(entity);
     }
+
+    @Override
+    public int updateSysArticleById(SysArticle entity) {
+        return baseMapper.updateById(entity);
+    }
+
 }
-
-
-
-
