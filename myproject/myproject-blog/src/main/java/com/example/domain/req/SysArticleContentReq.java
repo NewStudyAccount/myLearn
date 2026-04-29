@@ -19,4 +19,6 @@ public class SysArticleContentReq {
      */
     private String content;
 
+    private Long ossId;
+
 }

@@ -14,8 +14,8 @@ public class SysArticleContent {
 
     private Long articleId;
 
-    private String content;
 
-    private String contentUrl;
+    // 关联oss文件的id，用于后续直接查询并更新文件
+    private Long ossId;
 
 }

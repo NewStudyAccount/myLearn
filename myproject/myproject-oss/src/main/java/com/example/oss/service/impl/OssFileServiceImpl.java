@@ -76,7 +76,7 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
     }
 
     @Override
-    public String uploadFile(String fileName,String contentType,byte[] data) {
+    public Long uploadFile(Long ossId,String fileName,String contentType,byte[] data) {
         String url = "";
 
         List<SysOssConfig> sysOssConfigs = ossConfigService.listActive();
@@ -94,11 +94,12 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
         String bucketName = sysOssConfig.getBucketName();
 //            http://192.168.99.100:9000/my-bucket/62237aa2-b510-4acf-9c5e-32a94e953540.png
         url = endpoint+"/"+bucketName+"/"+newFileName;
-        SysOssFile sysOssFile = new SysOssFile(newFileName,fileName,split[1],url,contentType);
+        long ossNextId = SnowflakeIdUtil.ossNextId();
+        SysOssFile sysOssFile = new SysOssFile(ossNextId,newFileName,fileName,split[1],url,contentType);
 
         insertSysOssFile(sysOssFile);
 
-        return url;
+        return ossNextId;
     }
 
     @Override

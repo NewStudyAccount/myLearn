@@ -6,10 +6,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.domain.TableDataInfo;
 import com.example.domain.pojo.SysArticle;
 import com.example.domain.req.SysArticleQueryPageReq;
+import com.example.domain.req.SysArticleReq;
 import com.example.mapper.SysArticleMapper;
 import com.example.service.SysArticleService;
 import com.example.utils.SnowflakeIdUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SysArticleServiceImpl extends ServiceImpl<SysArticleMapper, SysArticle> implements SysArticleService {

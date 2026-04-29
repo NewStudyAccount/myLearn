@@ -47,10 +47,11 @@
             <el-table-column label="预览图" align="center" prop="cover" />
             <el-table-column label="删除标志" align="center" prop="isDeleted" />
             <el-table-column label="阅读次数" align="center" prop="readNum" />
-        <el-table-column label="操作" width="180" align="center">
+        <el-table-column label="操作" width="240" align="center">
           <template #default="{ row }">
             <el-button type="text" @click.stop="handleView(row)">查看</el-button>
             <el-button type="text" @click.stop="handleEdit(row)">编辑</el-button>
+            <el-button type="text" @click.stop="handleEditContent(row)">编辑内容</el-button>
             <el-button type="text" @click.stop="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -95,15 +96,27 @@
             <el-descriptions-item label="阅读次数">{{ currentRow?.readNum }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
+
+    <el-dialog v-model="contentDialogVisible" title="编辑文章内容" fullscreen destroy-on-close>
+      <MarkdownEditor v-model="contentForm.content" />
+      <template #footer>
+        <el-button @click="contentDialogVisible = false">取消</el-button>
+        <el-button type="primary" :loading="contentSaving" @click="handleContentSubmit">保存</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, onMounted } from 'vue'
+  import { ref, reactive, onMounted, defineAsyncComponent } from 'vue'
   import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { listSysArticle, getSysArticleById,deleteSysArticle, addSysArticle, updateSysArticle } from '@/api/blog/sysArticleApi'
   import type { SysArticle } from '@/api/blog/sysArticleApi'
+  import { getSysArticleContentByArticleId, addSysArticleContent, updateSysArticleContent } from '@/api/blog/sysArticleContentApi'
+  import type { SysArticleContent } from '@/api/blog/sysArticleContentApi'
+
+  const MarkdownEditor = defineAsyncComponent(() => import('@/components/MarkdownEditor/index.vue'))
 
   const loading = ref(false)
   const dataList = ref<SysArticle[]>([])
@@ -236,6 +249,45 @@
     Object.keys(form).forEach(key => {
       (form as any)[key] = undefined
     })
+  }
+
+  // 内容编辑相关
+  const contentDialogVisible = ref(false)
+  const contentSaving = ref(false)
+  const contentForm = reactive<Partial<SysArticleContent>>({})
+
+  const handleEditContent = async (row: SysArticle) => {
+    Object.keys(contentForm).forEach(key => {
+      (contentForm as any)[key] = undefined
+    })
+    contentForm.articleId = row.id
+    try {
+      const res = await getSysArticleContentByArticleId(row.id)
+      if (res.data) {
+        Object.assign(contentForm, res.data)
+      }
+    } catch {
+      // 文章无内容记录，显示空编辑器
+    }
+    contentDialogVisible.value = true
+  }
+
+  const handleContentSubmit = async () => {
+    contentSaving.value = true
+    try {
+      if (contentForm.id) {
+        await updateSysArticleContent(contentForm)
+        ElMessage.success('内容保存成功')
+      } else {
+        await addSysArticleContent(contentForm)
+        ElMessage.success('内容新增成功')
+      }
+      contentDialogVisible.value = false
+    } catch {
+      ElMessage.error('内容保存失败')
+    } finally {
+      contentSaving.value = false
+    }
   }
   onMounted(() => {
     getList()

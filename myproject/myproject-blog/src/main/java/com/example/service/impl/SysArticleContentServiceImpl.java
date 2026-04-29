@@ -1,15 +1,20 @@
 package com.example.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.domain.TableDataInfo;
+import com.example.domain.pojo.SysArticle;
 import com.example.domain.pojo.SysArticleContent;
 import com.example.domain.req.SysArticleContentQueryPageReq;
+import com.example.domain.req.SysArticleContentReq;
 import com.example.mapper.SysArticleContentMapper;
 import com.example.oss.service.OssFileService;
 import com.example.service.SysArticleContentService;
+import com.example.service.SysArticleService;
 import com.example.utils.SnowflakeIdUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +26,9 @@ public class SysArticleContentServiceImpl extends ServiceImpl<SysArticleContentM
 
     @Autowired
     private OssFileService ossFileService;
+
+    @Autowired
+    private SysArticleService sysArticleService;
 
     @Override
     public TableDataInfo<SysArticleContent> querySysArticleContentListPage(SysArticleContentQueryPageReq pageReq) {
@@ -43,33 +51,63 @@ public class SysArticleContentServiceImpl extends ServiceImpl<SysArticleContentM
     }
 
     @Override
-    public int addSysArticleContent(SysArticleContent entity) {
-        long blogNextId = SnowflakeIdUtil.blogNextId();
-        entity.setId(blogNextId);
-        String content = entity.getContent();
-        // 将 String 转为字节数组
-        byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-        String fileName = "ssss.md";
-        String contentUrl = ossFileService.uploadFile(fileName, "text/markdown", contentBytes);
+    public SysArticleContent queryByArticleId(Long id) {
+        LambdaQueryWrapper<SysArticleContent> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SysArticleContent::getArticleId, id);
+        SysArticleContent sysArticleContent = baseMapper.selectOne(lambdaQueryWrapper);
 
-        entity.setContentUrl(contentUrl);
+        String contentUrl = sysArticleContent.getContentUrl();
+        byte[] contentBytes = ossFileService.downloadFileContent(contentUrl);
+        String content = new String(contentBytes, StandardCharsets.UTF_8);
+        sysArticleContent.setContent( content);
 
-        return baseMapper.insert(entity);
+        return sysArticleContent;
     }
 
     @Override
-    public int updateSysArticleContentById(SysArticleContent entity) {
+    public int addSysArticleContent(SysArticleContentReq sysArticleContentReq) {
+        SysArticleContent sysArticleContent = new SysArticleContent();
+        BeanUtils.copyProperties(sysArticleContentReq, sysArticleContent);
+        long blogNextId = SnowflakeIdUtil.blogNextId();
+        sysArticleContent.setId(blogNextId);
 
-        String content = entity.getContent();
+        Long articleId = sysArticleContentReq.getArticleId();
+        SysArticle article = sysArticleService.getById(articleId);
+
+        String content = sysArticleContentReq.getContent();
+        // 将 String 转为字节数组
+        byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
+        String fileName = article.getTitle() + ".md";
+        Long ossId = ossFileService.uploadFile(null,fileName, "text/markdown", contentBytes);
+
+        sysArticleContent.setOssId(ossId);
+
+        return baseMapper.insert(sysArticleContent);
+    }
+
+    @Override
+    public int updateSysArticleContentById(SysArticleContentReq sysArticleContentReq) {
+
+        Long id = sysArticleContentReq.getId();
+        Long articleId = sysArticleContentReq.getArticleId();
+        Long ossId = sysArticleContentReq.getOssId();
+
+
+        SysArticleContent sysArticleContent = baseMapper.selectById(id);
+        SysArticle article = sysArticleService.getById(articleId);
+
+        String content = sysArticleContentReq.getContent();
         if (content != null && !content.isEmpty()) {
+
+            //更新历史oss文件
             byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-            String fileName = "article/" + entity.getId() + "/content.md";
-            String contentUrl = ossFileService.uploadFile(fileName, "text/markdown", contentBytes);
-            entity.setContentUrl(contentUrl);
+            String fileName = article.getTitle()+".md";
+            ossFileService.uploadFile(ossId,fileName, "text/markdown", contentBytes);
+
         }
 
 
-        return baseMapper.updateById(entity);
+        return baseMapper.updateById(sysArticleContent);
     }
 
 }

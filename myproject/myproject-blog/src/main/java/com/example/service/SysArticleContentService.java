@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.domain.TableDataInfo;
 import com.example.domain.pojo.SysArticleContent;
 import com.example.domain.req.SysArticleContentQueryPageReq;
+import com.example.domain.req.SysArticleContentReq;
 
 public interface SysArticleContentService extends IService<SysArticleContent> {
 
@@ -12,7 +13,9 @@ public interface SysArticleContentService extends IService<SysArticleContent> {
 
     SysArticleContent queryById(Long id);
 
-    int addSysArticleContent(SysArticleContent entity);
+    SysArticleContent queryByArticleId(Long id);
 
-    int updateSysArticleContentById(SysArticleContent entity);
+    int addSysArticleContent(SysArticleContentReq sysArticleContentReq);
+
+    int updateSysArticleContentById(SysArticleContentReq sysArticleContentReq);
 }

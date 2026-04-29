@@ -11,7 +11,7 @@ public interface OssFileService {
     public String uploadFile(MultipartFile file);
     public String uploadFile(MultipartFile file,String configName);
 
-    public String uploadFile(String fileName,String contentType,byte[] data);
+    public Long uploadFile(Long ossId,String fileName,String contentType,byte[] data);
 
     public String downloadFile(String fileName);
 

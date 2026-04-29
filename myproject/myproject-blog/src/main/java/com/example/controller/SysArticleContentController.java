@@ -4,6 +4,7 @@ import com.example.domain.Response;
 import com.example.domain.TableDataInfo;
 import com.example.domain.pojo.SysArticleContent;
 import com.example.domain.req.SysArticleContentQueryPageReq;
+import com.example.domain.req.SysArticleContentReq;
 import com.example.service.SysArticleContentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,17 +33,24 @@ public class SysArticleContentController {
         return Response.success(entity);
     }
 
+    @Operation(summary = "根据ID查询")
+    @GetMapping("/queryByArticleId/{id}")
+    public Response<SysArticleContent> queryByArticleId(@PathVariable("id") Long id) {
+        SysArticleContent entity = sysArticleContentService.queryByArticleId(id);
+        return Response.success(entity);
+    }
+
     @Operation(summary = "新增")
     @PostMapping("add")
-    public Response<?> addSysArticleContent(@RequestBody SysArticleContent entity) {
-        int result = sysArticleContentService.addSysArticleContent(entity);
+    public Response<?> addSysArticleContent(@RequestBody SysArticleContentReq sysArticleContentReq) {
+        int result = sysArticleContentService.addSysArticleContent(sysArticleContentReq);
         return Response.success(result);
     }
 
     @Operation(summary = "修改")
     @PostMapping("update")
-    public Response<?> updateSysArticleContent(@RequestBody SysArticleContent entity) {
-        int result = sysArticleContentService.updateSysArticleContentById(entity);
+    public Response<?> updateSysArticleContent(@RequestBody SysArticleContentReq sysArticleContentReq) {
+        int result = sysArticleContentService.updateSysArticleContentById(sysArticleContentReq);
         return Response.success(result);
     }
 

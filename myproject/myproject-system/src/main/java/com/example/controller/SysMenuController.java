@@ -69,7 +69,7 @@ public class SysMenuController {
 
     @Operation(summary = "删除")
     @DeleteMapping("/{id}")
-    public Response<Boolean> delete(@PathVariable Long id) {
+    public Response<Boolean> delete(@PathVariable("id") Long id) {
         boolean result = sysMenuService.removeById(id);
         return Response.success(result);
     }

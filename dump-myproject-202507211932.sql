@@ -200,7 +200,6 @@ CREATE TABLE `sys_oss_config` (
 
 LOCK TABLES `sys_oss_config` WRITE;
 /*!40000 ALTER TABLE `sys_oss_config` DISABLE KEYS */;
-INSERT INTO `sys_oss_config` VALUES (1,'阿里云','qjj-learn','LTAI5tSJf7HTwMp2ZkdENjgT','jpvy38MQpYfC6suwb3Q5KyHxBqNn1C','https://oss-cn-shanghai.aliyuncs.com','oss-cn-shanghai','test3',0);
 /*!40000 ALTER TABLE `sys_oss_config` ENABLE KEYS */;
 UNLOCK TABLES;
 

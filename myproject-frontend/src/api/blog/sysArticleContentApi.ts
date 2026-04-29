@@ -34,6 +34,13 @@ export function getSysArticleContentById(id: number) {
   })
 }
 
+export function getSysArticleContentByArticleId(id: number) {
+  return http({
+    url: `/sysArticleContent/queryByArticleId/${id}`,
+    method: 'get'
+  })
+}
+
 export function addSysArticleContent(data: Partial<SysArticleContent>) {
   return http({
     url: '/sysArticleContent/add',

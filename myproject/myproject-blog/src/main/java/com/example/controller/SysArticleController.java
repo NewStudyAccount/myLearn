@@ -4,6 +4,7 @@ import com.example.domain.Response;
 import com.example.domain.TableDataInfo;
 import com.example.domain.pojo.SysArticle;
 import com.example.domain.req.SysArticleQueryPageReq;
+import com.example.domain.req.SysArticleReq;
 import com.example.service.SysArticleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
