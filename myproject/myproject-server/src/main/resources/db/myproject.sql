@@ -157,7 +157,6 @@ CREATE TABLE IF NOT EXISTS `sys_oss_config` (
 -- ----------------------------
 -- Records of sys_oss_config
 -- ----------------------------
--- INSERT INTO `sys_oss_config` VALUES (1, '阿里云', 'qjj-learn', 'LTAI5tSJf7HTwMp2ZkdENjgT', 'jpvy38MQpYfC6suwb3Q5KyHxBqNn1C', 'https://oss-cn-shanghai.aliyuncs.com', 'oss-cn-shanghai', 'test3', 0);
 INSERT INTO `sys_oss_config` (`config_name`, `provider`, `endpoint`, `access_key`, `secret_key`, `bucket_name`, `region`, `extra_config`, `is_active`) VALUES
 ('aliyun-default', 'aliyun', 'https://oss-cn-hangzhou.aliyuncs.com', 'your-access-key-id', 'your-access-key-secret', 'my-bucket', 'cn-hangzhou', NULL, 0),
 ('minio-local', 'minio', 'http://192.168.99.100:9000', 'c49ak3akZPzJpI0EoyUs', 'LQX4Cu3IbZd9nTr5g1LGQJYkTa5J3H5PVpQmuMBL', 'my-bucket', NULL, '{"pathStyleAccess": true}', 1);
