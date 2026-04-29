@@ -5,6 +5,7 @@ import com.example.domain.TableDataInfo;
 import com.example.domain.pojo.SysArticleContent;
 import com.example.domain.req.SysArticleContentQueryPageReq;
 import com.example.domain.req.SysArticleContentReq;
+import com.example.domain.vo.SysArticleContentVo;
 import com.example.service.SysArticleContentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,8 +36,8 @@ public class SysArticleContentController {
 
     @Operation(summary = "根据ID查询")
     @GetMapping("/queryByArticleId/{id}")
-    public Response<SysArticleContent> queryByArticleId(@PathVariable("id") Long id) {
-        SysArticleContent entity = sysArticleContentService.queryByArticleId(id);
+    public Response<SysArticleContentVo> queryByArticleId(@PathVariable("id") Long id) {
+        SysArticleContentVo entity = sysArticleContentService.queryByArticleId(id);
         return Response.success(entity);
     }
 

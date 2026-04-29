@@ -14,6 +14,7 @@ import com.example.oss.service.OssFileService;
 import com.example.utils.SnowflakeIdUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -76,9 +77,11 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long uploadFile(Long ossId,String fileName,String contentType,byte[] data) {
         String url = "";
 
+        long ossNextId = SnowflakeIdUtil.ossNextId();
         List<SysOssConfig> sysOssConfigs = ossConfigService.listActive();
         if (CollectionUtils.isEmpty(sysOssConfigs)) {
             throw new  RuntimeException("未找到有效的OSS配置");
@@ -86,18 +89,28 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
 
         String[] split = fileName.split("\\.");
         String newFileName = UUID.randomUUID().toString() + "."+split[1];
+        if (ossId!= null) {
+            SysOssFile sysOssFile = this.baseMapper.selectById(ossId);
+            newFileName = sysOssFile.getFileName();
+            ossNextId = sysOssFile.getOssId();
+        }
+
 
         SysOssConfig sysOssConfig = ossConfigService.getByConfigName("minio-local");
-        ossClientFactory.uploadFile(sysOssConfig,newFileName,contentType,data);
-
         String endpoint = sysOssConfig.getEndpoint();
         String bucketName = sysOssConfig.getBucketName();
-//            http://192.168.99.100:9000/my-bucket/62237aa2-b510-4acf-9c5e-32a94e953540.png
         url = endpoint+"/"+bucketName+"/"+newFileName;
-        long ossNextId = SnowflakeIdUtil.ossNextId();
+
+        //执行上传文件
+        ossClientFactory.uploadFile(sysOssConfig,newFileName,contentType,data);
+
         SysOssFile sysOssFile = new SysOssFile(ossNextId,newFileName,fileName,split[1],url,contentType);
 
-        insertSysOssFile(sysOssFile);
+        if (ossId == null){
+            insertSysOssFile(sysOssFile);
+        }else {
+            this.baseMapper.updateById(sysOssFile);
+        }
 
         return ossNextId;
     }

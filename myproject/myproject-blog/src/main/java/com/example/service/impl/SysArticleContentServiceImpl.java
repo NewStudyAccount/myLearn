@@ -9,7 +9,9 @@ import com.example.domain.pojo.SysArticle;
 import com.example.domain.pojo.SysArticleContent;
 import com.example.domain.req.SysArticleContentQueryPageReq;
 import com.example.domain.req.SysArticleContentReq;
+import com.example.domain.vo.SysArticleContentVo;
 import com.example.mapper.SysArticleContentMapper;
+import com.example.oss.domain.SysOssFile;
 import com.example.oss.service.OssFileService;
 import com.example.service.SysArticleContentService;
 import com.example.service.SysArticleService;
@@ -17,6 +19,7 @@ import com.example.utils.SnowflakeIdUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 
@@ -40,31 +43,41 @@ public class SysArticleContentServiceImpl extends ServiceImpl<SysArticleContentM
     @Override
     public SysArticleContent queryById(Long id) {
         SysArticleContent sysArticleContent = baseMapper.selectById(id);
-        String contentUrl = sysArticleContent.getContentUrl();
+        Long ossId = sysArticleContent.getOssId();
 
-        byte[] contentBytes = ossFileService.downloadFileContent(contentUrl);
+        SysOssFile sysOssFile = ossFileService.queryById(ossId);
+
+        byte[] contentBytes = ossFileService.downloadFileContent(sysOssFile.getFileUrl());
         String content = new String(contentBytes, StandardCharsets.UTF_8);
-        sysArticleContent.setContent( content);
+//        sysArticleContent.setContent( content);
 
         return sysArticleContent;
 
     }
 
     @Override
-    public SysArticleContent queryByArticleId(Long id) {
+    public SysArticleContentVo queryByArticleId(Long id) {
+        SysArticleContentVo entity = new SysArticleContentVo();
         LambdaQueryWrapper<SysArticleContent> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(SysArticleContent::getArticleId, id);
         SysArticleContent sysArticleContent = baseMapper.selectOne(lambdaQueryWrapper);
 
-        String contentUrl = sysArticleContent.getContentUrl();
-        byte[] contentBytes = ossFileService.downloadFileContent(contentUrl);
-        String content = new String(contentBytes, StandardCharsets.UTF_8);
-        sysArticleContent.setContent( content);
+        // 将 sysArticleContent 转为 sysArticleContentVo
+        BeanUtils.copyProperties(sysArticleContent, entity);
 
-        return sysArticleContent;
+        // 下载文件
+        Long ossId = sysArticleContent.getOssId();
+        SysOssFile sysOssFile = ossFileService.queryById(ossId);
+        byte[] contentBytes = ossFileService.downloadFileContent(sysOssFile.getFileUrl());
+        String content = new String(contentBytes, StandardCharsets.UTF_8);
+
+        entity.setContent( content);
+
+        return entity;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int addSysArticleContent(SysArticleContentReq sysArticleContentReq) {
         SysArticleContent sysArticleContent = new SysArticleContent();
         BeanUtils.copyProperties(sysArticleContentReq, sysArticleContent);

@@ -6,6 +6,7 @@ import com.example.domain.TableDataInfo;
 import com.example.domain.pojo.SysArticleContent;
 import com.example.domain.req.SysArticleContentQueryPageReq;
 import com.example.domain.req.SysArticleContentReq;
+import com.example.domain.vo.SysArticleContentVo;
 
 public interface SysArticleContentService extends IService<SysArticleContent> {
 
@@ -13,7 +14,7 @@ public interface SysArticleContentService extends IService<SysArticleContent> {
 
     SysArticleContent queryById(Long id);
 
-    SysArticleContent queryByArticleId(Long id);
+    SysArticleContentVo queryByArticleId(Long id);
 
     int addSysArticleContent(SysArticleContentReq sysArticleContentReq);
 
