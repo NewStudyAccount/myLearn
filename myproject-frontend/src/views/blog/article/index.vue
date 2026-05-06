@@ -47,11 +47,12 @@
             <el-table-column label="预览图" align="center" prop="cover" />
             <el-table-column label="删除标志" align="center" prop="isDeleted" />
             <el-table-column label="阅读次数" align="center" prop="readNum" />
-        <el-table-column label="操作" width="240" align="center">
+        <el-table-column label="操作" width="300" align="center">
           <template #default="{ row }">
             <el-button type="text" @click.stop="handleView(row)">查看</el-button>
             <el-button type="text" @click.stop="handleEdit(row)">编辑</el-button>
             <el-button type="text" @click.stop="handleEditContent(row)">编辑内容</el-button>
+            <el-button type="text" @click.stop="handleViewDoc(row)">查看文档</el-button>
             <el-button type="text" @click.stop="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -109,6 +110,7 @@
 
 <script setup lang="ts">
   import { ref, reactive, onMounted, defineAsyncComponent } from 'vue'
+  import { useRouter } from 'vue-router'
   import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import { listSysArticle, getSysArticleById,deleteSysArticle, addSysArticle, updateSysArticle } from '@/api/blog/sysArticleApi'
@@ -117,6 +119,8 @@
   import type { SysArticleContent } from '@/api/blog/sysArticleContentApi'
 
   const MarkdownEditor = defineAsyncComponent(() => import('@/components/MarkdownEditor/index.vue'))
+
+  const router = useRouter()
 
   const loading = ref(false)
   const dataList = ref<SysArticle[]>([])
@@ -270,6 +274,10 @@
       // 文章无内容记录，显示空编辑器
     }
     contentDialogVisible.value = true
+  }
+
+  const handleViewDoc = (row: SysArticle) => {
+    router.push(`/blog/doc/${row.id}`)
   }
 
   const handleContentSubmit = async () => {

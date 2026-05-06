@@ -9,12 +9,14 @@ import com.example.domain.pojo.SysArticle;
 import com.example.domain.pojo.SysArticleContent;
 import com.example.domain.req.SysArticleContentQueryPageReq;
 import com.example.domain.req.SysArticleContentReq;
+import com.example.domain.vo.SysArticleContentHtmlVo;
 import com.example.domain.vo.SysArticleContentVo;
 import com.example.mapper.SysArticleContentMapper;
 import com.example.oss.domain.SysOssFile;
 import com.example.oss.service.OssFileService;
 import com.example.service.SysArticleContentService;
 import com.example.service.SysArticleService;
+import com.example.utils.MarkDownUtil;
 import com.example.utils.SnowflakeIdUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +76,26 @@ public class SysArticleContentServiceImpl extends ServiceImpl<SysArticleContentM
         entity.setContent( content);
 
         return entity;
+    }
+
+    @Override
+    public SysArticleContentHtmlVo queryHtmlByArticleId(Long id) {
+        LambdaQueryWrapper<SysArticleContent> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SysArticleContent::getArticleId, id);
+        SysArticleContent sysArticleContent = baseMapper.selectOne(lambdaQueryWrapper);
+
+        SysArticleContentHtmlVo htmlVo = new SysArticleContentHtmlVo();
+        BeanUtils.copyProperties(sysArticleContent, htmlVo);
+
+        Long ossId = sysArticleContent.getOssId();
+        SysOssFile sysOssFile = ossFileService.queryById(ossId);
+        byte[] contentBytes = ossFileService.downloadFileContent(sysOssFile.getFileUrl());
+        String markdownContent = new String(contentBytes, StandardCharsets.UTF_8);
+
+        String htmlContent = MarkDownUtil.toKramdownHtml(markdownContent);
+        htmlVo.setHtmlContent(htmlContent);
+
+        return htmlVo;
     }
 
     @Override

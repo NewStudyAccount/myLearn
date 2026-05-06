@@ -6,6 +6,12 @@ export interface SysArticleContent {
   content: string
 }
 
+export interface SysArticleContentHtml {
+  id: number
+  articleId: number
+  htmlContent: string
+}
+
 export interface PageQuery {
   pageNum: number
   pageSize: number
@@ -37,6 +43,13 @@ export function getSysArticleContentById(id: number) {
 export function getSysArticleContentByArticleId(id: number) {
   return http({
     url: `/sysArticleContent/queryByArticleId/${id}`,
+    method: 'get'
+  })
+}
+
+export function getSysArticleContentHtmlByArticleId(id: number) {
+  return http({
+    url: `/sysArticleContent/queryHtmlByArticleId/${id}`,
     method: 'get'
   })
 }
