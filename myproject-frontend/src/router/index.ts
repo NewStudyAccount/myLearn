@@ -25,13 +25,13 @@ const constantRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/generator/index.vue'),
         meta: { requiresAuth: true, title: '代码生成器' },
       },
-      {
-        path: 'blog/doc/:articleId',
-        name: 'doc-display',
-        component: () => import('@/views/blog/doc/index.vue'),
-        meta: { requiresAuth: true, title: '文档展示' },
-      },
     ],
+  },
+  {
+    path: '/blog/doc/:articleId',
+    name: 'doc-display',
+    component: () => import('@/views/blog/doc/index.vue'),
+    meta: { requiresAuth: true, title: '文档展示' },
   },
 ]
 
