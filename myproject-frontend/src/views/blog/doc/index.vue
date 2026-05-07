@@ -34,7 +34,11 @@ import { getSysArticleById } from '@/api/blog/sysArticleApi'
 const route = useRoute()
 const router = useRouter()
 
-const articleId = Number(route.params.articleId)
+// ❌ 修改前
+// const articleId = Number(route.params.articleId)
+
+// ✅ 修改后
+const articleId = route.params.articleId as string
 const articleTitle = ref('')
 const htmlContent = ref('')
 const loading = ref(true)

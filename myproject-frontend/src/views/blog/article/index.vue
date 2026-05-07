@@ -277,13 +277,21 @@
   }
 
   const handleViewDoc = (row: SysArticle) => {
+
+    console.log("查看文章内容", row.id)
+
     router.push(`/blog/doc/${row.id}`)
   }
 
   const handleContentSubmit = async () => {
     contentSaving.value = true
+
+
+    console.log("保存文章内容", JSON.stringify(contentForm))
+
+
     try {
-      if (contentForm.id) {
+      if (contentForm.articleId) {
         await updateSysArticleContent(contentForm)
         ElMessage.success('内容保存成功')
       } else {

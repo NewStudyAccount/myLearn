@@ -8,11 +8,6 @@ import lombok.Data;
  */
 @Data
 public class SysArticleContentVo{
-    /**
-     * 文章内容id
-     */
-
-    private Long id;
 
     /**
      * 文章id

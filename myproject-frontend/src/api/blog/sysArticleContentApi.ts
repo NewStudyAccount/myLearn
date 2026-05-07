@@ -1,14 +1,12 @@
 import http from '@/utils/http'
 
 export interface SysArticleContent {
-  id: number
-  articleId: number
+  articleId: string
   content: string
 }
 
 export interface SysArticleContentHtml {
-  id: number
-  articleId: number
+  articleId: string
   htmlContent: string
 }
 
@@ -33,21 +31,14 @@ export function listSysArticleContent(params: SysArticleContentListParams) {
   })
 }
 
-export function getSysArticleContentById(id: number) {
-  return http({
-    url: `/sysArticleContent/${id}`,
-    method: 'get'
-  })
-}
-
-export function getSysArticleContentByArticleId(id: number) {
+export function getSysArticleContentByArticleId(id: string) {
   return http({
     url: `/sysArticleContent/queryByArticleId/${id}`,
     method: 'get'
   })
 }
 
-export function getSysArticleContentHtmlByArticleId(id: number) {
+export function getSysArticleContentHtmlByArticleId(id: string) {
   return http({
     url: `/sysArticleContent/queryHtmlByArticleId/${id}`,
     method: 'get'
@@ -70,9 +61,3 @@ export function updateSysArticleContent(data: Partial<SysArticleContent>) {
   })
 }
 
-export function deleteSysArticleContent(id: number) {
-  return http({
-    url: `/sysArticleContent/${id}`,
-    method: 'delete'
-  })
-}

@@ -1,7 +1,7 @@
 import http from '@/utils/http'
 
 export interface SysArticle {
-  id: number
+  id: string
   title: string
   cover: string
   isDeleted: string
@@ -31,7 +31,7 @@ export function listSysArticle(params: SysArticleListParams) {
   })
 }
 
-export function getSysArticleById(id: number) {
+export function getSysArticleById(id: string) {
   return http({
     url: `/sysArticle/${id}`,
     method: 'get'
@@ -54,7 +54,7 @@ export function updateSysArticle(data: Partial<SysArticle>) {
   })
 }
 
-export function deleteSysArticle(id: number) {
+export function deleteSysArticle(id: string) {
   return http({
     url: `/sysArticle/${id}`,
     method: 'delete'

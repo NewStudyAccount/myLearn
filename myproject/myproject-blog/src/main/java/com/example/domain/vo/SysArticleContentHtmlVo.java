@@ -5,8 +5,6 @@ import lombok.Data;
 @Data
 public class SysArticleContentHtmlVo {
 
-    private Long id;
-
     private Long articleId;
 
     private String htmlContent;

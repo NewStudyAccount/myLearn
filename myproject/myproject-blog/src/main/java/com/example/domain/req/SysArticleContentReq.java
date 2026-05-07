@@ -7,7 +7,6 @@ import lombok.Data;
 public class SysArticleContentReq {
 
 
-    private Long id;
 
     /**
      * 文章id
@@ -18,7 +17,5 @@ public class SysArticleContentReq {
      * 文章内容
      */
     private String content;
-
-    private Long ossId;
 
 }

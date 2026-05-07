@@ -13,11 +13,9 @@ public interface SysArticleContentService extends IService<SysArticleContent> {
 
     TableDataInfo<SysArticleContent> querySysArticleContentListPage(SysArticleContentQueryPageReq pageReq);
 
-    SysArticleContent queryById(Long id);
+    SysArticleContentVo queryByArticleId(Long articleId);
 
-    SysArticleContentVo queryByArticleId(Long id);
-
-    SysArticleContentHtmlVo queryHtmlByArticleId(Long id);
+    SysArticleContentHtmlVo queryHtmlByArticleId(Long articleId);
 
     int addSysArticleContent(SysArticleContentReq sysArticleContentReq);
 

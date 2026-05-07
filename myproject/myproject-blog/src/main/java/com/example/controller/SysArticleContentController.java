@@ -28,14 +28,7 @@ public class SysArticleContentController {
         return Response.success(tableDataInfo);
     }
 
-    @Operation(summary = "根据ID查询")
-    @GetMapping("/{id}")
-    public Response<SysArticleContent> queryById(@PathVariable("id") Long id) {
-        SysArticleContent entity = sysArticleContentService.queryById(id);
-        return Response.success(entity);
-    }
-
-    @Operation(summary = "根据ID查询")
+    @Operation(summary = "根据文章ID查询")
     @GetMapping("/queryByArticleId/{id}")
     public Response<SysArticleContentVo> queryByArticleId(@PathVariable("id") Long id) {
         SysArticleContentVo entity = sysArticleContentService.queryByArticleId(id);
@@ -63,10 +56,4 @@ public class SysArticleContentController {
         return Response.success(result);
     }
 
-    @Operation(summary = "删除")
-    @DeleteMapping("/{id}")
-    public Response<?> delete(@PathVariable("id") Long id) {
-        boolean result = sysArticleContentService.removeById(id);
-        return Response.success(result);
-    }
 }

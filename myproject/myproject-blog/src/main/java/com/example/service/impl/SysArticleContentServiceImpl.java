@@ -17,7 +17,6 @@ import com.example.oss.service.OssFileService;
 import com.example.service.SysArticleContentService;
 import com.example.service.SysArticleService;
 import com.example.utils.MarkDownUtil;
-import com.example.utils.SnowflakeIdUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,21 +40,6 @@ public class SysArticleContentServiceImpl extends ServiceImpl<SysArticleContentM
         return TableDataInfo.build(page);
     }
 
-
-    @Override
-    public SysArticleContent queryById(Long id) {
-        SysArticleContent sysArticleContent = baseMapper.selectById(id);
-        Long ossId = sysArticleContent.getOssId();
-
-        SysOssFile sysOssFile = ossFileService.queryById(ossId);
-
-        byte[] contentBytes = ossFileService.downloadFileContent(sysOssFile.getFileUrl());
-        String content = new String(contentBytes, StandardCharsets.UTF_8);
-//        sysArticleContent.setContent( content);
-
-        return sysArticleContent;
-
-    }
 
     @Override
     public SysArticleContentVo queryByArticleId(Long id) {
@@ -102,9 +86,7 @@ public class SysArticleContentServiceImpl extends ServiceImpl<SysArticleContentM
     @Transactional(rollbackFor = Exception.class)
     public int addSysArticleContent(SysArticleContentReq sysArticleContentReq) {
         SysArticleContent sysArticleContent = new SysArticleContent();
-        BeanUtils.copyProperties(sysArticleContentReq, sysArticleContent);
-        long blogNextId = SnowflakeIdUtil.blogNextId();
-        sysArticleContent.setId(blogNextId);
+        sysArticleContent.setArticleId(sysArticleContentReq.getArticleId());
 
         Long articleId = sysArticleContentReq.getArticleId();
         SysArticle article = sysArticleService.getById(articleId);
@@ -123,15 +105,16 @@ public class SysArticleContentServiceImpl extends ServiceImpl<SysArticleContentM
     @Override
     public int updateSysArticleContentById(SysArticleContentReq sysArticleContentReq) {
 
-        Long id = sysArticleContentReq.getId();
         Long articleId = sysArticleContentReq.getArticleId();
-        Long ossId = sysArticleContentReq.getOssId();
+        String content = sysArticleContentReq.getContent();
 
+        LambdaQueryWrapper<SysArticleContent> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(SysArticleContent::getArticleId, articleId);
 
-        SysArticleContent sysArticleContent = baseMapper.selectById(id);
+        SysArticleContent sysArticleContent = baseMapper.selectOne(lambdaQueryWrapper);
+        Long ossId = sysArticleContent.getOssId();
         SysArticle article = sysArticleService.getById(articleId);
 
-        String content = sysArticleContentReq.getContent();
         if (content != null && !content.isEmpty()) {
 
             //更新历史oss文件

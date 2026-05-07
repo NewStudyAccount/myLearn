@@ -1,6 +1,5 @@
 package com.example.domain.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -9,8 +8,6 @@ import lombok.Data;
 @TableName("sys_article_content")
 public class SysArticleContent {
 
-    @TableId(value = "id")
-    private Long id;
 
     private Long articleId;
 
