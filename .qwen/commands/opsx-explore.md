@@ -1,8 +1,5 @@
 ---
-name: "OPSX: Explore"
-description: "Enter explore mode - think through ideas, investigate problems, clarify requirements"
-category: Workflow
-tags: [workflow, explore, experimental, thinking]
+description: Enter explore mode - think through ideas, investigate problems, clarify requirements
 ---
 
 Enter explore mode. Think deeply. Visualize freely. Follow the conversation wherever it goes.
@@ -171,3 +168,4 @@ When things crystallize, you might offer a summary - but it's optional. Sometime
 - **Do visualize** - A good diagram is worth many paragraphs
 - **Do explore the codebase** - Ground discussions in reality
 - **Do question assumptions** - Including the user's and your own
+

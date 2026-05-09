@@ -16,12 +16,12 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3ClientBuilder;
-import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.net.URI;
-import java.util.List;
+import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -189,90 +189,5 @@ public class S3OssClientFactory implements OssClientFactory {
                 stats.hitCount(),
                 stats.missCount(),
                 stats.evictionCount());
-    }
-
-    @Override
-    public void deleteFile(SysOssConfig sysOssConfig, String objectName) {
-        try {
-            S3Client s3Client = getClient(sysOssConfig);
-            DeleteObjectRequest request = DeleteObjectRequest.builder()
-                    .bucket(sysOssConfig.getBucketName())
-                    .key(objectName)
-                    .build();
-            s3Client.deleteObject(request);
-            log.info("S3文件删除成功: bucket={}, object={}", sysOssConfig.getBucketName(), objectName);
-        } catch (Exception e) {
-            log.error("S3文件删除失败: {}", e.getMessage(), e);
-            throw new RuntimeException("S3文件删除失败: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public void uploadFile(SysOssConfig sysOssConfig, String objectName, String contentType, InputStream inputStream, long contentLength) {
-        try {
-            S3Client s3Client = getClient(sysOssConfig);
-            PutObjectRequest request = PutObjectRequest.builder()
-                    .bucket(sysOssConfig.getBucketName())
-                    .key(objectName)
-                    .contentType(contentType)
-                    .contentDisposition("inline")
-                    .build();
-            s3Client.putObject(request, RequestBody.fromInputStream(inputStream, contentLength));
-            log.info("S3文件流上传成功: bucket={}, object={}", sysOssConfig.getBucketName(), objectName);
-        } catch (Exception e) {
-            log.error("S3文件流上传失败: {}", e.getMessage(), e);
-            throw new RuntimeException("S3文件流上传失败: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public InputStream downloadFileStream(SysOssConfig sysOssConfig, String objectName) {
-        try {
-            S3Client s3Client = getClient(sysOssConfig);
-            GetObjectRequest request = GetObjectRequest.builder()
-                    .bucket(sysOssConfig.getBucketName())
-                    .key(objectName)
-                    .build();
-            return s3Client.getObject(request);
-        } catch (Exception e) {
-            log.error("S3文件流下载失败: {}", e.getMessage(), e);
-            throw new RuntimeException("S3文件流下载失败: " + e.getMessage(), e);
-        }
-    }
-
-    public List<String> listFiles(SysOssConfig sysOssConfig, String prefix) {
-        try {
-            S3Client s3Client = getClient(sysOssConfig);
-            ListObjectsV2Request.Builder requestBuilder = ListObjectsV2Request.builder()
-                    .bucket(sysOssConfig.getBucketName());
-            if (prefix != null && !prefix.isEmpty()) {
-                requestBuilder.prefix(prefix);
-            }
-            ListObjectsV2Response response = s3Client.listObjectsV2(requestBuilder.build());
-            return response.contents().stream()
-                    .map(S3Object::key)
-                    .toList();
-        } catch (Exception e) {
-            log.error("S3文件列表获取失败: {}", e.getMessage(), e);
-            throw new RuntimeException("S3文件列表获取失败: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public long getFileSize(SysOssConfig sysOssConfig, String objectName) {
-        try {
-            S3Client s3Client = getClient(sysOssConfig);
-            HeadObjectRequest request = HeadObjectRequest.builder()
-                    .bucket(sysOssConfig.getBucketName())
-                    .key(objectName)
-                    .build();
-            HeadObjectResponse response = s3Client.headObject(request);
-            return response.contentLength();
-        } catch (NoSuchKeyException e) {
-            throw new RuntimeException("文件不存在: " + objectName);
-        } catch (Exception e) {
-            log.error("S3获取文件大小失败: {}", e.getMessage(), e);
-            throw new RuntimeException("S3获取文件大小失败: " + e.getMessage(), e);
-        }
     }
 }

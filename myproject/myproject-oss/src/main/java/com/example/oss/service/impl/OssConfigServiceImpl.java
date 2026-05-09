@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.domain.TableDataInfo;
 import com.example.oss.domain.SysOssConfig;
 import com.example.oss.domain.req.sysOssConfig.SysOssConfigQueryPageReq;
-import com.example.oss.factory.OssClientFactoryProvider;
+import com.example.oss.factory.OssClientFactory;
 import com.example.oss.mapper.OssConfigMapper;
 import com.example.oss.service.OssConfigService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ import java.util.List;
 public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, SysOssConfig> implements OssConfigService {
 
     @Autowired
-    private OssClientFactoryProvider ossClientFactoryProvider;
+    private OssClientFactory ossClientFactory;
 
 
 
@@ -33,7 +33,7 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, SysOssCon
     public void initConfig() {
         List<SysOssConfig> sysOssConfigs = listActive();
         for (SysOssConfig sysOssConfig : sysOssConfigs) {
-            ossClientFactoryProvider.getFactory(sysOssConfig).createClient(sysOssConfig);
+            ossClientFactory.createClient(sysOssConfig);
         }
     }
 
