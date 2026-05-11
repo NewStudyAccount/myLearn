@@ -13,6 +13,7 @@
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/demo-kafka/pom.xml" />
+        <option value="$PROJECT_DIR$/myproject/pom.xml" />
         <option value="$PROJECT_DIR$/thread-learn/pom.xml" />
       </set>
     </option>
