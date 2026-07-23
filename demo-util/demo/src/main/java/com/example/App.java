@@ -45,11 +45,15 @@ public class App
 
 
 
-        String attrValue6 = "M20_M20";
+        String attrValue6 = "T1(v.11/V.35)/T1(V.11/V.35)";
         String newOrgValue6 = attrValue6
                 .replaceAll("([A-Za-z])(\\d+(?:\\.\\d+)?)_(\\d+(?:\\.\\d+)?)", "$2$1/$3$1")
                 .replaceAll("([A-Za-z])(\\d+(?:\\.\\d+)?)_([A-Za-z])(\\d+(?:\\.\\d+)?)", "$2$1/$4$3");
         System.out.println("newOrgValue6"+newOrgValue6);
+
+
+
+
     }
 
 

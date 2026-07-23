@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(openspec status:*)",
-      "Bash(openspec instructions:*)"
+      "Bash(openspec instructions:*)",
+      "Bash(mvn dependency:resolve -Dartifact=org.springframework.boot:spring-boot-starter-parent:3.2.0:pom)"
     ]
   }
 }
